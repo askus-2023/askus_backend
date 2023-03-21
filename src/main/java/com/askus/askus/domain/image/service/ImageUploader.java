@@ -1,4 +1,4 @@
-package com.askus.askus.domain.image;
+package com.askus.askus.domain.image.service;
 
 import com.askus.askus.domain.image.domain.Image;
 

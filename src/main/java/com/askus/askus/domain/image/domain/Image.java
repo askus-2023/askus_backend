@@ -1,6 +1,6 @@
 package com.askus.askus.domain.image.domain;
 
-import com.askus.askus.domain.image.ImageUploader;
+import com.askus.askus.domain.image.service.ImageUploader;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
