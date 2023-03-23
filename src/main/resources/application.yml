@@ -19,5 +19,17 @@ spring:
     resources:
       add-mappings: false # disable ResourceHttpRequestHandler
 
+cloud:
+  aws:
+    credentials:
+      access-key: #
+      secret-key: #
+    s3:
+      bucket: #
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+
 logging.level:
   org.hibernate.SQL: debug
