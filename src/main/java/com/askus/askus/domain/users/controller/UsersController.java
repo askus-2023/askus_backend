@@ -20,15 +20,15 @@ public class UsersController {
 
     private final UsersService usersService;
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+/*    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(Exception.class)
     public ErrorResponse exceptionHandler(Exception e) {
-        return ErrorResponse.builder()
+        return new ErrorResponse()ErrorResponse.builder()
                 .title("Error")
                 .status("400")
                 .detail(e.getMessage())
                 .build();
-    }
+    }*/
 
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)

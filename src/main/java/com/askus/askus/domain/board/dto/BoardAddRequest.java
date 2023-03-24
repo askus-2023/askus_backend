@@ -11,6 +11,7 @@ import com.askus.askus.domain.board.domain.Category;
 import com.askus.askus.domain.image.domain.Image;
 import com.askus.askus.domain.image.domain.ImageType;
 import com.askus.askus.domain.users.domain.Users;
+import com.askus.askus.global.error.exception.KookleRuntimeException;
 
 import lombok.Getter;
 
@@ -58,7 +59,7 @@ public class BoardAddRequest {
 			byte[] byteArray = file.getBytes();
 			byteArrayInputStream = new ByteArrayInputStream(byteArray);
 		} catch (IOException e) {
-			throw new RuntimeException(e); //TODO 글로벌 예외 처리
+			throw new KookleRuntimeException("이미지 파일 변환 실패", e);
 		}
 		return byteArrayInputStream;
 	}

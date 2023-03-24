@@ -11,6 +11,8 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.askus.askus.domain.image.service.ImageUploader;
 import com.askus.askus.domain.image.domain.Image;
+import com.askus.askus.global.error.exception.KookleRuntimeException;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -24,9 +26,9 @@ public class S3ImageUploader implements ImageUploader {
     private String bucket;
 
     @Override
-    public String upload(Image image) throws IOException {
+    public String upload(Image image) {
         File file = convert(image)
-            .orElseThrow(() -> new IllegalArgumentException("파일 생성 과정에서 문제 발생"));
+            .orElseThrow(() -> new KookleRuntimeException("로컬 파일 저장 실패"));
 
         String filename = UUID.randomUUID().toString();
         String imageUrl = putS3(file, filename);
@@ -34,12 +36,16 @@ public class S3ImageUploader implements ImageUploader {
         return imageUrl;
     }
 
-    private Optional<File> convert(Image image) throws IOException {
+    private Optional<File> convert(Image image) {
         File file = new File(image.getOriginalFilename());
-        if (file.createNewFile()) {
-            try (FileOutputStream fos = new FileOutputStream(file)) {
-                fos.write(image.getInputStream().readAllBytes());
+        try {
+            if (file.createNewFile()) {
+                try (FileOutputStream fos = new FileOutputStream(file)) {
+                    fos.write(image.getInputStream().readAllBytes());
+                }
             }
+        } catch (IOException e) {
+            throw new KookleRuntimeException("로컬 파일 저장 실패", e);
         }
         return Optional.of(file);
     }
@@ -55,7 +61,7 @@ public class S3ImageUploader implements ImageUploader {
         try {
             file.delete();
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("로컬 파일 삭제 실패", e);
+            throw new KookleRuntimeException("로컬 파일 삭제 실패", e);
         }
     }
 
