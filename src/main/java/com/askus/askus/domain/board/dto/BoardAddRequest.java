@@ -30,15 +30,15 @@ public class BoardAddRequest {
 		String ingredients,
 		String content,
 		String tag,
-		Image thumbnailImage,
-		Image representativeImage) {
+		MultipartFile thumbnailImage,
+		MultipartFile representativeImage) {
 		this.title = title;
 		this.category = Category.valueOf(category);
 		this.ingredients = ingredients;
 		this.content = content;
 		this.tag = tag;
-		this.thumbnailImage = thumbnailImage;
-		this.representativeImage = representativeImage;
+		setThumbnailImage(thumbnailImage);
+		setRepresentativeImage(representativeImage);
 	}
 
 	public void setThumbnailImage(MultipartFile thumbnailImage) {

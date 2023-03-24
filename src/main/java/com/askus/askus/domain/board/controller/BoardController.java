@@ -1,5 +1,7 @@
 package com.askus.askus.domain.board.controller;
 
+import java.io.IOException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +24,7 @@ public class BoardController {
 	@PostMapping()
 	public ResponseEntity<BoardAddResponse> addBoard(
 		BoardAddRequest request
-	) {
+	) throws IOException {
 		//TODO: @AuthenticationPrincipal 활용 -> SecurityUser 타입 Authentication 객체에서 userId 가져올 것
 		long id = 1L;
 

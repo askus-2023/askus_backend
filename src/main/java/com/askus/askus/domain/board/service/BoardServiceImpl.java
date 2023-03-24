@@ -1,5 +1,6 @@
 package com.askus.askus.domain.board.service;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class BoardServiceImpl implements BoardService {
 	private final ImageService imageService;
 
 	@Override
-	public BoardAddResponse addBoard(long id, BoardAddRequest request) {
+	public BoardAddResponse addBoard(long id, BoardAddRequest request) throws IOException {
 		Users users = usersRepository.findById(id)
 			.orElseThrow(() -> new IllegalArgumentException("User not Found"));//TODO: 글로벌 예외 처리
 

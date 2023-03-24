@@ -1,8 +1,10 @@
 package com.askus.askus.domain.board.service;
 
+import java.io.IOException;
+
 import com.askus.askus.domain.board.dto.BoardAddRequest;
 import com.askus.askus.domain.board.dto.BoardAddResponse;
 
 public interface BoardService {
-	BoardAddResponse addBoard(long id, BoardAddRequest request);
+	BoardAddResponse addBoard(long id, BoardAddRequest request) throws IOException;
 }
