@@ -4,6 +4,7 @@ import com.askus.askus.domain.image.service.ImageUploader;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -19,11 +20,13 @@ public class Image {
     private final ImageType imageType;
     private final InputStream inputStream;
     private final String extension;
+    private final String originalFilename;
 
     public Image(ImageType imageType, InputStream inputStream, String originalFilename) {
         this.imageType = imageType;
         this.inputStream = inputStream;
         this.extension = checkAndGetExtension(originalFilename);
+        this.originalFilename = originalFilename;
     }
 
     /* 파일명으로 부터 확장자 얻기 및 검증 */
@@ -34,7 +37,7 @@ public class Image {
     }
 
     /* 도메인 서비스 ImageUploader 를 활용해 이미지 업로드 수행 */
-    public String uploadBy(ImageUploader imageUploader) {
+    public String uploadBy(ImageUploader imageUploader) throws IOException {
         return imageUploader.upload(this);
     }
 }

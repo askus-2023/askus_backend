@@ -1,5 +1,6 @@
 package com.askus.askus.domain.image.service;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,7 +22,7 @@ public class ImageServiceImpl implements ImageService{
 	private final BoardImageRepository boardImageRepository;
 
 	@Override
-	public Map<ImageType, Object> uploadBoardImage(Board board, BoardAddRequest request) {
+	public Map<ImageType, Object> uploadBoardImage(Board board, BoardAddRequest request) throws IOException {
 		HashMap<ImageType, Object> map = new HashMap<>();
 
 		String thumbnailImageUrl = request.getThumbnailImage().uploadBy(imageUploader);
