@@ -1,12 +1,11 @@
-package com.askus.askus.domain.user.security;
+package com.askus.askus.domain.users.security;
 
-import com.askus.askus.domain.user.dto.TokenInfo;
+import com.askus.askus.domain.users.dto.TokenInfo;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -23,7 +22,6 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
-@PropertySource("classpath:config.properties")
 public class JwtTokenProvider {
 
     private final Key key;

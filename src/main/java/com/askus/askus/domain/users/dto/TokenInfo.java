@@ -1,4 +1,4 @@
-package com.askus.askus.domain.user.dto;
+package com.askus.askus.domain.users.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

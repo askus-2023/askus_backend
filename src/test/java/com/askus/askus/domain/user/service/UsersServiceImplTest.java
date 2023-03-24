@@ -1,9 +1,10 @@
 package com.askus.askus.domain.user.service;
 
-import com.askus.askus.domain.user.domain.User;
-import com.askus.askus.domain.user.dto.UserSignUpRequestDto;
-import com.askus.askus.domain.user.dto.UserSignUpResponseDto;
-import com.askus.askus.domain.user.repository.UserRepository;
+import com.askus.askus.domain.users.domain.Users;
+import com.askus.askus.domain.users.dto.SignUpRequest;
+import com.askus.askus.domain.users.dto.SignUpResponse;
+import com.askus.askus.domain.users.repository.UsersRepository;
+import com.askus.askus.domain.users.service.UsersServiceImpl;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,31 +20,31 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceImplTest {
+class UsersServiceImplTest {
 
     @Mock
-    private UserRepository userRepository;
+    private UsersRepository usersRepository;
     @Mock
     private PasswordEncoder passwordEncoder;
 
     @InjectMocks
-    private UserServiceImpl userService;
+    private UsersServiceImpl userService;
 
     @Test
     void 기본_회원가입(){
         // given
-        UserSignUpRequestDto requestDto = UserSignUpRequestDto.builder()
+        SignUpRequest requestDto = SignUpRequest.builder()
                 .nickname("nickname")
                 .password("password")
                 .checkedPassword("password")
                 .email("email")
                 .build();
-        User user = requestDto.toEntity();
-        given(userRepository.save(any(User.class))).willReturn(user);
+        Users users = requestDto.toEntity();
+        given(usersRepository.save(any(Users.class))).willReturn(users);
 
         // when
         try {
-            UserSignUpResponseDto responseDto = userService.signUp(requestDto);
+            SignUpResponse responseDto = userService.signUp(requestDto);
 
             // then
             Assertions.assertThat(responseDto.getEmail()).isEqualTo(requestDto.getEmail());
@@ -56,13 +57,13 @@ class UserServiceImplTest {
     @Test
     void 중복_회원가입() {
         // given
-        UserSignUpRequestDto requestDto = UserSignUpRequestDto.builder()
+        SignUpRequest requestDto = SignUpRequest.builder()
                 .nickname("nickname")
                 .password("password")
                 .checkedPassword("password")
                 .email("email")
                 .build();
-        given(userRepository.findByEmail("email")).willReturn(Optional.of(User.builder()
+        given(usersRepository.findByEmail("email")).willReturn(Optional.of(Users.builder()
                 .nickname("nickname")
                 .password("password")
                 .email("email")
@@ -77,7 +78,7 @@ class UserServiceImplTest {
     @Test
     void 가입시_비밀번호_다름() {
         // given
-        UserSignUpRequestDto requestDto = UserSignUpRequestDto.builder()
+        SignUpRequest requestDto = SignUpRequest.builder()
                 .nickname("nickname")
                 .password("password")
                 .checkedPassword("password123")

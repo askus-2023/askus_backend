@@ -1,7 +1,8 @@
 package com.askus.askus.global.configuration;
 
-import com.askus.askus.domain.user.security.JwtAuthenticationFilter;
-import com.askus.askus.domain.user.security.JwtTokenProvider;
+import com.askus.askus.domain.users.repository.UsersRepository;
+import com.askus.askus.domain.users.security.JwtAuthenticationFilter;
+import com.askus.askus.domain.users.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,14 +17,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import javax.servlet.http.HttpServletResponse;
-
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final UsersRepository usersRepository;
     private final UserDetailsService userDetailsService;
 
     @Bean
@@ -40,7 +40,7 @@ public class SecurityConfig {
 //                .exceptionHandling()
 //                .authenticationEntryPoint((request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED))
                 .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, usersRepository), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
@@ -51,7 +51,6 @@ public class SecurityConfig {
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {

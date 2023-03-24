@@ -1,19 +1,18 @@
-package com.askus.askus.domain.user.dto;
+package com.askus.askus.domain.users.dto;
 
-import com.askus.askus.domain.user.domain.User;
+import com.askus.askus.domain.users.domain.Users;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserSignUpRequestDto {
+public class SignUpRequest {
 
     @NotBlank(message = "이메일을 입력해주세요.")
     private String email;
@@ -26,8 +25,8 @@ public class UserSignUpRequestDto {
     @NotBlank(message = "닉네임을 입력해주세요.")
     private String nickname;
 
-    public User toEntity() {
-        return User.builder()
+    public Users toEntity() {
+        return Users.builder()
                 .email(email)
                 .password(password)
                 .nickname(nickname)
