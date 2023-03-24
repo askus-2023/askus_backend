@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.askus.askus.domain.board.dto.BoardAddRequest;
 import com.askus.askus.domain.board.dto.BoardAddResponse;
 import com.askus.askus.domain.board.service.BoardService;
+import com.askus.askus.domain.users.security.SecurityUser;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,12 +25,11 @@ public class BoardController {
 
 	@PostMapping()
 	public ResponseEntity<BoardAddResponse> addBoard(
+		@AuthenticationPrincipal SecurityUser securityUser,
 		BoardAddRequest request
 	) throws IOException {
-		//TODO: @AuthenticationPrincipal 활용 -> SecurityUser 타입 Authentication 객체에서 userId 가져올 것
-		long id = 1L;
-
-		BoardAddResponse boardAddResponse = boardService.addBoard(id, request);
+		Long userId = securityUser.getId();
+		BoardAddResponse boardAddResponse = boardService.addBoard(userId, request);
 		return ResponseEntity
 			.status(HttpStatus.CREATED)
 			.body(boardAddResponse);
