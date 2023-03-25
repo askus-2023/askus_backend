@@ -4,7 +4,6 @@ import com.askus.askus.domain.image.service.ImageUploader;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -32,12 +31,12 @@ public class Image {
     /* 파일명으로 부터 확장자 얻기 및 검증 */
     private String checkAndGetExtension(String filename) {
         String extension = StringUtils.substringAfterLast(filename, ".");
-        checkContains(extension, ACCEPTED_FILE_EXTENSIONS, "illegal file extension provided for image");
+        checkContains(extension, ACCEPTED_FILE_EXTENSIONS, "잘못된 파일 형식");
         return extension;
     }
 
     /* 도메인 서비스 ImageUploader 를 활용해 이미지 업로드 수행 */
-    public String uploadBy(ImageUploader imageUploader) throws IOException {
+    public String uploadBy(ImageUploader imageUploader) {
         return imageUploader.upload(this);
     }
 }
