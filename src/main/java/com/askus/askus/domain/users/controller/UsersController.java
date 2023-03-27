@@ -3,7 +3,6 @@ package com.askus.askus.domain.users.controller;
 import com.askus.askus.domain.users.dto.*;
 import com.askus.askus.domain.users.security.SecurityUser;
 import com.askus.askus.domain.users.service.UsersService;
-import com.askus.askus.global.error.ErrorResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -19,16 +18,6 @@ import javax.validation.Valid;
 public class UsersController {
 
     private final UsersService usersService;
-
-/*    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(Exception.class)
-    public ErrorResponse exceptionHandler(Exception e) {
-        return new ErrorResponse()ErrorResponse.builder()
-                .title("Error")
-                .status("400")
-                .detail(e.getMessage())
-                .build();
-    }*/
 
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)

@@ -3,6 +3,10 @@ package com.askus.askus.domain.image.service;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.askus.askus.domain.image.domain.ProfileImage;
+import com.askus.askus.domain.image.repository.ProfileImageRepository;
+import com.askus.askus.domain.users.domain.Users;
+import com.askus.askus.domain.users.dto.SignUpRequest;
 import org.springframework.stereotype.Service;
 
 import com.askus.askus.domain.board.domain.Board;
@@ -19,6 +23,7 @@ public class ImageServiceImpl implements ImageService{
 
 	private final ImageUploader imageUploader;
 	private final BoardImageRepository boardImageRepository;
+	private final ProfileImageRepository profileImageRepository;
 
 	@Override
 	public Map<ImageType, Object> uploadBoardImage(Board board, BoardAddRequest request) {
@@ -37,5 +42,15 @@ public class ImageServiceImpl implements ImageService{
 		map.put(ImageType.REPRESENTATIVE, savedRepresentativeImage);
 
 		return map;
+	}
+
+	@Override
+	public ProfileImage uploadProfileImage(Users users, SignUpRequest request) {
+
+		String profileImageUrl = request.getProfileImage().uploadBy(imageUploader);
+		ProfileImage profileImage = new ProfileImage(users, profileImageUrl);
+		ProfileImage savedProfileImage = profileImageRepository.save(profileImage);
+
+		return savedProfileImage;
 	}
 }
