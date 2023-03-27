@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import com.askus.askus.domain.common.BaseEntity;
 import com.askus.askus.domain.users.domain.Users;
@@ -20,6 +21,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Table(name = "board")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Board extends BaseEntity {
 	@Id
