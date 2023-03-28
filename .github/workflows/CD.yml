@@ -62,5 +62,5 @@ jobs:
           --deployment-config-name CodeDeployDefault.AllAtOnce \
           --deployment-group-name kookle-prod \
           --file-exists-behavior OVERWRITE \
-          --s3-location bucket=kookle-bucket,bundleType=zip,key=cookle/$GITHUB_SHA.zip \
+          --s3-location bucket=kookle-bucket,bundleType=zip,key=cookle-server/$GITHUB_SHA.zip \
           --region ap-northeast-2 \
