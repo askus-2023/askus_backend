@@ -60,7 +60,7 @@ jobs:
           aws deploy create-deployment \
           --application-name kookle-project \
           --deployment-config-name CodeDeployDefault.AllAtOnce \
-          --deployment-group-name kookle-prod \
+          --deployment-group-name kookle-backend-prod \
           --file-exists-behavior OVERWRITE \
           --s3-location bucket=kookle-bucket,bundleType=zip,key=cookle-server/$GITHUB_SHA.zip \
           --region ap-northeast-2 \
