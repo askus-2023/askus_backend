@@ -23,10 +23,12 @@ public class SignUpResponse {
     public static SignUpResponse ofEntity(
             Users users,
             ProfileImage profileImage) {
+        String imageUrl = (profileImage!=null) ? profileImage.getUrl():null;
+
         return new SignUpResponse(
                 users.getEmail(),
                 users.getNickname(),
-                profileImage.getUrl()
+                imageUrl
         );
     }
 }

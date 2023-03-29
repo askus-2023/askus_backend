@@ -42,11 +42,13 @@ public class UsersServiceImpl implements UsersService {
         }
 
         Users users = usersRepository.save(request.toEntity());
-        ProfileImage profileImage = imageService.uploadProfileImage(users, request);
+        ProfileImage profileImage = null;
+        if(request.getProfileImage()!=null) {
+             profileImage = imageService.uploadProfileImage(users, request);
+        }
 
         // 비밀번호 인코딩
         users.encodePassword(passwordEncoder);
-
         return SignUpResponse.ofEntity(users, profileImage);
     }
 
