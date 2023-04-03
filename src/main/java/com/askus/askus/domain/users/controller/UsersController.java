@@ -32,19 +32,19 @@ public class UsersController {
 
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)
-    public SignUpResponse signUp(@Valid @RequestBody SignUpRequest request) throws Exception {
+    public SignUpResponse signUp(@Valid SignUpRequest request) throws Exception {
         return usersService.signUp(request);
     }
 
     @PostMapping("/signup/email/duplicated")
     @ResponseStatus(HttpStatus.OK)
-    public DupEmailResponse checkDupEmail(@RequestBody DupEmailRequest request) {
+    public DupEmailResponse checkDupEmail(DupEmailRequest request) {
         return usersService.isDupEmail(request.getEmail());
     }
 
     @PostMapping("/signin")
     @ResponseStatus(HttpStatus.OK)
-    public SignInResponse signIn(@Valid @RequestBody SignInRequest request) {
+    public SignInResponse signIn(@Valid SignInRequest request) {
         return usersService.signIn(request);
     }
 
