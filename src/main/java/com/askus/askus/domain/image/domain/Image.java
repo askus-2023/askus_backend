@@ -19,17 +19,19 @@ public class Image {
     private final ImageType imageType;
     private final InputStream inputStream;
     private final String extension;
+    private final String originalFilename;
 
     public Image(ImageType imageType, InputStream inputStream, String originalFilename) {
         this.imageType = imageType;
         this.inputStream = inputStream;
         this.extension = checkAndGetExtension(originalFilename);
+        this.originalFilename = originalFilename;
     }
 
     /* 파일명으로 부터 확장자 얻기 및 검증 */
     private String checkAndGetExtension(String filename) {
         String extension = StringUtils.substringAfterLast(filename, ".");
-        checkContains(extension, ACCEPTED_FILE_EXTENSIONS, "illegal file extension provided for image");
+        checkContains(extension, ACCEPTED_FILE_EXTENSIONS, "잘못된 파일 형식");
         return extension;
     }
 
