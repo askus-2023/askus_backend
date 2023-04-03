@@ -8,14 +8,22 @@ on:
 
 env:
   S3_BUCKET_NAME: kookle-deploy
+  AWS_REGION: ap-northeast-2
+  CODE_DEPLOY_APPLICATION_NAME: kookle
+  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: kookle-group
+  
+permissions:
+  contents: read
 
 jobs:
   build:
-
+    name: Deploy
     runs-on: ubuntu-latest
+    environment: production
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v2
     
     - name: Set up JDK 11
       uses: actions/setup-java@v2
@@ -23,51 +31,72 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
         
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+#     - name: Grant execute permission for gradlew
+#       run: chmod +x gradlew
     
-    - name: Build with Gradle
-      run: ./gradlew clean build
+#     - name: Build with Gradle
+#       run: ./gradlew clean build
 
-    # 디렉토리 생성
-    - name: Make Directory
-      run: mkdir -p deploy
+#     - name: Build with Gradle
+#       uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
+#       with:
+#         arguments: clean build -x test
+
+#     # 디렉토리 생성
+#     - name: Make Directory
+#       run: mkdir -p deploy
         
-    # Jar 파일 복사
-    - name: Copy Jar
-      run: cp ./build/libs/*.jar ./deploy
+#     # Jar 파일 복사
+#     - name: Copy Jar
+#       run: cp ./build/libs/*.jar ./deploy
       
-    # appspec.yml 파일 복사
-    - name: Copy appspec.yml
-      run: cp appspec.yml ./deploy
+#     # appspec.yml 파일 복사
+#     - name: Copy appspec.yml
+#       run: cp appspec.yml ./deploy
     
-    # script files 복사
-    - name: Copy script
-      run: cp ./scripts/*.sh ./deploy
+#     # script files 복사
+#     - name: Copy script
+#       run: cp ./scripts/*.sh ./deploy
 
-    - name: Make zip file
-      run: zip -r ./kookle.zip ./deploy
-      shell: bash
+#     - name: Make zip file
+#       run: zip -r ./kookle.zip ./deploy
+#       shell: bash
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ap-northeast-2
+        aws-region: ${{ env.AWS_REGION }}
+    
+    - name: Upload to AWS S3
+      run: |
+        aws deploy push \
+          --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
+          --ignore-hidden-files \
+          --s3-location s3://$S3_BUCKET_NAME/$GITHUB_SHA.zip \
+          --source .
 
-    - name: Upload to S3
-      run: aws s3 cp --region ap-northeast-2 ./kookle.zip s3://$S3_BUCKET_NAME/
+#     - name: Upload to S3
+#       run: aws s3 cp --region ap-northeast-2 ./kookle.zip s3://$S3_BUCKET_NAME/
 
     # Deploy
-    - name: Deploy
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#     - name: Deploy
+#       env:
+#         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#       run: |
+#         aws deploy create-deployment \
+#         --application-name kookle \
+#         --deployment-group-name kookle-group \
+#         --file-exists-behavior OVERWRITE \
+#         --s3-location bucket=kookle-deploy,bundleType=zip,key=kookle.zip \ 
+#         --region ap-northeast-2
+    
+    - name: Deploy to AWS EC2 from S3
       run: |
         aws deploy create-deployment \
-        --application-name kookle \
-        --deployment-group-name kookle-group \
-        --file-exists-behavior OVERWRITE \
-        --s3-location bucket=kookle-deploy,bundleType=zip,key=kookle.zip \ 
-        --region ap-northeast-2
+          --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
+          --deployment-config-name CodeDeployDefault.AllAtOnce \
+          --deployment-group-name ${{ env.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
+          --s3-location bucket=$S3_BUCKET_NAME,key=$GITHUB_SHA.zip,bundleType=zip
