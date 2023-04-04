@@ -1,5 +1,7 @@
 package com.askus.askus.domain.users.service;
 
+import com.askus.askus.domain.image.domain.ProfileImage;
+import com.askus.askus.domain.image.service.ImageService;
 import com.askus.askus.domain.users.domain.Users;
 import com.askus.askus.domain.users.dto.*;
 import com.askus.askus.domain.users.repository.UsersRepository;
@@ -23,29 +25,31 @@ public class UsersServiceImpl implements UsersService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final ImageService imageService;
 
     @Transactional
     @Override
-    public SignUpResponse signUp(SignUpRequest requestDto) throws Exception {
+    public SignUpResponse signUp(SignUpRequest request) throws Exception {
 
-        if (usersRepository.findByEmail(requestDto.getEmail()).isPresent()){
-            log.error("중복된 이메일로 가입 시도: {}", requestDto.getEmail());
+        if (usersRepository.findByEmail(request.getEmail()).isPresent()){
+            log.error("중복된 이메일로 가입 시도: {}", request.getEmail());
             throw new Exception("이미 존재하는 이메일입니다.");
         }
 
-        if (!requestDto.getPassword().equals(requestDto.getCheckedPassword())){
-            log.error("가입 시 비밀번호 불일치: {}", requestDto.getEmail());
+        if (!request.getPassword().equals(request.getCheckedPassword())){
+            log.error("가입 시 비밀번호 불일치: {}", request.getEmail());
             throw new Exception("비밀번호가 일치하지 않습니다.");
         }
 
-        Users users = usersRepository.save(requestDto.toEntity());
+        Users users = usersRepository.save(request.toEntity());
+        ProfileImage profileImage = null;
+        if(request.getProfileImage()!=null) {
+             profileImage = imageService.uploadProfileImage(users, request);
+        }
+
         // 비밀번호 인코딩
         users.encodePassword(passwordEncoder);
-
-        return SignUpResponse.builder()
-                .email(users.getEmail())
-                .nickname(users.getNickname())
-                .build();
+        return SignUpResponse.ofEntity(users, profileImage);
     }
 
     @Override

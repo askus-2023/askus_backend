@@ -1,15 +1,34 @@
 package com.askus.askus.domain.users.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import com.askus.askus.domain.image.domain.ProfileImage;
+import com.askus.askus.domain.users.domain.Users;
+import lombok.Getter;
 
-@Builder
-@Data
-@AllArgsConstructor
+@Getter
 public class SignUpResponse {
 
-    private String email;
-    private String nickname;
-//    private String imageUrl;
+    private final String email;
+    private final String nickname;
+    private final String imageUrl;
+
+    public SignUpResponse(
+            String email,
+            String nickname,
+            String imageUrl) {
+        this.email = email;
+        this.nickname = nickname;
+        this.imageUrl = imageUrl;
+    }
+
+    public static SignUpResponse ofEntity(
+            Users users,
+            ProfileImage profileImage) {
+        String imageUrl = (profileImage!=null) ? profileImage.getUrl():null;
+
+        return new SignUpResponse(
+                users.getEmail(),
+                users.getNickname(),
+                imageUrl
+        );
+    }
 }
