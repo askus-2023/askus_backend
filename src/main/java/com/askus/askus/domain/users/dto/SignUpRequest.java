@@ -21,9 +21,21 @@ public class SignUpRequest {
     private String nickname;
     private Image profileImage;
 
+    public SignUpRequest(String email, String password, String checkedPassword, String nickname, MultipartFile profileImage) {
+        this.email = email;
+        this.password = password;
+        this.checkedPassword = checkedPassword;
+        this.nickname = nickname;
+        setProfileImage(profileImage);
+    }
+
     public void setProfileImage(MultipartFile profileImage) {
 
-        if(profileImage==null) return;
+        if(profileImage==null || profileImage.isEmpty()) {
+            this.profileImage = null;
+            return;
+        };
+
         InputStream inputStream = getInputStream(profileImage);
         String originalFileName = getOriginalFileName(profileImage);
         this.profileImage = new Image(ImageType.PROFILE, inputStream, originalFileName);
