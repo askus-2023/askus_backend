@@ -34,7 +34,7 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/v1/test").authenticated()
+                .antMatchers("/v1/boards/**").authenticated()
                 .anyRequest().permitAll()
 //                .and()
 //                .exceptionHandling()
