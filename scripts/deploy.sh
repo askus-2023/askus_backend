@@ -2,8 +2,7 @@
 
 REPOSITORY=/home/ubuntu/app
 
-# CURRENT_PID=$(pgrep -fla java | grep askus | awk '{print $1}')
-CURRENT_PID=$(lsof -i tcp:8080 | awk '{print $2}')
+CURRENT_PID=$(pgrep -fla java | awk '{print $1}')
 
 echo "> 현재 구동 중인 애플리케이션 pid: $CURRENT_PID"
 
