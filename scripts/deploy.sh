@@ -2,7 +2,8 @@
 
 REPOSITORY=/home/ubuntu/app
 
-CURRENT_PID=$(pgrep -fla java | grep askus | awk '{print $1}')
+# CURRENT_PID=$(pgrep -fla java | grep askus | awk '{print $1}')
+CURRENT_PID=$(lsof -i tcp:8080 | awk ‘NR!=1 {print$2}’)
 
 echo "> 현재 구동 중인 애플리케이션 pid: $CURRENT_PID"
 
@@ -27,4 +28,3 @@ chmod +x $JAR_NAME
 echo "> $JAR_NAME 실행"
 
 nohup java -jar -Duser.timezone=Asia/Seoul $JAR_NAME >> $REPOSITORY/nohup.out 2>&1 &
-# nohup java -jar $REPOSITORY/$JAR_NAME &
