@@ -71,7 +71,7 @@ jobs:
 
     # zip 파일 생성
     - name: Make zip file
-      run: zip -r ./kookle.zip ./deploy
+      run: zip -r ./kookle-server.zip ./deploy
       shell: bash
 
     - name: Configure AWS credentials
@@ -86,11 +86,11 @@ jobs:
         aws deploy push \
           --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
           --ignore-hidden-files \
-          --s3-location s3://$S3_BUCKET_NAME/$kookle.zip \
+          --s3-location s3://$S3_BUCKET_NAME/kookle-server.zip \
           --source .
 
 #     - name: Upload to S3
-#       run: aws s3 cp --region ap-northeast-2 ./kookle.zip s3://$S3_BUCKET_NAME/
+#       run: aws s3 cp --region ap-northeast-2 ./kookle-server.zip s3://$S3_BUCKET_NAME/kookle-server.zip
 
     # Deploy
 #     - name: Deploy
@@ -102,7 +102,7 @@ jobs:
 #         --application-name kookle \
 #         --deployment-group-name kookle-group \
 #         --file-exists-behavior OVERWRITE \
-#         --s3-location bucket=kookle-deploy,bundleType=zip,key=kookle.zip \ 
+#         --s3-location bucket=kookle-deploy,bundleType=zip,key=kookle-server.zip \ 
 #         --region ap-northeast-2
     
     - name: Deploy to AWS EC2 from S3
@@ -112,4 +112,4 @@ jobs:
           --deployment-config-name CodeDeployDefault.AllAtOnce \
           --deployment-group-name ${{ env.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
           --file-exists-behavior OVERWRITE \
-          --s3-location bucket=$S3_BUCKET_NAME,key=$kookle.zip,bundleType=zip
+          --s3-location bucket=$S3_BUCKET_NAME,key=kookle-server.zip,bundleType=zip
