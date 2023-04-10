@@ -57,6 +57,14 @@ public class Board extends BaseEntity {
 		this.tag = tag;
 	}
 
+	public void update(String title, Category category, String ingredients, String content, String tag) {
+		this.title = title;
+		this.category = category;
+		this.ingredients = ingredients;
+		this.content = content;
+		this.tag = tag;
+	}
+
 	public void addLikeCount() {
 		this.likeCount++;
 	}

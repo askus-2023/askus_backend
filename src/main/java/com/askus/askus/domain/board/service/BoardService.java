@@ -2,13 +2,17 @@ package com.askus.askus.domain.board.service;
 
 import java.util.List;
 
-import com.askus.askus.domain.board.dto.BoardAddRequest;
-import com.askus.askus.domain.board.dto.BoardAddResponse;
-import com.askus.askus.domain.board.dto.BoardsSearchCondition;
-import com.askus.askus.domain.board.dto.BoardsSearchResponse;
+import com.askus.askus.domain.board.dto.BoardRequest;
+import com.askus.askus.domain.board.dto.BoardResponse;
 
 public interface BoardService {
-	BoardAddResponse addBoard(long id, BoardAddRequest request);
+	BoardResponse.Post addBoard(long userId, BoardRequest.Post request);
 
-	List<BoardsSearchResponse> searchBoards(BoardsSearchCondition condition);
+	List<BoardResponse.Summary> searchBoards(BoardRequest.Summary request);
+
+	BoardResponse.Detail searchBoard(long boardId);
+
+	BoardResponse.Post updateBoard(long boardId, BoardRequest.Post request);
+
+	BoardResponse.Delete deleteBoard(BoardRequest.Delete request);
 }
