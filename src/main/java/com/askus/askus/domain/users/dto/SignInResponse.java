@@ -9,7 +9,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class SignInResponse {
 
-    private String email;
-    private String accessToken;
-    private String refreshToken;
+	private String email;
+	private String accessToken;
+	private String refreshToken;
 }

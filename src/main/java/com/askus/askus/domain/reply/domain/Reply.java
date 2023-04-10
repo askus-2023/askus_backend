@@ -1,14 +1,16 @@
-package com.askus.askus.domain.image.domain;
+package com.askus.askus.domain.reply.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.askus.askus.domain.board.domain.Board;
 import com.askus.askus.domain.common.BaseEntity;
 import com.askus.askus.domain.users.domain.Users;
 
@@ -18,24 +20,28 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "profile_image")
+@Table(name = "reply")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ProfileImage extends BaseEntity {
-
+public class Reply extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(updatable = false)
 	private Long id;
 
-	@JoinColumn(name = "user_id")
-	@OneToOne
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "users_id")
 	private Users users;
 
-	@Column
-	private String url;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "board_id")
+	private Board board;
 
-	public ProfileImage(Users users, String url) {
+	@Column
+	private String content;
+
+	public Reply(Users users, Board board, String content) {
 		this.users = users;
-		this.url = url;
+		this.board = board;
+		this.content = content;
 	}
 }
