@@ -2,6 +2,7 @@ package com.askus.askus.domain.board.repository;
 
 import static com.askus.askus.domain.board.domain.QBoard.*;
 import static com.askus.askus.domain.image.domain.QBoardImage.*;
+import static com.askus.askus.domain.users.domain.QUsers.*;
 
 import java.util.List;
 import java.util.Objects;
@@ -26,13 +27,15 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 		return queryFactory
 			.select(Projections.constructor(BoardsSearchResponse.class,
 				board.id,
-				board.users,
+				board.users.nickname,
 				board.createdAt,
 				boardImage.url
 			))
 			.from(board)
 			.innerJoin(boardImage.board, board)
 			.on(boardImage.board.id.eq(board.id))
+			.innerJoin(users, board.users)
+			.on(users.id.eq(board.users.id))
 			.where(
 				searchTag(condition),
 				dateLoe(condition),
