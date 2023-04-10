@@ -22,10 +22,11 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
 	@Override
 	public List<BoardsSearchResponse> searchBoards(BoardsSearchCondition condition) {
-		//TODO: board에 작성자, 댓글수, 좋아요수 추가
+		//TODO: board에 댓글수, 좋아요수 추가
 		return queryFactory
 			.select(Projections.constructor(BoardsSearchResponse.class,
 				board.id,
+				board.users,
 				board.createdAt,
 				boardImage.url
 			))
