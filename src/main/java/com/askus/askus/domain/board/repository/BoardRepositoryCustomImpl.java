@@ -24,7 +24,6 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
 	@Override
 	public List<BoardsSearchResponse> searchBoards(BoardsSearchCondition condition) {
-		//TODO: board에 댓글수 추가
 		return queryFactory
 			.select(Projections.constructor(BoardsSearchResponse.class,
 				board.id,
