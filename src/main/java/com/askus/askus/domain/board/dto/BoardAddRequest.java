@@ -47,6 +47,7 @@ public class BoardAddRequest {
 		String originalFileName = getOriginalFileName(thumbnailImage);
 		this.thumbnailImage = new Image(ImageType.THUMBNAIL, inputStream, originalFileName);
 	}
+
 	public void setRepresentativeImage(MultipartFile representativeImage) {
 		InputStream inputStream = getInputStream(representativeImage);
 		String originalFileName = getOriginalFileName(representativeImage);

@@ -9,7 +9,7 @@ import lombok.Getter;
 
 @Getter
 public class BoardAddResponse {
-	private final Long id;
+	private final Long boardId;
 	private final String title;
 	private final String nickname;
 	private final String ingredients;
@@ -20,7 +20,7 @@ public class BoardAddResponse {
 	private final String representativeImageUrl;
 
 	public BoardAddResponse(
-		Long id,
+		Long boardId,
 		String title,
 		String nickname,
 		String ingredients,
@@ -29,7 +29,7 @@ public class BoardAddResponse {
 		String tag,
 		String thumbnailImageUrl,
 		String representativeImageUrl) {
-		this.id = id;
+		this.boardId = boardId;
 		this.title = title;
 		this.nickname = nickname;
 		this.ingredients = ingredients;
