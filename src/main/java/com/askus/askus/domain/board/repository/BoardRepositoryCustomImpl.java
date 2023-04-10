@@ -27,7 +27,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 		return queryFactory
 			.select(Projections.constructor(BoardsSearchResponse.class,
 				board.id,
-				board.users.nickname,
+				users.nickname,
 				board.createdAt,
 				boardImage.url
 			))
