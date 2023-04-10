@@ -3,23 +3,23 @@ package com.askus.askus.domain.image.service;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.askus.askus.domain.image.domain.ProfileImage;
-import com.askus.askus.domain.image.repository.ProfileImageRepository;
-import com.askus.askus.domain.users.domain.Users;
-import com.askus.askus.domain.users.dto.SignUpRequest;
 import org.springframework.stereotype.Service;
 
 import com.askus.askus.domain.board.domain.Board;
 import com.askus.askus.domain.board.dto.BoardAddRequest;
 import com.askus.askus.domain.image.domain.BoardImage;
 import com.askus.askus.domain.image.domain.ImageType;
+import com.askus.askus.domain.image.domain.ProfileImage;
 import com.askus.askus.domain.image.repository.BoardImageRepository;
+import com.askus.askus.domain.image.repository.ProfileImageRepository;
+import com.askus.askus.domain.users.domain.Users;
+import com.askus.askus.domain.users.dto.SignUpRequest;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class ImageServiceImpl implements ImageService{
+public class ImageServiceImpl implements ImageService {
 
 	private final ImageUploader imageUploader;
 	private final BoardImageRepository boardImageRepository;

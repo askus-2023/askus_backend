@@ -11,5 +11,6 @@ import com.askus.askus.domain.users.dto.SignUpRequest;
 
 public interface ImageService {
 	Map<ImageType, Object> uploadBoardImage(Board board, BoardAddRequest request);
+
 	ProfileImage uploadProfileImage(Users users, SignUpRequest request);
 }

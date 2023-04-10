@@ -9,5 +9,6 @@ import com.askus.askus.domain.board.dto.BoardsSearchResponse;
 
 public interface BoardService {
 	BoardAddResponse addBoard(long id, BoardAddRequest request);
+
 	List<BoardsSearchResponse> searchBoards(BoardsSearchCondition condition);
 }

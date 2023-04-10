@@ -8,5 +8,5 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class DupEmailResponse {
-    private boolean duplicated;
+	private boolean duplicated;
 }

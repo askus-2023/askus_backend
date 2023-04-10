@@ -36,8 +36,8 @@ public class BoardServiceImpl implements BoardService {
 		Board board = boardRepository.save(request.toEntity(users));
 
 		Map<ImageType, Object> map = imageService.uploadBoardImage(board, request);
-		BoardImage thumbnailImage = (BoardImage) map.get(ImageType.THUMBNAIL);
-		BoardImage representativeImage = (BoardImage) map.get(ImageType.REPRESENTATIVE);
+		BoardImage thumbnailImage = (BoardImage)map.get(ImageType.THUMBNAIL);
+		BoardImage representativeImage = (BoardImage)map.get(ImageType.REPRESENTATIVE);
 
 		return BoardAddResponse.ofEntity(board, users, thumbnailImage, representativeImage);
 	}

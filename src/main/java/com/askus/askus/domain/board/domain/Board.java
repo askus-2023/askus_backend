@@ -45,6 +45,9 @@ public class Board extends BaseEntity {
 	@Column
 	private Long likeCount = 0L;
 
+	@Column
+	private Long replyCount = 0L;
+
 	public Board(Users users, String title, Category category, String ingredients, String content, String tag) {
 		this.users = users;
 		this.title = title;
@@ -60,5 +63,13 @@ public class Board extends BaseEntity {
 
 	public void deleteLikeCount() {
 		this.likeCount--;
+	}
+
+	public void addReplyCount() {
+		this.replyCount++;
+	}
+
+	public void deleteReplyCount() {
+		this.replyCount--;
 	}
 }
