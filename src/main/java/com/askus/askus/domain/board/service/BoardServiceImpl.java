@@ -1,5 +1,6 @@
 package com.askus.askus.domain.board.service;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -7,6 +8,8 @@ import org.springframework.stereotype.Service;
 import com.askus.askus.domain.board.domain.Board;
 import com.askus.askus.domain.board.dto.BoardAddRequest;
 import com.askus.askus.domain.board.dto.BoardAddResponse;
+import com.askus.askus.domain.board.dto.BoardsSearchCondition;
+import com.askus.askus.domain.board.dto.BoardsSearchResponse;
 import com.askus.askus.domain.board.repository.BoardRepository;
 import com.askus.askus.domain.image.domain.BoardImage;
 import com.askus.askus.domain.image.domain.ImageType;
@@ -37,5 +40,10 @@ public class BoardServiceImpl implements BoardService {
 		BoardImage representativeImage = (BoardImage) map.get(ImageType.REPRESENTATIVE);
 
 		return BoardAddResponse.ofEntity(board, users, thumbnailImage, representativeImage);
+	}
+
+	@Override
+	public List<BoardsSearchResponse> searchBoards(BoardsSearchCondition condition) {
+		return boardRepository.searchBoards(condition);
 	}
 }
