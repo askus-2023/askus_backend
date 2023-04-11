@@ -25,8 +25,13 @@ public class SignUpRequest {
 	private String nickname;
 	private Image profileImage;
 
-	public SignUpRequest(String email, String password, String checkedPassword, String nickname,
-		MultipartFile profileImage) {
+	public SignUpRequest(
+			String email,
+			String password,
+			String checkedPassword,
+			String nickname,
+			MultipartFile profileImage
+	) {
 		this.email = email;
 		this.password = password;
 		this.checkedPassword = checkedPassword;
@@ -36,11 +41,11 @@ public class SignUpRequest {
 
 	public void setProfileImage(MultipartFile profileImage) {
 
-		if (profileImage == null || profileImage.isEmpty()) {
-			this.profileImage = null;
+		if(profileImage==null) {
+			InputStream inputStream = getClass().getClassLoader().getResourceAsStream("defaultProfileImage.png");
+			this.profileImage = new Image(ImageType.PROFILE, inputStream, "defaultProfileImage.png");
 			return;
 		}
-		;
 
 		InputStream inputStream = getInputStream(profileImage);
 		String originalFileName = getOriginalFileName(profileImage);

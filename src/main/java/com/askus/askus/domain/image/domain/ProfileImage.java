@@ -1,25 +1,17 @@
 package com.askus.askus.domain.image.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import com.askus.askus.domain.common.BaseEntity;
 import com.askus.askus.domain.users.domain.Users;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @Table(name = "profile_image")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class ProfileImage extends BaseEntity {
 
 	@Id
@@ -27,8 +19,8 @@ public class ProfileImage extends BaseEntity {
 	@Column(updatable = false)
 	private Long id;
 
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
-	@OneToOne
 	private Users users;
 
 	@Column
