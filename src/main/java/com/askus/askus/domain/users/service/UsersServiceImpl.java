@@ -49,10 +49,7 @@ public class UsersServiceImpl implements UsersService {
 		}
 
 		Users users = usersRepository.save(request.toEntity());
-		ProfileImage profileImage = null;
-		if (request.getProfileImage() != null) {
-			profileImage = imageService.uploadProfileImage(users, request);
-		}
+		ProfileImage profileImage = imageService.uploadProfileImage(users, request);
 
 		// 비밀번호 인코딩
 		users.encodePassword(passwordEncoder);
@@ -74,11 +71,14 @@ public class UsersServiceImpl implements UsersService {
 			new UsernamePasswordAuthenticationToken(requestDto.getEmail(), requestDto.getPassword());
 
 		// 2. 실제 검증 (사용자 비밀번호 체크)이 이루어지는 부분
-		// authenticate 메서드가 실행될 때 customerUserDetailService에서 만든 loadUserByUsername 메서드가 실행
+		// authenticate 메서드가 실행될 때 customerUserDetailsService에서 만든 loadUserByUsername 메서드가 실행
 		Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
 		// 3. 인증 정보를 기반으로 JWT 토큰 생성
 		TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
+
+		// TODO:: RefreshToken Redis 저장
+
 		return SignInResponse.builder()
 			.email(authentication.getName())
 			.accessToken(tokenInfo.getAccessToken())
