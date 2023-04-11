@@ -7,10 +7,10 @@ import com.askus.askus.domain.users.domain.Users;
 import lombok.Getter;
 
 @Getter
-public class LikeAddAndDeleteRequest {
+public class LikeRequest {
 	private long boardId;
 
-	public LikeAddAndDeleteRequest(long boardId) {
+	public LikeRequest(long boardId) {
 		this.boardId = boardId;
 	}
 
