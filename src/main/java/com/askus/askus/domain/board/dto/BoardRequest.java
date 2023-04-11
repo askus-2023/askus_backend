@@ -3,7 +3,9 @@ package com.askus.askus.domain.board.dto;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -105,32 +107,40 @@ public class BoardRequest {
 			String ingredients,
 			String content,
 			String tag,
-			Optional<MultipartFile> thumbnailImage,
-			Optional<List<MultipartFile>> representativeImages
+			MultipartFile thumbnailImage,
+			List<MultipartFile> representativeImages
 		) {
 			this.title = title;
 			this.category = Category.valueOf(category);
 			this.ingredients = ingredients;
 			this.content = content;
 			this.tag = tag;
-			if (thumbnailImage != null) {
-				setThumbnailImage(thumbnailImage.get());
-			}
-			if (representativeImages != null) {
-				setRepresentativeImages(representativeImages.get());
-			}
+			setThumbnailImage(thumbnailImage);
+			setRepresentativeImages(representativeImages);
 		}
 
 		public void setThumbnailImage(MultipartFile thumbnailImage) {
+			if (thumbnailImage == null || thumbnailImage.isEmpty()) {
+				return;
+			}
 			this.thumbnailImage = Optional.of(new Image(
 				ImageType.THUMBNAIL, getInputStream(thumbnailImage), getOriginalFileName(thumbnailImage)
 			));
 		}
 
 		public void setRepresentativeImages(List<MultipartFile> representativeImages) {
-			this.representativeImages = Optional.of(representativeImages.stream()
-				.map(image -> new Image(ImageType.REPRESENTATIVE, getInputStream(image), getOriginalFileName(image)))
-				.collect(Collectors.toList()));
+			if (representativeImages == null || representativeImages.isEmpty()) {
+				return;
+			}
+			long count = representativeImages.stream()
+				.filter(file -> !file.isEmpty())
+				.count();
+			if (count != 0) {
+				this.representativeImages = Optional.of(representativeImages.stream()
+					.map(
+						image -> new Image(ImageType.REPRESENTATIVE, getInputStream(image), getOriginalFileName(image)))
+					.collect(Collectors.toList()));
+			}
 		}
 
 		private InputStream getInputStream(MultipartFile image) {
@@ -163,19 +173,23 @@ public class BoardRequest {
 	public static class Summary {
 		/* 검색조건 */
 		private String tag;
-		private LocalDateTime dateLoe;
-		private LocalDateTime dateGoe;
+		private Optional<LocalDateTime> dateLoe = Optional.empty();
+		private Optional<LocalDateTime> dateGoe = Optional.empty();
 		/* 정렬기준 */
 		private SortConditions sortTarget;
 
 		public Summary(
 			String tag,
-			LocalDateTime dateLoe,
-			LocalDateTime dateGoe,
+			String dateLoe,
+			String dateGoe,
 			String sortTarget) {
 			this.tag = tag;
-			this.dateLoe = dateLoe;
-			this.dateGoe = dateGoe;
+			if (!dateLoe.isBlank()) {
+				this.dateLoe = Optional.of(LocalDate.parse(dateLoe, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay());
+			}
+			if (!dateGoe.isBlank()) {
+				this.dateGoe = Optional.of(LocalDate.parse(dateGoe, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay());
+			}
 			this.sortTarget = SortConditions.valueOf(sortTarget);
 		}
 	}

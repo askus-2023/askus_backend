@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.askus.askus.domain.board.domain.Board;
 import com.askus.askus.domain.board.domain.Category;
 import com.askus.askus.domain.board.repository.BoardRepository;
-import com.askus.askus.domain.like.dto.LikeAddAndDeleteRequest;
-import com.askus.askus.domain.like.dto.LikeAddAndDeleteResponse;
+import com.askus.askus.domain.like.dto.LikeRequest;
+import com.askus.askus.domain.like.dto.LikeResponse;
 import com.askus.askus.domain.users.domain.Users;
 import com.askus.askus.domain.users.repository.UsersRepository;
 import com.askus.askus.global.config.TestConfig;
@@ -44,10 +44,10 @@ class LikeServiceImplTest {
 		);
 		Board savedBoard = boardRepository.save(board);
 
-		LikeAddAndDeleteRequest request = new LikeAddAndDeleteRequest(savedBoard.getId());
+		LikeRequest request = new LikeRequest(savedBoard.getId());
 
 		// when
-		LikeAddAndDeleteResponse response = likeService.addLike(savedUsers.getId(), request);
+		LikeResponse response = likeService.addLike(savedUsers.getId(), request);
 
 		// then
 		assertThat(response.getBoardId()).isEqualTo(savedBoard.getId());
@@ -70,11 +70,11 @@ class LikeServiceImplTest {
 		);
 		Board savedBoard = boardRepository.save(board);
 
-		LikeAddAndDeleteRequest request = new LikeAddAndDeleteRequest(savedBoard.getId());
+		LikeRequest request = new LikeRequest(savedBoard.getId());
 		likeService.addLike(savedUsers.getId(), request);
 
 		// when
-		LikeAddAndDeleteResponse response = likeService.deleteLike(savedUsers.getId(), request);
+		LikeResponse response = likeService.deleteLike(savedUsers.getId(), request);
 
 		// then
 		assertThat(response.getBoardId()).isEqualTo(savedBoard.getId());

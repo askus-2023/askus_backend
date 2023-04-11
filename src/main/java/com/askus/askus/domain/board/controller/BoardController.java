@@ -46,7 +46,7 @@ public class BoardController {
 
 	@GetMapping("/{boardId}")
 	public BoardResponse.Detail searchBoard(
-		@PathVariable long boardId
+		@PathVariable Long boardId
 	) {
 		return boardService.searchBoard(boardId);
 	}
@@ -54,7 +54,7 @@ public class BoardController {
 	@PatchMapping("/{boardId}")
 	public BoardResponse.Patch updateBoard(
 		@AuthenticationPrincipal SecurityUser securityUser,
-		@PathVariable long boardId,
+		@PathVariable Long boardId,
 		BoardRequest.Patch request
 	) {
 		return boardService.updateBoard(securityUser.getId(), boardId, request);

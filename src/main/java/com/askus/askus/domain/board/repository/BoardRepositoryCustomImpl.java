@@ -5,7 +5,6 @@ import static com.askus.askus.domain.image.domain.QBoardImage.*;
 import static com.askus.askus.domain.users.domain.QUsers.*;
 
 import java.util.List;
-import java.util.Objects;
 
 import com.askus.askus.domain.board.dto.BoardRequest;
 import com.askus.askus.domain.board.dto.BoardResponse;
@@ -63,17 +62,17 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 	}
 
 	private BooleanExpression dateLoe(BoardRequest.Summary request) {
-		if (Objects.isNull(request.getDateLoe())) {
+		if (request.getDateLoe().isEmpty()) {
 			return null;
 		}
-		return board.createdAt.after(request.getDateLoe());
+		return board.createdAt.after(request.getDateLoe().get());
 	}
 
 	private BooleanExpression dateGoe(BoardRequest.Summary request) {
-		if (Objects.isNull(request.getDateGoe())) {
+		if (request.getDateGoe().isEmpty()) {
 			return null;
 		}
-		return board.createdAt.before(request.getDateGoe());
+		return board.createdAt.before(request.getDateGoe().get());
 	}
 
 	private OrderSpecifier<?> sort(BoardRequest.Summary request) {
