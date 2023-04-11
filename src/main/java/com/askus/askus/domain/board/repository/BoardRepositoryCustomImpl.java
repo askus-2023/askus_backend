@@ -5,10 +5,9 @@ import static com.askus.askus.domain.image.domain.QBoardImage.*;
 import static com.askus.askus.domain.users.domain.QUsers.*;
 
 import java.util.List;
-import java.util.Objects;
 
-import com.askus.askus.domain.board.dto.BoardsSearchCondition;
-import com.askus.askus.domain.board.dto.BoardsSearchResponse;
+import com.askus.askus.domain.board.dto.BoardRequest;
+import com.askus.askus.domain.board.dto.BoardResponse;
 import com.askus.askus.domain.image.domain.ImageType;
 import com.askus.askus.global.util.SortConditions;
 import com.askus.askus.global.util.StringUtil;
@@ -26,16 +25,19 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public List<BoardsSearchResponse> searchBoards(BoardsSearchCondition condition) {
+	public List<BoardResponse.Summary> searchBoards(BoardRequest.Summary request) {
 		return queryFactory
-			.select(Projections.constructor(BoardsSearchResponse.class,
+			.select(Projections.constructor(BoardResponse.Summary.class,
 				board.id,
 				users.nickname,
 				board.createdAt,
 				ExpressionUtils.as(
 					JPAExpressions
 						.select(boardImage.url).from(boardImage)
-						.where(boardImage.board.id.eq(board.id), boardImage.imageType.eq(ImageType.THUMBNAIL)), "url"
+						.where(
+							boardImage.board.id.eq(board.id),
+							boardImage.imageType.eq(ImageType.THUMBNAIL),
+							boardImage.deletedAt.isNull()), "url"
 				),
 				board.likeCount,
 				board.replyCount
@@ -43,42 +45,42 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 			.from(board)
 			.join(board.users, users)
 			.where(
-				searchTag(condition),
-				dateLoe(condition),
-				dateGoe(condition),
+				searchTag(request),
+				dateLoe(request),
+				dateGoe(request),
 				board.deletedAt.isNull()
 			)
-			.orderBy(sort(condition))
+			.orderBy(sort(request))
 			.distinct().fetch();
 	}
 
-	private BooleanExpression searchTag(BoardsSearchCondition condition) {
-		if (StringUtil.isNullOrEmpty(condition.getTag())) {
+	private BooleanExpression searchTag(BoardRequest.Summary request) {
+		if (StringUtil.isNullOrEmpty(request.getTag())) {
 			return null;
 		}
-		return board.tag.like("%" + condition.getTag() + "%");
+		return board.tag.like("%" + request.getTag() + "%");
 	}
 
-	private BooleanExpression dateLoe(BoardsSearchCondition condition) {
-		if (Objects.isNull(condition.getDateLoe())) {
+	private BooleanExpression dateLoe(BoardRequest.Summary request) {
+		if (request.getDateLoe().isEmpty()) {
 			return null;
 		}
-		return board.createdAt.after(condition.getDateLoe());
+		return board.createdAt.after(request.getDateLoe().get());
 	}
 
-	private BooleanExpression dateGoe(BoardsSearchCondition condition) {
-		if (Objects.isNull(condition.getDateGoe())) {
+	private BooleanExpression dateGoe(BoardRequest.Summary request) {
+		if (request.getDateGoe().isEmpty()) {
 			return null;
 		}
-		return board.createdAt.before(condition.getDateGoe());
+		return board.createdAt.before(request.getDateGoe().get());
 	}
 
-	private OrderSpecifier<?> sort(BoardsSearchCondition condition) {
-		if (condition.getSortTarget().equals(SortConditions.CREATED_AT_DESC)) {
+	private OrderSpecifier<?> sort(BoardRequest.Summary request) {
+		if (request.getSortTarget().equals(SortConditions.CREATED_AT_DESC)) {
 			return board.createdAt.desc();
-		} else if (condition.getSortTarget().equals(SortConditions.CREATED_AT_ASC)) {
+		} else if (request.getSortTarget().equals(SortConditions.CREATED_AT_ASC)) {
 			return board.createdAt.asc();
-		} else if (condition.getSortTarget().equals(SortConditions.LIKE_COUNT_DESC)) {
+		} else if (request.getSortTarget().equals(SortConditions.LIKE_COUNT_DESC)) {
 			return board.likeCount.desc();
 		} else {
 			return board.replyCount.desc();

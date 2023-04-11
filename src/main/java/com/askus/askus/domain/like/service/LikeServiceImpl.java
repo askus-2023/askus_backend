@@ -8,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.askus.askus.domain.board.domain.Board;
 import com.askus.askus.domain.board.repository.BoardRepository;
 import com.askus.askus.domain.like.domain.Like;
-import com.askus.askus.domain.like.dto.LikeAddAndDeleteRequest;
-import com.askus.askus.domain.like.dto.LikeAddAndDeleteResponse;
+import com.askus.askus.domain.like.dto.LikeRequest;
+import com.askus.askus.domain.like.dto.LikeResponse;
 import com.askus.askus.domain.like.repository.LikeRepository;
 import com.askus.askus.domain.users.domain.Users;
 import com.askus.askus.domain.users.repository.UsersRepository;
@@ -26,7 +26,7 @@ public class LikeServiceImpl implements LikeService {
 
 	@Override
 	@Transactional
-	public LikeAddAndDeleteResponse addLike(long usersId, LikeAddAndDeleteRequest request) {
+	public LikeResponse addLike(long usersId, LikeRequest request) {
 		Users users = usersRepository.findById(usersId)
 			.orElseThrow(() -> new KookleRuntimeException("Users Not Found"));
 
@@ -44,12 +44,12 @@ public class LikeServiceImpl implements LikeService {
 		board.addLikeCount();
 		boardRepository.save(board);
 
-		return LikeAddAndDeleteResponse.ofEntity(board);
+		return LikeResponse.ofEntity(board);
 	}
 
 	@Override
 	@Transactional
-	public LikeAddAndDeleteResponse deleteLike(long usersId, LikeAddAndDeleteRequest request) {
+	public LikeResponse deleteLike(long usersId, LikeRequest request) {
 		Users users = usersRepository.findById(usersId)
 			.orElseThrow(() -> new KookleRuntimeException("Users Not Found"));
 
@@ -64,6 +64,6 @@ public class LikeServiceImpl implements LikeService {
 		board.deleteLikeCount();
 		boardRepository.save(board);
 
-		return LikeAddAndDeleteResponse.ofEntity(board);
+		return LikeResponse.ofEntity(board);
 	}
 }

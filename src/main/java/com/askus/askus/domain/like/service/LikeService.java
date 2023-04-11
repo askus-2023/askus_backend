@@ -1,10 +1,10 @@
 package com.askus.askus.domain.like.service;
 
-import com.askus.askus.domain.like.dto.LikeAddAndDeleteRequest;
-import com.askus.askus.domain.like.dto.LikeAddAndDeleteResponse;
+import com.askus.askus.domain.like.dto.LikeRequest;
+import com.askus.askus.domain.like.dto.LikeResponse;
 
 public interface LikeService {
-	LikeAddAndDeleteResponse addLike(long usersId, LikeAddAndDeleteRequest request);
+	LikeResponse addLike(long usersId, LikeRequest request);
 
-	LikeAddAndDeleteResponse deleteLike(long usersId, LikeAddAndDeleteRequest request);
+	LikeResponse deleteLike(long usersId, LikeRequest request);
 }

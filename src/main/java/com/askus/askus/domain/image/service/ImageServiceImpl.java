@@ -1,19 +1,20 @@
 package com.askus.askus.domain.image.service;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import com.askus.askus.domain.board.domain.Board;
-import com.askus.askus.domain.board.dto.BoardAddRequest;
 import com.askus.askus.domain.image.domain.BoardImage;
+import com.askus.askus.domain.image.domain.Image;
 import com.askus.askus.domain.image.domain.ImageType;
 import com.askus.askus.domain.image.domain.ProfileImage;
 import com.askus.askus.domain.image.repository.BoardImageRepository;
 import com.askus.askus.domain.image.repository.ProfileImageRepository;
 import com.askus.askus.domain.users.domain.Users;
 import com.askus.askus.domain.users.dto.SignUpRequest;
+import com.askus.askus.global.error.exception.KookleRuntimeException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,22 +27,17 @@ public class ImageServiceImpl implements ImageService {
 	private final ProfileImageRepository profileImageRepository;
 
 	@Override
-	public Map<ImageType, Object> uploadBoardImage(Board board, BoardAddRequest request) {
-		HashMap<ImageType, Object> map = new HashMap<>();
+	public BoardImage uploadThumbnailImage(Board board, Image image) {
+		String url = image.uploadBy(imageUploader);
+		BoardImage boardImage = new BoardImage(board, ImageType.THUMBNAIL, url);
+		return boardImageRepository.save(boardImage);
+	}
 
-		String thumbnailImageUrl = request.getThumbnailImage().uploadBy(imageUploader);
-		String representativeImageUrl = request.getRepresentativeImage().uploadBy(imageUploader);
-
-		BoardImage thumbnailImage = new BoardImage(board, ImageType.THUMBNAIL, thumbnailImageUrl);
-		BoardImage representativeImage = new BoardImage(board, ImageType.REPRESENTATIVE, representativeImageUrl);
-
-		BoardImage savedThumbnailImage = boardImageRepository.save(thumbnailImage);
-		BoardImage savedRepresentativeImage = boardImageRepository.save(representativeImage);
-
-		map.put(ImageType.THUMBNAIL, savedThumbnailImage);
-		map.put(ImageType.REPRESENTATIVE, savedRepresentativeImage);
-
-		return map;
+	@Override
+	public BoardImage uploadRepresentativeImage(Board board, Image image) {
+		String url = image.uploadBy(imageUploader);
+		BoardImage boardImage = new BoardImage(board, ImageType.REPRESENTATIVE, url);
+		return boardImageRepository.save(boardImage);
 	}
 
 	@Override
@@ -52,5 +48,26 @@ public class ImageServiceImpl implements ImageService {
 		ProfileImage savedProfileImage = profileImageRepository.save(profileImage);
 
 		return savedProfileImage;
+	}
+
+	@Override
+	public void deleteThumbnailImage(Board board) {
+		BoardImage thumbnailImage = boardImageRepository.findByBoardAndImageTypeAndDeletedAtNull(board,
+				ImageType.THUMBNAIL)
+			.orElseThrow(() -> new KookleRuntimeException("Thumbnail Image Not Found"));
+		thumbnailImage.delete();
+		boardImageRepository.save(thumbnailImage);
+	}
+
+	@Override
+	public void deleteRepresentativeImages(Board board) {
+		List<BoardImage> deletedRepresentativeImages = new ArrayList<>();
+		List<BoardImage> representativeImages = boardImageRepository.findAllByBoardAndImageTypeAndDeletedAtNull(board,
+			ImageType.REPRESENTATIVE);
+		for (BoardImage image : representativeImages) {
+			image.delete();
+			deletedRepresentativeImages.add(image);
+		}
+		boardImageRepository.saveAll(deletedRepresentativeImages);
 	}
 }
