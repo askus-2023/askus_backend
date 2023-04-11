@@ -4,8 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -30,7 +30,7 @@ public class BoardRequest {
 		private String content;
 		private String tag;
 		private Image thumbnailImage;
-		private List<Image> representativeImages = new ArrayList<>();
+		private List<Image> representativeImages;
 
 		public Post(
 			String title,
@@ -80,6 +80,76 @@ public class BoardRequest {
 		public Board toEntity(Users users) {
 			return new Board(
 				users,
+				this.title,
+				this.category,
+				this.ingredients,
+				this.content,
+				this.tag
+			);
+		}
+	}
+
+	@Getter
+	public static class Patch {
+		private String title;
+		private Category category;
+		private String ingredients;
+		private String content;
+		private String tag;
+		private Optional<Image> thumbnailImage = Optional.empty();
+		private Optional<List<Image>> representativeImages = Optional.empty();
+
+		public Patch(
+			String title,
+			String category,
+			String ingredients,
+			String content,
+			String tag,
+			Optional<MultipartFile> thumbnailImage,
+			Optional<List<MultipartFile>> representativeImages
+		) {
+			this.title = title;
+			this.category = Category.valueOf(category);
+			this.ingredients = ingredients;
+			this.content = content;
+			this.tag = tag;
+			if (thumbnailImage != null) {
+				setThumbnailImage(thumbnailImage.get());
+			}
+			if (representativeImages != null) {
+				setRepresentativeImages(representativeImages.get());
+			}
+		}
+
+		public void setThumbnailImage(MultipartFile thumbnailImage) {
+			this.thumbnailImage = Optional.of(new Image(
+				ImageType.THUMBNAIL, getInputStream(thumbnailImage), getOriginalFileName(thumbnailImage)
+			));
+		}
+
+		public void setRepresentativeImages(List<MultipartFile> representativeImages) {
+			this.representativeImages = Optional.of(representativeImages.stream()
+				.map(image -> new Image(ImageType.REPRESENTATIVE, getInputStream(image), getOriginalFileName(image)))
+				.collect(Collectors.toList()));
+		}
+
+		private InputStream getInputStream(MultipartFile image) {
+			ByteArrayInputStream byteArrayInputStream;
+			try {
+				byte[] byteArray = image.getBytes();
+				byteArrayInputStream = new ByteArrayInputStream(byteArray);
+			} catch (IOException e) {
+				throw new KookleRuntimeException("이미지 파일 변환 실패", e);
+			}
+			return byteArrayInputStream;
+		}
+
+		private String getOriginalFileName(MultipartFile image) {
+			return image.getOriginalFilename();
+		}
+
+		public void update(Board board) {
+			board.update(
 				this.title,
 				this.category,
 				this.ingredients,

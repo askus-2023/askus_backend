@@ -50,6 +50,40 @@ public class BoardResponse {
 
 	@Getter
 	@AllArgsConstructor
+	public static class Patch {
+		private final Long boardId;
+		private final String title;
+		private final String nickname;
+		private final String ingredients;
+		private final Category category;
+		private final String content;
+		private final String tag;
+		private final String thumbnailImageUrl;
+		private final List<String> representativeImageUrls;
+
+		public static BoardResponse.Patch ofEntity(
+			Board board,
+			Users users,
+			BoardImage thumbnailImage,
+			List<BoardImage> representativeImages) {
+			return new BoardResponse.Patch(
+				board.getId(),
+				board.getTitle(),
+				users.getNickname(),
+				board.getIngredients(),
+				board.getCategory(),
+				board.getContent(),
+				board.getTag(),
+				thumbnailImage.getUrl(),
+				representativeImages.stream()
+					.map(BoardImage::getUrl)
+					.collect(Collectors.toList())
+			);
+		}
+	}
+
+	@Getter
+	@AllArgsConstructor
 	public static class Summary {
 		private long id;
 		private String author;

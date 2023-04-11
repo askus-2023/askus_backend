@@ -70,27 +70,36 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public BoardResponse.Post updateBoard(long boardId, BoardRequest.Post request) {
+	public BoardResponse.Patch updateBoard(long userId, long boardId, BoardRequest.Patch request) {
+		Users user = usersRepository.findById(userId)
+			.orElseThrow(() -> new KookleRuntimeException("User Not Found"));
+
 		Board board = boardRepository.findById(boardId)
 			.orElseThrow(() -> new KookleRuntimeException("Board Not Found"));
 
-		board.update(
-			request.getTitle(),
-			request.getCategory(),
-			request.getIngredients(),
-			request.getContent(),
-			request.getTag()
-		);
+		request.update(board);
+		boardRepository.save(board);
 
-		Board savedBoard = boardRepository.save(board);
+		BoardImage thumbnailImage;
+		List<BoardImage> representativeImages;
+		if (request.getThumbnailImage().isPresent()) {
+			imageService.deleteThumbnailImage(board);
+			thumbnailImage = imageService.uploadThumbnailImage(board, request.getThumbnailImage().get());
+		} else {
+			thumbnailImage = boardImageRepository.findByBoardAndImageTypeAndDeletedAtNull(board, ImageType.THUMBNAIL)
+				.orElseThrow(() -> new KookleRuntimeException("thumbnail image not found"));
+		}
+		if (request.getRepresentativeImages().isPresent()) {
+			imageService.deleteRepresentativeImages(board);
+			representativeImages = request.getRepresentativeImages().get().stream()
+				.map(image -> imageService.uploadRepresentativeImage(board, image))
+				.collect(Collectors.toList());
+		} else {
+			representativeImages = boardImageRepository.findAllByBoardAndImageTypeAndDeletedAtNull(board,
+				ImageType.REPRESENTATIVE);
+		}
 
-		BoardImage thumbnailImage = imageService.uploadThumbnailImage(board, request.getThumbnailImage());
-		List<BoardImage> representativeImages = request.getRepresentativeImages().stream()
-			.map(image -> imageService.uploadRepresentativeImage(board, image))
-			.collect(Collectors.toList());
-
-		// return BoardResponse.Post.ofEntity(board, users, thumbnailImage, representativeImages);
-		return null;
+		return BoardResponse.Patch.ofEntity(board, user, thumbnailImage, representativeImages);
 	}
 
 	@Override

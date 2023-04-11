@@ -14,4 +14,8 @@ public interface ImageService {
 	BoardImage uploadRepresentativeImage(Board board, Image image);
 
 	ProfileImage uploadProfileImage(Users users, SignUpRequest request);
+
+	void deleteThumbnailImage(Board board);
+
+	void deleteRepresentativeImages(Board board);
 }

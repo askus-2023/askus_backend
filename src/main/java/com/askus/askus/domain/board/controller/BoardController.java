@@ -52,11 +52,12 @@ public class BoardController {
 	}
 
 	@PatchMapping("/{boardId}")
-	public void updateBoard(
+	public BoardResponse.Patch updateBoard(
 		@AuthenticationPrincipal SecurityUser securityUser,
-		@PathVariable long boardId
+		@PathVariable long boardId,
+		BoardRequest.Patch request
 	) {
-
+		return boardService.updateBoard(securityUser.getId(), boardId, request);
 	}
 
 	@DeleteMapping

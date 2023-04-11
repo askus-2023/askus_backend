@@ -35,7 +35,10 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 				ExpressionUtils.as(
 					JPAExpressions
 						.select(boardImage.url).from(boardImage)
-						.where(boardImage.board.id.eq(board.id), boardImage.imageType.eq(ImageType.THUMBNAIL)), "url"
+						.where(
+							boardImage.board.id.eq(board.id),
+							boardImage.imageType.eq(ImageType.THUMBNAIL),
+							boardImage.deletedAt.isNull()), "url"
 				),
 				board.likeCount,
 				board.replyCount

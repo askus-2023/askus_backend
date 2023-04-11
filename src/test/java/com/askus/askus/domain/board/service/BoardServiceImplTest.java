@@ -229,6 +229,86 @@ class BoardServiceImplTest {
 	}
 
 	@Test
+	void 게시글_수정_성공() throws IOException {
+		// given
+		Users users = new Users("email", "password", "nickname");
+		Users savedUsers = usersRepository.save(users);
+
+		String title = "title";
+		String category = "KOREAN";
+		String ingredients = "ingredients";
+		String content = "content";
+		String tag = "tag";
+		MockMultipartFile thumbnailImage = new MockMultipartFile(
+			"thumbnailImage",
+			"thumbnailImage.png",
+			"image/png",
+			new FileInputStream("/Users/hyeonjinlee/Documents/askus/src/test/resources/store/images/image.png"));
+		MockMultipartFile representativeImage1 = new MockMultipartFile(
+			"representativeImage1",
+			"representativeImage1.png",
+			"image/png",
+			new FileInputStream("/Users/hyeonjinlee/Documents/askus/src/test/resources/store/images/image.png"));
+		MockMultipartFile representativeImage2 = new MockMultipartFile(
+			"representativeImage2",
+			"representativeImage2.png",
+			"image/png",
+			new FileInputStream("/Users/hyeonjinlee/Documents/askus/src/test/resources/store/images/image.png"));
+
+		List<MultipartFile> representativeImages = new ArrayList<>();
+		representativeImages.add(representativeImage1);
+		representativeImages.add(representativeImage2);
+
+		BoardRequest.Post request = new BoardRequest.Post(
+			title,
+			category,
+			ingredients,
+			content,
+			tag,
+			thumbnailImage,
+			representativeImages
+		);
+
+		BoardResponse.Post response = boardService.addBoard(savedUsers.getId(), request);
+
+		String updatedTitle = "updatedTitle";
+		String updatedCategory = "ETC";
+		String updatedIngredients = "updatedIngredients";
+		String updatedContent = "updatedContent";
+		String updatedTag = null;
+
+		BoardRequest.Patch updatedRequest = new BoardRequest.Patch(
+			updatedTitle,
+			updatedCategory,
+			updatedIngredients,
+			updatedContent,
+			updatedTag,
+			null,
+			null);
+
+		// when & then
+		assertThat(response.getTitle()).isEqualTo(title);
+		assertThat(response.getNickname()).isEqualTo(savedUsers.getNickname());
+		assertThat(response.getIngredients()).isEqualTo(ingredients);
+		assertThat(response.getCategory()).isEqualTo(Category.valueOf(category));
+		assertThat(response.getContent()).isEqualTo(content);
+		assertThat(response.getTag()).isEqualTo(tag);
+		assertThat(response.getThumbnailImageUrl()).isNotNull();
+		assertThat(response.getRepresentativeImageUrls().size()).isEqualTo(2);
+
+		BoardResponse.Patch updatedResponse = boardService.updateBoard(savedUsers.getId(), response.getBoardId(),
+			updatedRequest);
+
+		assertThat(updatedResponse.getTitle()).isEqualTo(updatedTitle);
+		assertThat(updatedResponse.getCategory()).isEqualTo(Category.ETC);
+		assertThat(updatedResponse.getIngredients()).isEqualTo(updatedIngredients);
+		assertThat(updatedResponse.getContent()).isEqualTo(updatedContent);
+		assertThat(updatedResponse.getTag()).isEqualTo(updatedTag);
+		assertThat(updatedResponse.getThumbnailImageUrl()).isNotNull();
+		assertThat(updatedResponse.getRepresentativeImageUrls().size()).isEqualTo(2);
+	}
+
+	@Test
 	void 게시글_삭제_성공() throws IOException {
 		Users users = new Users("email", "password", "nickname");
 		Users savedUsers = usersRepository.save(users);

@@ -1,5 +1,8 @@
 package com.askus.askus.domain.image.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.askus.askus.domain.board.domain.Board;
@@ -11,6 +14,7 @@ import com.askus.askus.domain.image.repository.BoardImageRepository;
 import com.askus.askus.domain.image.repository.ProfileImageRepository;
 import com.askus.askus.domain.users.domain.Users;
 import com.askus.askus.domain.users.dto.SignUpRequest;
+import com.askus.askus.global.error.exception.KookleRuntimeException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -44,5 +48,26 @@ public class ImageServiceImpl implements ImageService {
 		ProfileImage savedProfileImage = profileImageRepository.save(profileImage);
 
 		return savedProfileImage;
+	}
+
+	@Override
+	public void deleteThumbnailImage(Board board) {
+		BoardImage thumbnailImage = boardImageRepository.findByBoardAndImageTypeAndDeletedAtNull(board,
+				ImageType.THUMBNAIL)
+			.orElseThrow(() -> new KookleRuntimeException("Thumbnail Image Not Found"));
+		thumbnailImage.delete();
+		boardImageRepository.save(thumbnailImage);
+	}
+
+	@Override
+	public void deleteRepresentativeImages(Board board) {
+		List<BoardImage> deletedRepresentativeImages = new ArrayList<>();
+		List<BoardImage> representativeImages = boardImageRepository.findAllByBoardAndImageTypeAndDeletedAtNull(board,
+			ImageType.REPRESENTATIVE);
+		for (BoardImage image : representativeImages) {
+			image.delete();
+			deletedRepresentativeImages.add(image);
+		}
+		boardImageRepository.saveAll(deletedRepresentativeImages);
 	}
 }
