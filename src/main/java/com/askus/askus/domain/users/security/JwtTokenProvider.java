@@ -31,6 +31,9 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class JwtTokenProvider {
 
+	private static final long ACCESS_TOKEN_EXPIRE_TIME = 30 * 60 * 1000L; // 30분
+	private static final long REFRESH_TOKEN_EXPIRE_TIME = 7 * 24 * 60 * 60 * 1000L; // 7일
+
 	private final Key key;
 
 	public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
@@ -40,17 +43,20 @@ public class JwtTokenProvider {
 
 	// AccessToken, RefreshToken 생성
 	public TokenInfo generateToken(Authentication authentication) {
-		// 권한 가져오기
-		String authorities = authentication.getAuthorities().stream()
-			.map(GrantedAuthority::getAuthority)
-			.collect(Collectors.joining(","));
+		// 로그인 정보 가져오기
+		SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
+//		String authorities = securityUser.getAuthorities().stream()
+//			.map(GrantedAuthority::getAuthority)
+//			.collect(Collectors.joining(","));
+		Long id = securityUser.getId();
 
 		long now = (new Date()).getTime();
 		// AccessToken 생성
-		Date accessTokenExpiresIn = new Date(now + 1800000);
+		Date accessTokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
 		String accessToken = Jwts.builder()
 			.setSubject(authentication.getName())
-			.claim("auth", authorities)
+//			.claim("auth", authorities)
+			.claim("id", id)
 			.setExpiration(accessTokenExpiresIn)
 			.signWith(key, SignatureAlgorithm.HS256)
 			.compact();
@@ -59,7 +65,7 @@ public class JwtTokenProvider {
 
 		// RefreshToken 생성
 		String refreshToken = Jwts.builder()
-			.setExpiration(new Date(now + 1800000))
+			.setExpiration(new Date(now + REFRESH_TOKEN_EXPIRE_TIME))
 			.signWith(key, SignatureAlgorithm.HS256)
 			.compact();
 
