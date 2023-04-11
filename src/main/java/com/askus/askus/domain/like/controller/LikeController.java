@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.askus.askus.domain.like.dto.LikeAddAndDeleteRequest;
-import com.askus.askus.domain.like.dto.LikeAddAndDeleteResponse;
+import com.askus.askus.domain.like.dto.LikeRequest;
+import com.askus.askus.domain.like.dto.LikeResponse;
 import com.askus.askus.domain.like.service.LikeService;
 import com.askus.askus.domain.users.security.SecurityUser;
 
@@ -22,22 +22,22 @@ public class LikeController {
 	private final LikeService likeService;
 
 	@PostMapping
-	public ResponseEntity<LikeAddAndDeleteResponse> addLike(
-		@AuthenticationPrincipal SecurityUser users,
-		LikeAddAndDeleteRequest request
+	public ResponseEntity<LikeResponse> addLike(
+		@AuthenticationPrincipal SecurityUser securityUser,
+		LikeRequest request
 	) {
-		LikeAddAndDeleteResponse response = likeService.addLike(users.getId(), request);
+		LikeResponse response = likeService.addLike(securityUser.getId(), request);
 		return ResponseEntity
 			.status(HttpStatus.CREATED)
 			.body(response);
 	}
 
 	@DeleteMapping
-	public ResponseEntity<LikeAddAndDeleteResponse> deleteLike(
-		@AuthenticationPrincipal SecurityUser users,
-		LikeAddAndDeleteRequest request
+	public ResponseEntity<LikeResponse> deleteLike(
+		@AuthenticationPrincipal SecurityUser securityUser,
+		LikeRequest request
 	) {
-		LikeAddAndDeleteResponse response = likeService.deleteLike(users.getId(), request);
+		LikeResponse response = likeService.deleteLike(securityUser.getId(), request);
 		return ResponseEntity
 			.status(HttpStatus.NO_CONTENT)
 			.body(response);
