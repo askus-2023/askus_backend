@@ -42,8 +42,8 @@ public class SignUpRequest {
 	public void setProfileImage(MultipartFile profileImage) {
 
 		if(profileImage==null) {
-			InputStream inputStream = getClass().getClassLoader().getResourceAsStream("defaultProfileImage.webp");
-			this.profileImage = new Image(ImageType.PROFILE, inputStream, "defaultProfileImage.webp");
+			InputStream inputStream = getClass().getClassLoader().getResourceAsStream("defaultProfileImage.png");
+			this.profileImage = new Image(ImageType.PROFILE, inputStream, "defaultProfileImage.png");
 			return;
 		}
 
