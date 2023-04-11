@@ -57,8 +57,7 @@ public class BoardController {
 		@PathVariable Long boardId,
 		BoardRequest.Patch request
 	) {
-		long userId = 1L;
-		return boardService.updateBoard(userId, boardId, request);
+		return boardService.updateBoard(securityUser.getId(), boardId, request);
 	}
 
 	@DeleteMapping
