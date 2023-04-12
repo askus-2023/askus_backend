@@ -2,6 +2,7 @@ package com.askus.askus.global.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -27,6 +28,7 @@ public class SecurityConfig {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final UsersRepository usersRepository;
 	private final UserDetailsService userDetailsService;
+	private final RedisTemplate redisTemplate;
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -36,13 +38,14 @@ public class SecurityConfig {
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			.and()
 			.authorizeRequests()
-			// .antMatchers("/v1/boards/**").authenticated()
+			.antMatchers("/v1/boards").permitAll()
+			.antMatchers("/v1/boards/**").authenticated()
 			.anyRequest().permitAll()
 			//                .and()
 			//                .exceptionHandling()
 			//                .authenticationEntryPoint((request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED))
 			.and()
-			.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, usersRepository),
+			.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, usersRepository, redisTemplate),
 				UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
