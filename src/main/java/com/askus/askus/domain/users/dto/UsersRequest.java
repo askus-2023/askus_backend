@@ -34,11 +34,11 @@ public class UsersRequest {
 
         public void setProfileImage(MultipartFile profileImage) {
 
-            if (profileImage == null || profileImage.isEmpty()) {
-                this.profileImage = null;
+            if(profileImage==null) {
+                InputStream inputStream = getClass().getClassLoader().getResourceAsStream("defaultProfileImage.png");
+                this.profileImage = new Image(ImageType.PROFILE, inputStream, "defaultProfileImage.png");
                 return;
             }
-            ;
 
             InputStream inputStream = getInputStream(profileImage);
             String originalFileName = getOriginalFileName(profileImage);

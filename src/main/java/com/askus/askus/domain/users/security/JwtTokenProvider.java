@@ -44,9 +44,9 @@ public class JwtTokenProvider {
 	public UsersResponse.TokenInfo generateToken(Authentication authentication) {
 		// 로그인 정보 가져오기
 		SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
-//		String authorities = securityUser.getAuthorities().stream()
-//			.map(GrantedAuthority::getAuthority)
-//			.collect(Collectors.joining(","));
+		String authorities = securityUser.getAuthorities().stream()
+			.map(GrantedAuthority::getAuthority)
+			.collect(Collectors.joining(","));
 		Long id = securityUser.getId();
 
 		long now = (new Date()).getTime();
@@ -54,7 +54,7 @@ public class JwtTokenProvider {
 		Date accessTokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
 		String accessToken = Jwts.builder()
 			.setSubject(authentication.getName())
-//			.claim("auth", authorities)
+			.claim("auth", authorities)
 			.claim("id", id)
 			.setExpiration(accessTokenExpiresIn)
 			.signWith(key, SignatureAlgorithm.HS256)
