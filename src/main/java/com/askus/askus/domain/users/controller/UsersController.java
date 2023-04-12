@@ -2,18 +2,13 @@ package com.askus.askus.domain.users.controller;
 
 import javax.validation.Valid;
 
+import com.askus.askus.domain.users.dto.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.askus.askus.domain.users.dto.DupEmailRequest;
-import com.askus.askus.domain.users.dto.DupEmailResponse;
-import com.askus.askus.domain.users.dto.SignInRequest;
-import com.askus.askus.domain.users.dto.SignInResponse;
-import com.askus.askus.domain.users.dto.SignUpRequest;
-import com.askus.askus.domain.users.dto.SignUpResponse;
 import com.askus.askus.domain.users.service.UsersService;
 
 import lombok.RequiredArgsConstructor;
@@ -29,19 +24,28 @@ public class UsersController {
 
 	@PostMapping("/signup")
 	@ResponseStatus(HttpStatus.CREATED)
-	public SignUpResponse signUp(@Valid SignUpRequest request) throws Exception {
+	public UsersResponse.SignUp signUp(@Valid UsersRequest.SignUp request) throws Exception {
 		return usersService.signUp(request);
 	}
 
 	@PostMapping("/signup/email/duplicated")
 	@ResponseStatus(HttpStatus.OK)
-	public DupEmailResponse checkDupEmail(DupEmailRequest request) {
+	public UsersResponse.DupEmail checkDupEmail(UsersRequest.DupEmail request) {
 		return usersService.isDupEmail(request.getEmail());
 	}
 
 	@PostMapping("/signin")
 	@ResponseStatus(HttpStatus.OK)
-	public SignInResponse signIn(@Valid SignInRequest request) {
+	public UsersResponse.SignIn signIn(@Valid UsersRequest.SignIn request) {
 		return usersService.signIn(request);
 	}
+
+//	@PostMapping("/reissue")
+//	public ResponseEntity<?> reissue(@Validated UserRequestDto.Reissue reissue, Errors errors) {
+//		// validation check
+//		if (errors.hasErrors()) {
+//			return response.invalidFields(Helper.refineErrors(errors));
+//		}
+//		return usersService.reissue(reissue);
+//	}
 }

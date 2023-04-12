@@ -5,7 +5,7 @@ import com.askus.askus.domain.image.domain.BoardImage;
 import com.askus.askus.domain.image.domain.Image;
 import com.askus.askus.domain.image.domain.ProfileImage;
 import com.askus.askus.domain.users.domain.Users;
-import com.askus.askus.domain.users.dto.SignUpRequest;
+import com.askus.askus.domain.users.dto.UsersRequest;
 
 public interface ImageService {
 
@@ -13,7 +13,7 @@ public interface ImageService {
 
 	BoardImage uploadRepresentativeImage(Board board, Image image);
 
-	ProfileImage uploadProfileImage(Users users, SignUpRequest request);
+	ProfileImage uploadProfileImage(Users users, UsersRequest.SignUp request);
 
 	void deleteThumbnailImage(Board board);
 
