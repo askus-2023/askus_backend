@@ -8,10 +8,12 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -25,41 +27,45 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends GenericFilterBean {
 
-	private final JwtTokenProvider jwtTokenProvider;
-	private final UsersRepository userRepository;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final UsersRepository userRepository;
+    private final RedisTemplate redisTemplate;
 
-	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws
-		IOException,
-		ServletException {
 
-		// 1. Request Header에서 JWT 토큰 추출
-		String token = resolveToken((HttpServletRequest)request);
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws
+            IOException,
+            ServletException {
 
-		// 2. validateToken으로 토큰 유효성 검사
-		if (token != null && jwtTokenProvider.validationToken(token)) {
-			// 토큰이 유효할 경우 토큰에서 authentication 객체(유저 정보)를 받아온다.
-			Authentication authentication = jwtTokenProvider.getAuthentication(token);
+        // 1. Request Header에서 JWT 토큰 추출
+        String token = resolveToken((HttpServletRequest) request);
 
-			Users users = userRepository.findByEmail(authentication.getName())
-				.orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다."));
-			SecurityUser securityUser = new SecurityUser(users);
+        // 2. validateToken으로 토큰 유효성 검사
+        if (token != null && jwtTokenProvider.validateToken(token)) {
 
-			Authentication customAuthentication = new UsernamePasswordAuthenticationToken(
-				securityUser, null, securityUser.getAuthorities());
+            // 토큰이 유효할 경우 토큰에서 authentication 객체(사용자 정보)를 받아온다.
+            Authentication authentication = jwtTokenProvider.getAuthentication(token);
 
-			// SecurityContext에 Authentication 객체를 저장한다.
-			SecurityContextHolder.getContext().setAuthentication(customAuthentication);
-		}
-		chain.doFilter(request, response);
-	}
+            // authentication 객체에 사용자 정보를 추가한다.
+            Users users = userRepository.findByEmail(authentication.getName())
+                    .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다."));
+            SecurityUser securityUser = new SecurityUser(users);
 
-	// Request Header에서 토큰 정보 추출
-	private String resolveToken(HttpServletRequest request) {
-		String bearerToken = request.getHeader("Authorization");
-		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
-			return bearerToken.substring(7);
-		}
-		return null;
-	}
+            Authentication customAuthentication = new UsernamePasswordAuthenticationToken(
+                    securityUser, null, securityUser.getAuthorities());
+
+            // SecurityContext에 authentication 객체를 저장한다.
+            SecurityContextHolder.getContext().setAuthentication(customAuthentication);
+        }
+        chain.doFilter(request, response);
+    }
+
+    // Request Header에서 토큰 정보 추출
+    private String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
+            return bearerToken.substring(7);
+        }
+        return null;
+    }
 }

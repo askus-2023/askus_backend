@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+import com.askus.askus.domain.users.dto.UsersResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,8 +15,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-
-import com.askus.askus.domain.users.dto.TokenInfo;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -42,7 +41,7 @@ public class JwtTokenProvider {
 	}
 
 	// AccessToken, RefreshToken 생성
-	public TokenInfo generateToken(Authentication authentication) {
+	public UsersResponse.TokenInfo generateToken(Authentication authentication) {
 		// 로그인 정보 가져오기
 		SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
 //		String authorities = securityUser.getAuthorities().stream()
@@ -71,7 +70,7 @@ public class JwtTokenProvider {
 
 		log.info("refreshToken = {}", refreshToken);
 
-		return TokenInfo.builder()
+		return UsersResponse.TokenInfo.builder()
 			.grantType("Bearer")
 			.accessToken(accessToken)
 			.refreshToken(refreshToken)
@@ -99,7 +98,7 @@ public class JwtTokenProvider {
 	}
 
 	// 토큰 정보를 검증하는 메서드
-	public boolean validationToken(String token) {
+	public boolean validateToken(String token) {
 		try {
 			Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
 			return true;

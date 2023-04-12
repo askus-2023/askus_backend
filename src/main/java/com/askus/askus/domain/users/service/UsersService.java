@@ -10,4 +10,6 @@ public interface UsersService {
 	UsersResponse.SignIn signIn(UsersRequest.SignIn request);
 
 	UsersResponse.DupEmail isDupEmail(String email);
+
+	UsersResponse.TokenInfo reissue(UsersRequest.Reissue reissue);
 }

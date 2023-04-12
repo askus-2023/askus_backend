@@ -74,6 +74,7 @@ public class UsersRequest {
     }
 
     @Getter
+    @AllArgsConstructor
     public static class DupEmail {
         private String email;
     }

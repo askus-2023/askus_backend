@@ -2,6 +2,7 @@ package com.askus.askus.domain.users.service;
 
 import com.askus.askus.domain.users.dto.UsersRequest;
 import com.askus.askus.domain.users.dto.UsersResponse;
+import com.askus.askus.global.error.exception.KookleRuntimeException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -13,12 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.askus.askus.domain.image.domain.ProfileImage;
 import com.askus.askus.domain.image.service.ImageService;
 import com.askus.askus.domain.users.domain.Users;
-import com.askus.askus.domain.users.dto.TokenInfo;
 import com.askus.askus.domain.users.repository.UsersRepository;
 import com.askus.askus.domain.users.security.JwtTokenProvider;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.ObjectUtils;
 
 import java.util.concurrent.TimeUnit;
 
@@ -79,7 +80,7 @@ public class UsersServiceImpl implements UsersService {
 		Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
 		// 3. 인증 정보를 기반으로 JWT 토큰 생성
-		TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
+		UsersResponse.TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
 
 		// 4. RefreshToken Redis 저장 (expirationTime 설정을 통해 자동 삭제 처리)
 		redisTemplate.opsForValue()
@@ -93,5 +94,35 @@ public class UsersServiceImpl implements UsersService {
 			.accessToken(tokenInfo.getAccessToken())
 			.refreshToken(tokenInfo.getRefreshToken())
 			.build();
+	}
+
+	public UsersResponse.TokenInfo reissue(UsersRequest.Reissue reissue) {
+		// 1. Refresh Token 검증
+		if (!jwtTokenProvider.validateToken(reissue.getRefreshToken())) {
+			throw new KookleRuntimeException("Refresh Token이 유효하지 않습니다.");
+		}
+
+		// 2. Access Token 에서 User email 을 가져온다.
+		Authentication authentication = jwtTokenProvider.getAuthentication(reissue.getAccessToken());
+
+		// 3. Redis 에서 User email 을 기반으로 저장된 Refresh Token 값을 가져온다.
+		String refreshToken = (String) redisTemplate.opsForValue().get("RT:" + authentication.getName());
+
+		// (로그아웃되어 Redis 에 RefreshToken 이 존재하지 않는 경우 처리)
+		if(ObjectUtils.isEmpty(refreshToken)) {
+			throw new KookleRuntimeException("잘못된 요청입니다.");
+		}
+		if(!refreshToken.equals(reissue.getRefreshToken())) {
+			throw new KookleRuntimeException("Refresh Token 정보가 일치하지 않습니다.");
+		}
+
+		// 4. 새로운 토큰 생성
+		UsersResponse.TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
+
+		// 5. RefreshToken Redis 업데이트
+		redisTemplate.opsForValue()
+				.set("RT:" + authentication.getName(), tokenInfo.getRefreshToken(), 7, TimeUnit.DAYS);
+
+		return tokenInfo;
 	}
 }

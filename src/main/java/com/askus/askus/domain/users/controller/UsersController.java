@@ -31,6 +31,7 @@ public class UsersController {
 	@PostMapping("/signup/email/duplicated")
 	@ResponseStatus(HttpStatus.OK)
 	public UsersResponse.DupEmail checkDupEmail(UsersRequest.DupEmail request) {
+		log.info("====={}=====", request.getEmail());
 		return usersService.isDupEmail(request.getEmail());
 	}
 
@@ -40,12 +41,9 @@ public class UsersController {
 		return usersService.signIn(request);
 	}
 
-//	@PostMapping("/reissue")
-//	public ResponseEntity<?> reissue(@Validated UserRequestDto.Reissue reissue, Errors errors) {
-//		// validation check
-//		if (errors.hasErrors()) {
-//			return response.invalidFields(Helper.refineErrors(errors));
-//		}
-//		return usersService.reissue(reissue);
-//	}
+	@PostMapping("/reissue")
+	@ResponseStatus(HttpStatus.OK)
+	public UsersResponse.TokenInfo reissue(UsersRequest.Reissue reissue) {
+		return usersService.reissue(reissue);
+	}
 }
