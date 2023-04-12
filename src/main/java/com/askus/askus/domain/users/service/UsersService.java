@@ -1,16 +1,15 @@
 package com.askus.askus.domain.users.service;
 
-import com.askus.askus.domain.users.dto.DupEmailResponse;
-import com.askus.askus.domain.users.dto.SignInRequest;
-import com.askus.askus.domain.users.dto.SignInResponse;
-import com.askus.askus.domain.users.dto.SignUpRequest;
-import com.askus.askus.domain.users.dto.SignUpResponse;
+import com.askus.askus.domain.users.dto.UsersRequest;
+import com.askus.askus.domain.users.dto.UsersResponse;
 
 public interface UsersService {
 
-	SignUpResponse signUp(SignUpRequest requestDto) throws Exception;
+	UsersResponse.SignUp signUp(UsersRequest.SignUp request) throws Exception;
 
-	SignInResponse signIn(SignInRequest requestDto);
+	UsersResponse.SignIn signIn(UsersRequest.SignIn request);
 
-	DupEmailResponse isDupEmail(String email);
+	UsersResponse.DupEmail isDupEmail(String email);
+
+	UsersResponse.TokenInfo reissue(UsersRequest.Reissue reissue);
 }
