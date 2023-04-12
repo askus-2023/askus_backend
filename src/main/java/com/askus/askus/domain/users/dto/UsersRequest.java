@@ -66,7 +66,6 @@ public class UsersRequest {
     }
 
     @Data
-    @NoArgsConstructor
     @AllArgsConstructor
     @Builder
     public static class SignIn {
@@ -74,11 +73,15 @@ public class UsersRequest {
         private String password;
     }
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
+    @Getter
     public static class DupEmail {
         private String email;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public static class Reissue {
+        private String accessToken;
+        private String refreshToken;
     }
 }

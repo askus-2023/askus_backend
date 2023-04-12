@@ -2,10 +2,7 @@ package com.askus.askus.domain.users.dto;
 
 import com.askus.askus.domain.image.domain.ProfileImage;
 import com.askus.askus.domain.users.domain.Users;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
+import lombok.*;
 
 public class UsersResponse {
     @Getter
@@ -52,5 +49,14 @@ public class UsersResponse {
     @AllArgsConstructor
     public static class DupEmail {
         private boolean duplicated;
+    }
+
+    @Builder
+    @Getter
+    public static class TokenInfo {
+
+        private String grantType;
+        private String accessToken;
+        private String refreshToken;
     }
 }
