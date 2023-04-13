@@ -34,7 +34,7 @@ public class ReplyServiceImpl implements ReplyService {
 		board.addReplyCount();
 		boardRepository.save(board);
 
-		return ReplyResponse.Post.ofEntity(board, reply);
+		return ReplyResponse.Post.ofEntity(board.getUsers(), reply);
 	}
 
 	@Override

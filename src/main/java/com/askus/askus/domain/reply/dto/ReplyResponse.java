@@ -13,12 +13,12 @@ public class ReplyResponse {
 	@Getter
 	@AllArgsConstructor
 	public static class Post {
-		private final long boardId;
+		private final String replyAuthor;
 		private final String content;
-		private final long replyCount;
+		private final LocalDateTime createdAt;
 
-		public static Post ofEntity(Board board, Reply reply) {
-			return new Post(board.getId(), reply.getContent(), board.getReplyCount());
+		public static Post ofEntity(Users users, Reply reply) {
+			return new Post(users.getNickname(), reply.getContent(), reply.getCreatedAt());
 		}
 	}
 
