@@ -1,8 +1,7 @@
 package com.askus.askus.domain.users.service;
 
-import com.askus.askus.domain.users.dto.UsersRequest;
-import com.askus.askus.domain.users.dto.UsersResponse;
-import com.askus.askus.global.error.exception.KookleRuntimeException;
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -10,18 +9,19 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import com.askus.askus.domain.image.domain.ProfileImage;
 import com.askus.askus.domain.image.service.ImageService;
 import com.askus.askus.domain.users.domain.Users;
+import com.askus.askus.domain.users.dto.UsersRequest;
+import com.askus.askus.domain.users.dto.UsersResponse;
 import com.askus.askus.domain.users.repository.UsersRepository;
 import com.askus.askus.domain.users.security.JwtTokenProvider;
+import com.askus.askus.global.error.exception.KookleRuntimeException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.ObjectUtils;
-
-import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -84,10 +84,10 @@ public class UsersServiceImpl implements UsersService {
 
 		// 4. RefreshToken Redis 저장 (expirationTime 설정을 통해 자동 삭제 처리)
 		redisTemplate.opsForValue()
-				.set("RT:" + authentication.getName(),
-						tokenInfo.getRefreshToken(),
-						7,
-						TimeUnit.DAYS);
+			.set("RT:" + authentication.getName(),
+				tokenInfo.getRefreshToken(),
+				7,
+				TimeUnit.DAYS);
 
 		return UsersResponse.SignIn.builder()
 			.email(authentication.getName())
@@ -106,13 +106,13 @@ public class UsersServiceImpl implements UsersService {
 		Authentication authentication = jwtTokenProvider.getAuthentication(reissue.getAccessToken());
 
 		// 3. Redis 에서 User email 을 기반으로 저장된 Refresh Token 값을 가져온다.
-		String refreshToken = (String) redisTemplate.opsForValue().get("RT:" + authentication.getName());
+		String refreshToken = (String)redisTemplate.opsForValue().get("RT:" + authentication.getName());
 
 		// (로그아웃되어 Redis 에 RefreshToken 이 존재하지 않는 경우 처리)
-		if(ObjectUtils.isEmpty(refreshToken)) {
+		if (ObjectUtils.isEmpty(refreshToken)) {
 			throw new KookleRuntimeException("잘못된 요청입니다.");
 		}
-		if(!refreshToken.equals(reissue.getRefreshToken())) {
+		if (!refreshToken.equals(reissue.getRefreshToken())) {
 			throw new KookleRuntimeException("Refresh Token 정보가 일치하지 않습니다.");
 		}
 
@@ -121,7 +121,7 @@ public class UsersServiceImpl implements UsersService {
 
 		// 5. RefreshToken Redis 업데이트
 		redisTemplate.opsForValue()
-				.set("RT:" + authentication.getName(), tokenInfo.getRefreshToken(), 7, TimeUnit.DAYS);
+			.set("RT:" + authentication.getName(), tokenInfo.getRefreshToken(), 7, TimeUnit.DAYS);
 
 		return tokenInfo;
 	}

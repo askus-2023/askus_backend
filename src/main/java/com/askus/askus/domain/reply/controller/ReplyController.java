@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.askus.askus.domain.reply.dto.ReplyAddRequest;
-import com.askus.askus.domain.reply.dto.ReplyAddResponse;
+import com.askus.askus.domain.reply.dto.ReplyRequest;
+import com.askus.askus.domain.reply.dto.ReplyResponse;
 import com.askus.askus.domain.reply.service.ReplyService;
 import com.askus.askus.domain.users.security.SecurityUser;
 
@@ -22,12 +22,12 @@ public class ReplyController {
 	private final ReplyService replyService;
 
 	@PostMapping("/{boardId}/replies")
-	public ResponseEntity<ReplyAddResponse> addReply(
-		@AuthenticationPrincipal SecurityUser users,
+	public ResponseEntity<ReplyResponse.Post> addReply(
+		@AuthenticationPrincipal SecurityUser securityUser,
 		@PathVariable long boardId,
-		ReplyAddRequest request
+		ReplyRequest.Post request
 	) {
-		ReplyAddResponse response = replyService.addReply(users.getId(), boardId, request);
+		ReplyResponse.Post response = replyService.addReply(securityUser.getId(), boardId, request);
 		return ResponseEntity
 			.status(HttpStatus.CREATED)
 			.body(response);

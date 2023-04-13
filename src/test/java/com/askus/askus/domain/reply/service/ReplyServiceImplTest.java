@@ -10,8 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.askus.askus.domain.board.domain.Board;
 import com.askus.askus.domain.board.domain.Category;
 import com.askus.askus.domain.board.repository.BoardRepository;
-import com.askus.askus.domain.reply.dto.ReplyAddRequest;
-import com.askus.askus.domain.reply.dto.ReplyAddResponse;
+import com.askus.askus.domain.reply.dto.ReplyRequest;
+import com.askus.askus.domain.reply.dto.ReplyResponse;
 import com.askus.askus.domain.users.domain.Users;
 import com.askus.askus.domain.users.repository.UsersRepository;
 
@@ -42,10 +42,10 @@ class ReplyServiceImplTest {
 		Board savedBoard = boardRepository.save(board);
 
 		String content = "content";
-		ReplyAddRequest request = new ReplyAddRequest(content);
+		ReplyRequest.Post request = new ReplyRequest.Post(content);
 
 		// when
-		ReplyAddResponse response = replyService.addReply(savedUsers.getId(), savedBoard.getId(), request);
+		ReplyResponse.Post response = replyService.addReply(savedUsers.getId(), savedBoard.getId(), request);
 
 		// then
 		assertThat(response.getBoardId()).isEqualTo(savedBoard.getId());

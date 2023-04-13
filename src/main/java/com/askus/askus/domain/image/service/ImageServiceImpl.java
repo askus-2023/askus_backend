@@ -3,7 +3,6 @@ package com.askus.askus.domain.image.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.askus.askus.domain.users.dto.UsersRequest;
 import org.springframework.stereotype.Service;
 
 import com.askus.askus.domain.board.domain.Board;
@@ -14,6 +13,7 @@ import com.askus.askus.domain.image.domain.ProfileImage;
 import com.askus.askus.domain.image.repository.BoardImageRepository;
 import com.askus.askus.domain.image.repository.ProfileImageRepository;
 import com.askus.askus.domain.users.domain.Users;
+import com.askus.askus.domain.users.dto.UsersRequest;
 import com.askus.askus.global.error.exception.KookleRuntimeException;
 
 import lombok.RequiredArgsConstructor;

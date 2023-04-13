@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import com.askus.askus.domain.board.domain.Board;
 import com.askus.askus.domain.board.repository.BoardRepository;
 import com.askus.askus.domain.reply.domain.Reply;
-import com.askus.askus.domain.reply.dto.ReplyAddRequest;
-import com.askus.askus.domain.reply.dto.ReplyAddResponse;
+import com.askus.askus.domain.reply.dto.ReplyRequest;
+import com.askus.askus.domain.reply.dto.ReplyResponse;
 import com.askus.askus.domain.reply.repository.ReplyRepository;
 import com.askus.askus.domain.users.domain.Users;
 import com.askus.askus.domain.users.repository.UsersRepository;
@@ -22,7 +22,7 @@ public class ReplyServiceImpl implements ReplyService {
 	private final BoardRepository boardRepository;
 
 	@Override
-	public ReplyAddResponse addReply(long userId, long boardId, ReplyAddRequest request) {
+	public ReplyResponse.Post addReply(long userId, long boardId, ReplyRequest.Post request) {
 		Users users = usersRepository.findById(userId)
 			.orElseThrow(() -> new KookleRuntimeException("User Not found"));
 
@@ -34,6 +34,6 @@ public class ReplyServiceImpl implements ReplyService {
 		board.addReplyCount();
 		boardRepository.save(board);
 
-		return ReplyAddResponse.ofEntity(board, reply);
+		return ReplyResponse.Post.ofEntity(board, reply);
 	}
 }
