@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import com.askus.askus.domain.board.domain.Board;
 import com.askus.askus.domain.board.domain.Category;
 import com.askus.askus.domain.image.domain.BoardImage;
-import com.askus.askus.domain.reply.dto.RepliesSearchResponse;
+import com.askus.askus.domain.reply.dto.ReplyResponse;
 import com.askus.askus.domain.users.domain.Users;
 
 import lombok.AllArgsConstructor;
@@ -102,7 +102,7 @@ public class BoardResponse {
 		private final LocalDateTime createdAt;
 		private final List<String> urls;
 		private final String tag;
-		private final List<RepliesSearchResponse> replies;
+		private final List<ReplyResponse.Summary> replies;
 
 		public Detail(
 			String title,
@@ -112,7 +112,7 @@ public class BoardResponse {
 			LocalDateTime createdAt,
 			List<BoardImage> representativeImages,
 			String tag,
-			List<RepliesSearchResponse> replies) {
+			List<ReplyResponse.Summary> replies) {
 			this.title = title;
 			this.author = author;
 			this.ingredients = ingredients;
@@ -129,7 +129,7 @@ public class BoardResponse {
 			Users users,
 			Board board,
 			List<BoardImage> representativeImages,
-			List<RepliesSearchResponse> replies
+			List<ReplyResponse.Summary> replies
 		) {
 			return new Detail(
 				board.getTitle(),

@@ -14,7 +14,7 @@ import com.askus.askus.domain.image.domain.BoardImage;
 import com.askus.askus.domain.image.domain.ImageType;
 import com.askus.askus.domain.image.repository.BoardImageRepository;
 import com.askus.askus.domain.image.service.ImageService;
-import com.askus.askus.domain.reply.dto.RepliesSearchResponse;
+import com.askus.askus.domain.reply.dto.ReplyResponse;
 import com.askus.askus.domain.reply.repository.ReplyRepository;
 import com.askus.askus.domain.users.domain.Users;
 import com.askus.askus.domain.users.repository.UsersRepository;
@@ -61,9 +61,8 @@ public class BoardServiceImpl implements BoardService {
 			board, ImageType.REPRESENTATIVE
 		);
 
-		List<RepliesSearchResponse> replies = replyRepository.findAllByBoardAndDeletedAtNull(board).stream()
-			.map(reply -> new RepliesSearchResponse(reply.getUsers().getNickname(), reply.getContent(),
-				reply.getCreatedAt()))
+		List<ReplyResponse.Summary> replies = replyRepository.findAllByBoardAndDeletedAtNull(board).stream()
+			.map(reply -> ReplyResponse.Summary.ofEntity(board.getUsers(), reply))
 			.collect(Collectors.toList());
 
 		return BoardResponse.Detail.ofEntity(board.getUsers(), board, representativeImages, replies);

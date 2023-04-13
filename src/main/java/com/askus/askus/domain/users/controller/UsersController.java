@@ -2,13 +2,14 @@ package com.askus.askus.domain.users.controller;
 
 import javax.validation.Valid;
 
-import com.askus.askus.domain.users.dto.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.askus.askus.domain.users.dto.UsersRequest;
+import com.askus.askus.domain.users.dto.UsersResponse;
 import com.askus.askus.domain.users.service.UsersService;
 
 import lombok.RequiredArgsConstructor;
