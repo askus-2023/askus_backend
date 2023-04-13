@@ -19,6 +19,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
+import com.askus.askus.domain.users.dto.UsersResponse;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -48,7 +50,7 @@ public class JwtTokenProvider {
 	// AccessToken, RefreshToken 생성
 	public UsersResponse.TokenInfo generateToken(Authentication authentication) {
 		// 로그인 정보 가져오기
-		SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
+		SecurityUser securityUser = (SecurityUser)authentication.getPrincipal();
 		String authorities = securityUser.getAuthorities().stream()
 			.map(GrantedAuthority::getAuthority)
 			.collect(Collectors.joining(","));
