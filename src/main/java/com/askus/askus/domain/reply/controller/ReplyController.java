@@ -3,6 +3,8 @@ package com.askus.askus.domain.reply.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,12 +26,32 @@ public class ReplyController {
 	@PostMapping("/{boardId}/replies")
 	public ResponseEntity<ReplyResponse.Post> addReply(
 		@AuthenticationPrincipal SecurityUser securityUser,
-		@PathVariable long boardId,
+		@PathVariable Long boardId,
 		ReplyRequest.Post request
 	) {
 		ReplyResponse.Post response = replyService.addReply(securityUser.getId(), boardId, request);
 		return ResponseEntity
 			.status(HttpStatus.CREATED)
+			.body(response);
+	}
+
+	@PatchMapping("/{boardId}/replies/{replyId}")
+	public ReplyResponse.Patch updateReply(
+		@PathVariable Long boardId,
+		@PathVariable Long replyId,
+		ReplyRequest.Patch request
+	) {
+		return replyService.updateReply(boardId, replyId, request);
+	}
+
+	@DeleteMapping("/{boardId}/replies/{replyId}")
+	public ResponseEntity<ReplyResponse.Delete> deleteReply(
+		@PathVariable Long boardId,
+		@PathVariable Long replyId
+	) {
+		ReplyResponse.Delete response = replyService.deleteReply(boardId, replyId);
+		return ResponseEntity
+			.status(HttpStatus.NO_CONTENT)
 			.body(response);
 	}
 }

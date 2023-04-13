@@ -35,12 +35,24 @@ public class ReplyResponse {
 	}
 
 	@Getter
+	@AllArgsConstructor
 	public static class Patch {
+		private final String replyAuthor;
+		private final String content;
+		private final LocalDateTime createdAt;
 
+		public static Patch ofEntity(Users users, Reply reply) {
+			return new Patch(users.getNickname(), reply.getContent(), reply.getCreatedAt());
+		}
 	}
 
 	@Getter
+	@AllArgsConstructor
 	public static class Delete {
+		private final long replyCount;
 
+		public static Delete ofEntity(Board board) {
+			return new Delete(board.getReplyCount());
+		}
 	}
 }

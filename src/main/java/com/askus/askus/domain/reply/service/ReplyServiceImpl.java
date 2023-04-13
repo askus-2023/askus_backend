@@ -36,4 +36,35 @@ public class ReplyServiceImpl implements ReplyService {
 
 		return ReplyResponse.Post.ofEntity(board, reply);
 	}
+
+	@Override
+	public ReplyResponse.Patch updateReply(long boardId, long replyId, ReplyRequest.Patch request) {
+		Board board = boardRepository.findById(boardId)
+			.orElseThrow(() -> new KookleRuntimeException("Board Not Found"));
+
+		Reply reply = replyRepository.findById(replyId)
+			.orElseThrow(() -> new KookleRuntimeException("Reply Not Found"));
+
+		request.update(reply);
+		Reply savedReply = replyRepository.save(reply);
+
+		return ReplyResponse.Patch.ofEntity(board.getUsers(), savedReply);
+	}
+
+	@Override
+	public ReplyResponse.Delete deleteReply(long boardId, long replyId) {
+		Board board = boardRepository.findById(boardId)
+			.orElseThrow(() -> new KookleRuntimeException("Board Not Found"));
+
+		Reply reply = replyRepository.findById(replyId)
+			.orElseThrow(() -> new KookleRuntimeException("Reply Not Found"));
+
+		reply.delete();
+		board.deleteReplyCount();
+
+		Board savedBoard = boardRepository.save(board);
+		replyRepository.save(reply);
+
+		return ReplyResponse.Delete.ofEntity(savedBoard);
+	}
 }

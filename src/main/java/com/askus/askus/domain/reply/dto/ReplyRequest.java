@@ -19,12 +19,12 @@ public class ReplyRequest {
 	}
 
 	@Getter
+	@AllArgsConstructor
 	public static class Patch {
+		private final String content;
 
-	}
-
-	@Getter
-	public static class Delete {
-
+		public void update(Reply reply) {
+			reply.update(this.content);
+		}
 	}
 }
