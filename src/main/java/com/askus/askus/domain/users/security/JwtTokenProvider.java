@@ -6,13 +6,17 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+import com.askus.askus.domain.users.dto.UsersResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import com.askus.askus.domain.users.dto.UsersResponse;
@@ -35,6 +39,8 @@ public class JwtTokenProvider {
 	private static final long REFRESH_TOKEN_EXPIRE_TIME = 7 * 24 * 60 * 60 * 1000L; // 7일
 
 	private final Key key;
+	@Autowired
+	private UserDetailsService userDetailsService;
 
 	public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
 		byte[] keyBytes = Decoders.BASE64.decode(secretKey);
@@ -87,15 +93,20 @@ public class JwtTokenProvider {
 			throw new RuntimeException("권한 정보가 없는 토큰입니다.");
 		}
 
+		// 클레임에서 사용자 이름 가져오기
+		String username = claims.getSubject();
+
+		// 사용자 이름으로 로그인한 유저 정보 가져오기
+		SecurityUser securityUser = (SecurityUser) userDetailsService.loadUserByUsername(username);
+
 		// 클레임에서 권한 정보 가져오기
 		Collection<? extends GrantedAuthority> authorities =
 			Arrays.stream(claims.get("auth").toString().split(","))
 				.map(SimpleGrantedAuthority::new)
 				.collect(Collectors.toList());
 
-		// UserDetails 객체를 만들어서 Authentication 리턴
-		UserDetails principal = new User(claims.getSubject(), "", authorities);
-		return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+		// 유저 정보로 Authentication 리턴
+		return new UsernamePasswordAuthenticationToken(securityUser, "", authorities);
 	}
 
 	// 토큰 정보를 검증하는 메서드
