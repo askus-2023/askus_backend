@@ -54,8 +54,7 @@ class ReplyServiceImplTest {
 		ReplyResponse.Post response = replyService.addReply(savedUsers.getId(), savedBoard.getId(), request);
 
 		// then
-		assertThat(response.getBoardId()).isEqualTo(savedBoard.getId());
-		assertThat(response.getReplyCount()).isEqualTo(1L);
+		assertThat(response.getReplyAuthor()).isEqualTo(savedUsers.getNickname());
 		assertThat(response.getContent()).isEqualTo(content);
 	}
 
