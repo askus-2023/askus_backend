@@ -38,7 +38,7 @@ public class S3ImageUploader implements ImageUploader {
 	}
 
 	private Optional<File> convert(Image image) {
-		File file = new File(image.getOriginalFilename());
+		File file = new File("/tmp/" + image.getOriginalFilename());
 		try {
 			if (file.createNewFile()) {
 				try (FileOutputStream fos = new FileOutputStream(file)) {
