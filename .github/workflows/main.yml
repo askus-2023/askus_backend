@@ -12,8 +12,8 @@ env:
   CODE_DEPLOY_APPLICATION_NAME: kookle
   CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: kookle-group
   
-# permissions:
-#   contents: read
+permissions:
+  contents: read
 
 jobs:
   build:
