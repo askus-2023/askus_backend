@@ -5,4 +5,4 @@ if [ -d /home/ubuntu/app/ ]; then
 fi
 sudo mkdir -vp /home/ubuntu/app/
 sudo chown -R ubuntu:ubuntu /home/ubuntu/app
-sudo chmod ugo+rwx /home/ubuntu/app/**
+sudo chmod -R ugo+rwx /home/ubuntu/app
