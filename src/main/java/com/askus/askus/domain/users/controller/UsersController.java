@@ -58,4 +58,12 @@ public class UsersController {
 	) {
 		return usersService.updateUsers(securityUser.getId(), request);
 	}
+
+	@PatchMapping("/profiles/password")
+	public void updatePassword(
+		@AuthenticationPrincipal SecurityUser securityUser,
+		UsersRequest.PatchPassword request
+	) {
+		usersService.updatePassword(securityUser.getId(), request);
+	}
 }

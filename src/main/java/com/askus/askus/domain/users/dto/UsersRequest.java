@@ -137,4 +137,16 @@ public class UsersRequest {
 			users.update(this.email, this.nickname);
 		}
 	}
+
+	@Getter
+	@AllArgsConstructor
+	public static class PatchPassword {
+		private String existingPassword;
+		private String password;
+		private String checkedPassword;
+
+		public void update(Users users) {
+			users.updatePassword(this.password);
+		}
+	}
 }

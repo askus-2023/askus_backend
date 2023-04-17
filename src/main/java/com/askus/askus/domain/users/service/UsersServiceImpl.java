@@ -142,4 +142,25 @@ public class UsersServiceImpl implements UsersService {
 		// 3. return
 		return UsersResponse.Patch.ofEntity(users, profileImage);
 	}
+
+	@Override
+	public void updatePassword(long userId, UsersRequest.PatchPassword request) {
+		// 1. find
+		Users users = usersRepository.findById(userId)
+			.orElseThrow(() -> new KookleRuntimeException("user not found: " + userId));
+
+		// 2. validate
+		boolean matches = passwordEncoder.matches(users.getPassword(), request.getExistingPassword());
+		if (!matches) {
+			throw new KookleRuntimeException("기존 비밀번호와 다른 비밀번호입니다.");
+		}
+
+		if (!request.getPassword().equals(request.getCheckedPassword())) {
+			throw new KookleRuntimeException("비밀번호가 일치하지 않습니다.");
+		}
+
+		// 3. update
+		request.update(users);
+		users.encodePassword(passwordEncoder);
+	}
 }

@@ -14,4 +14,5 @@ public interface UsersService {
 	UsersResponse.TokenInfo reissue(UsersRequest.Reissue reissue);
 
 	UsersResponse.Patch updateUsers(long userId, UsersRequest.Patch request);
+	void updatePassword(long userId, UsersRequest.PatchPassword request);
 }
