@@ -72,7 +72,7 @@ public class UsersResponse {
 		private final String profileImageUrl;
 
 		public static Patch ofEntity(Users users, ProfileImage profileImage) {
-			return new Patch(users.getEmail(), users.getEmail(), profileImage.getUrl());
+			return new Patch(users.getEmail(), users.getNickname(), profileImage.getUrl());
 		}
 	}
 }

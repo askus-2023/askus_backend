@@ -150,7 +150,7 @@ public class UsersServiceImpl implements UsersService {
 			.orElseThrow(() -> new KookleRuntimeException("user not found: " + userId));
 
 		// 2. validate
-		boolean matches = passwordEncoder.matches(users.getPassword(), request.getExistingPassword());
+		boolean matches = passwordEncoder.matches(request.getExistingPassword(), users.getPassword());
 		if (!matches) {
 			throw new KookleRuntimeException("기존 비밀번호와 다른 비밀번호입니다.");
 		}
@@ -162,5 +162,6 @@ public class UsersServiceImpl implements UsersService {
 		// 3. update
 		request.update(users);
 		users.encodePassword(passwordEncoder);
+		usersRepository.save(users);
 	}
 }
