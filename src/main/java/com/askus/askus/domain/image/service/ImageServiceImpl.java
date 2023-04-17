@@ -13,7 +13,6 @@ import com.askus.askus.domain.image.domain.ProfileImage;
 import com.askus.askus.domain.image.repository.BoardImageRepository;
 import com.askus.askus.domain.image.repository.ProfileImageRepository;
 import com.askus.askus.domain.users.domain.Users;
-import com.askus.askus.domain.users.dto.UsersRequest;
 import com.askus.askus.global.error.exception.KookleRuntimeException;
 
 import lombok.RequiredArgsConstructor;
@@ -41,9 +40,9 @@ public class ImageServiceImpl implements ImageService {
 	}
 
 	@Override
-	public ProfileImage uploadProfileImage(Users users, UsersRequest.SignUp request) {
+	public ProfileImage uploadProfileImage(Users users, Image image) {
 
-		String profileImageUrl = request.getProfileImage().uploadBy(imageUploader);
+		String profileImageUrl = image.uploadBy(imageUploader);
 		ProfileImage profileImage = new ProfileImage(users, profileImageUrl);
 		ProfileImage savedProfileImage = profileImageRepository.save(profileImage);
 
@@ -69,5 +68,13 @@ public class ImageServiceImpl implements ImageService {
 			deletedRepresentativeImages.add(image);
 		}
 		boardImageRepository.saveAll(deletedRepresentativeImages);
+	}
+
+	@Override
+	public void deleteProfileImage(Users users) {
+		ProfileImage profileImage = profileImageRepository.findByUsers(users)
+			.orElseThrow(() -> new KookleRuntimeException("profileImage not found"));
+		profileImage.delete();
+		profileImageRepository.save(profileImage);
 	}
 }

@@ -63,4 +63,16 @@ public class UsersResponse {
 		private String accessToken;
 		private String refreshToken;
 	}
+
+	@Getter
+	@AllArgsConstructor
+	public static class Patch {
+		private final String email;
+		private final String nickname;
+		private final String profileImageUrl;
+
+		public static Patch ofEntity(Users users, ProfileImage profileImage) {
+			return new Patch(users.getEmail(), users.getEmail(), profileImage.getUrl());
+		}
+	}
 }
