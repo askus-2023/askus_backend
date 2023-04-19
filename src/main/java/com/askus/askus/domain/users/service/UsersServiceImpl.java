@@ -53,7 +53,7 @@ public class UsersServiceImpl implements UsersService {
 		Users users = usersRepository.save(request.toEntity());
 		ProfileImage profileImage = null;
 		if (request.getProfileImage() != null) {
-			profileImage = imageService.uploadProfileImage(users, request);
+			profileImage = imageService.uploadProfileImage(users, request.getProfileImage());
 		}
 
 		// 비밀번호 인코딩
@@ -124,5 +124,44 @@ public class UsersServiceImpl implements UsersService {
 			.set("RT:" + authentication.getName(), tokenInfo.getRefreshToken(), 7, TimeUnit.DAYS);
 
 		return tokenInfo;
+	}
+
+	@Override
+	public UsersResponse.Patch updateUsers(long userId, UsersRequest.Patch request) {
+		// 1. find
+		Users users = usersRepository.findById(userId)
+			.orElseThrow(() -> new KookleRuntimeException("user not found: " + userId));
+
+		// 2. update
+		request.update(users);
+		usersRepository.save(users);
+
+		imageService.deleteProfileImage(users);
+		ProfileImage profileImage = imageService.uploadProfileImage(users, request.getProfileImage());
+
+		// 3. return
+		return UsersResponse.Patch.ofEntity(users, profileImage);
+	}
+
+	@Override
+	public void updatePassword(long userId, UsersRequest.PatchPassword request) {
+		// 1. find
+		Users users = usersRepository.findById(userId)
+			.orElseThrow(() -> new KookleRuntimeException("user not found: " + userId));
+
+		// 2. validate
+		boolean matches = passwordEncoder.matches(request.getExistingPassword(), users.getPassword());
+		if (!matches) {
+			throw new KookleRuntimeException("기존 비밀번호와 다른 비밀번호입니다.");
+		}
+
+		if (!request.getPassword().equals(request.getCheckedPassword())) {
+			throw new KookleRuntimeException("비밀번호가 일치하지 않습니다.");
+		}
+
+		// 3. update
+		request.update(users);
+		users.encodePassword(passwordEncoder);
+		usersRepository.save(users);
 	}
 }

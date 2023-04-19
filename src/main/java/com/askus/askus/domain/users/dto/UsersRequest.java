@@ -92,4 +92,61 @@ public class UsersRequest {
 		private String accessToken;
 		private String refreshToken;
 	}
+
+	@Getter
+	public static class Patch {
+		private String email;
+		private String nickname;
+		private Image profileImage;
+
+		public Patch(String email, String nickname, MultipartFile profileImage) {
+			this.email = email;
+			this.nickname = nickname;
+			setProfileImage(profileImage);
+		}
+
+		public void setProfileImage(MultipartFile profileImage) {
+
+			if (profileImage == null) {
+				InputStream inputStream = getClass().getClassLoader().getResourceAsStream("defaultProfileImage.png");
+				this.profileImage = new Image(ImageType.PROFILE, inputStream, "defaultProfileImage.png");
+				return;
+			}
+
+			InputStream inputStream = getInputStream(profileImage);
+			String originalFileName = getOriginalFileName(profileImage);
+			this.profileImage = new Image(ImageType.PROFILE, inputStream, originalFileName);
+		}
+
+		private InputStream getInputStream(MultipartFile file) {
+			ByteArrayInputStream byteArrayInputStream;
+			try {
+				byte[] byteArray = file.getBytes();
+				byteArrayInputStream = new ByteArrayInputStream(byteArray);
+			} catch (IOException e) {
+				throw new KookleRuntimeException("이미지 파일 변환 실패", e);
+			}
+			return byteArrayInputStream;
+		}
+
+		private String getOriginalFileName(MultipartFile file) {
+			return file.getOriginalFilename();
+		}
+
+		public void update(Users users) {
+			users.update(this.email, this.nickname);
+		}
+	}
+
+	@Getter
+	@AllArgsConstructor
+	public static class PatchPassword {
+		private String existingPassword;
+		private String password;
+		private String checkedPassword;
+
+		public void update(Users users) {
+			users.updatePassword(this.password);
+		}
+	}
 }
