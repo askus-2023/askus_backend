@@ -82,20 +82,25 @@ public class UsersRequest {
 	@AllArgsConstructor
 	@Builder
 	public static class SignIn {
+		@Schema(description = "이메일", example = "email@email.com")
 		private String email;
+		@Schema(description = "비밀번호", example = "password")
 		private String password;
 	}
 
 	@Getter
 	@AllArgsConstructor
 	public static class DupEmail {
+		@Schema(description = "이메일", example = "email@email.com")
 		private String email;
 	}
 
 	@Getter
 	@AllArgsConstructor
 	public static class Reissue {
+		@Schema(description = "엑세스 토큰(jwt)", example = "2&836dsag218#$%@$~")
 		private String accessToken;
+		@Schema(description = "리프레시 토큰(jwt)", example = "2&836dsag218#$%@$~")
 		private String refreshToken;
 	}
 

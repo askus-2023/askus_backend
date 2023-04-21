@@ -47,8 +47,11 @@ public class UsersResponse {
 	@AllArgsConstructor
 	public static class SignIn {
 
+		@Schema(description = "이메일", example = "email@email.com")
 		private String email;
+		@Schema(description = "엑세스 토큰(jwt)", example = "2&836dsag218#$%@$~")
 		private String accessToken;
+		@Schema(description = "리프레시 토큰(jwt)", example = "2&836dsag218#$%@$~")
 		private String refreshToken;
 	}
 
@@ -56,15 +59,18 @@ public class UsersResponse {
 	@Data
 	@AllArgsConstructor
 	public static class DupEmail {
+		@Schema(description = "이메일 중복 여부", example = "true/false")
 		private boolean duplicated;
 	}
 
 	@Builder
 	@Getter
 	public static class TokenInfo {
-
+		@Schema(description = "bearer", example = "bearer")
 		private String grantType;
+		@Schema(description = "엑세스 토큰(jwt)", example = "2&836dsag218#$%@$~")
 		private String accessToken;
+		@Schema(description = "리프레시 토큰(jwt)", example = "2&836dsag218#$%@$~")
 		private String refreshToken;
 	}
 
