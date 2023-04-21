@@ -11,6 +11,7 @@ import com.askus.askus.domain.image.domain.ImageType;
 import com.askus.askus.domain.users.domain.Users;
 import com.askus.askus.global.error.exception.KookleRuntimeException;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,10 +25,15 @@ public class UsersRequest {
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	public static class SignUp {
 
+		@Schema(description = "이메일", example = "email@email.com")
 		private String email;
+		@Schema(description = "비밀번호", example = "password")
 		private String password;
+		@Schema(description = "비밀번호 검증", example = "password")
 		private String checkedPassword;
+		@Schema(description = "닉네임", example = "쿠킹마마")
 		private String nickname;
+		@Schema(description = "프로필 이미지(File)", example = "profileImage.png")
 		private Image profileImage;
 
 		public SignUp(String email, String password, String checkedPassword, String nickname,

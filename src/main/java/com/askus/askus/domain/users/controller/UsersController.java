@@ -15,6 +15,10 @@ import com.askus.askus.domain.users.dto.UsersResponse;
 import com.askus.askus.domain.users.security.SecurityUser;
 import com.askus.askus.domain.users.service.UsersService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,6 +30,14 @@ public class UsersController {
 
 	private final UsersService usersService;
 
+	@Operation(
+		summary = "회원가입",
+		description = "이메일, 비밀번호, 닉네임, 프로필 이미지(선택)을 이용한 회원 가입입니다."
+	)
+	@ApiResponse(responseCode = "201", description = "created", content = @Content(schema = @Schema(implementation = UsersResponse.SignUp.class)))
+	@ApiResponse(responseCode = "400", description = "BAD REQUEST")
+	@ApiResponse(responseCode = "404", description = "NOT FOUND")
+	@ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
 	@PostMapping("/signup")
 	@ResponseStatus(HttpStatus.CREATED)
 	public UsersResponse.SignUp signUp(@Valid UsersRequest.SignUp request) throws Exception {

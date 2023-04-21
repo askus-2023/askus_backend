@@ -3,6 +3,7 @@ package com.askus.askus.domain.users.dto;
 import com.askus.askus.domain.image.domain.ProfileImage;
 import com.askus.askus.domain.users.domain.Users;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,8 +13,11 @@ public class UsersResponse {
 	@Getter
 	public static class SignUp {
 
+		@Schema(description = "이메일", example = "email@email.com")
 		private final String email;
+		@Schema(description = "닉네임", example = "쿠킹마마")
 		private final String nickname;
+		@Schema(description = "프로필 이미지 주소", example = "http://profile/image/url")
 		private final String imageUrl;
 
 		public SignUp(

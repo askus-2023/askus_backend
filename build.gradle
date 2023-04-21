@@ -46,11 +46,15 @@ dependencies {
     implementation 'mysql:mysql-connector-java:8.0.27'
     implementation group: 'com.theokanning.openai-gpt3-java', name: 'client', version: '0.9.0'
     implementation 'io.github.flashvayne:chatgpt-spring-boot-starter:1.0.0'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.9'
+    implementation 'com.redis.testcontainers:testcontainers-redis:1.6.3'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.testcontainers:testcontainers:1.18.0'
+    testImplementation 'org.testcontainers:junit-jupiter:1.18.0'
 }
 
 tasks.named('test') {
