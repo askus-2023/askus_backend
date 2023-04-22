@@ -15,6 +15,11 @@ import com.askus.askus.domain.users.dto.UsersResponse;
 import com.askus.askus.domain.users.security.SecurityUser;
 import com.askus.askus.domain.users.service.UsersService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,12 +31,22 @@ public class UsersController {
 
 	private final UsersService usersService;
 
+	@Operation(
+		summary = "회원가입",
+		description = "이메일, 비밀번호, 닉네임, 프로필 이미지(선택)을 이용한 회원 가입입니다."
+	)
+	@ApiResponse(responseCode = "201", description = "created", content = @Content(schema = @Schema(implementation = UsersResponse.SignUp.class)))
 	@PostMapping("/signup")
 	@ResponseStatus(HttpStatus.CREATED)
 	public UsersResponse.SignUp signUp(@Valid UsersRequest.SignUp request) throws Exception {
 		return usersService.signUp(request);
 	}
 
+	@Operation(
+		summary = "이메일 중복 확인",
+		description = "이메일을 이용한 중복 확인입니다."
+	)
+	@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = UsersResponse.DupEmail.class)))
 	@PostMapping("/signup/email/duplicated")
 	@ResponseStatus(HttpStatus.OK)
 	public UsersResponse.DupEmail checkDupEmail(UsersRequest.DupEmail request) {
@@ -39,12 +54,23 @@ public class UsersController {
 		return usersService.isDupEmail(request.getEmail());
 	}
 
+	@Operation(
+		summary = "로그인",
+		description = "이메일, 비밀번호를 이용한 로그인 입니다."
+	)
+	@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = UsersResponse.SignIn.class)))
 	@PostMapping("/signin")
 	@ResponseStatus(HttpStatus.OK)
 	public UsersResponse.SignIn signIn(@Valid UsersRequest.SignIn request) {
 		return usersService.signIn(request);
 	}
 
+	@Operation(
+		summary = "리프레시 토큰 재발행",
+		description = "엑세스 토큰, 리프레시 토큰을 사용해 리프레시 토큰을 재발급 합니다.",
+		security = {@SecurityRequirement(name = "bearer-key")}
+	)
+	@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = UsersResponse.TokenInfo.class)))
 	@PostMapping("/reissue")
 	@ResponseStatus(HttpStatus.OK)
 	public UsersResponse.TokenInfo reissue(UsersRequest.Reissue reissue) {

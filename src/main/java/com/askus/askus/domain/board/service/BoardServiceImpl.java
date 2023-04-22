@@ -2,6 +2,7 @@ package com.askus.askus.domain.board.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -39,12 +40,19 @@ public class BoardServiceImpl implements BoardService {
 
 		Board board = boardRepository.save(request.toEntity(users));
 
-		BoardImage thumbnailImage = imageService.uploadThumbnailImage(board, request.getThumbnailImage());
-		List<BoardImage> representativeImages = request.getRepresentativeImages().stream()
-			.map(image -> imageService.uploadRepresentativeImage(board, image))
-			.collect(Collectors.toList());
+		BoardImage thumbnailImage = null;
+		List<BoardImage> representativeImages = null;
+		if (request.getThumbnailImage().isPresent()) {
+			thumbnailImage = imageService.uploadThumbnailImage(board, request.getThumbnailImage().get());
+		}
+		if (request.getRepresentativeImages().isPresent()) {
+			representativeImages = request.getRepresentativeImages().get().stream()
+				.map(image -> imageService.uploadRepresentativeImage(board, image))
+				.collect(Collectors.toList());
+		}
 
-		return BoardResponse.Post.ofEntity(board, users, thumbnailImage, representativeImages);
+		return BoardResponse.Post.ofEntity(board, users, Optional.ofNullable(thumbnailImage),
+			Optional.ofNullable(representativeImages));
 	}
 
 	@Override

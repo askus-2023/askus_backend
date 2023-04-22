@@ -2,6 +2,7 @@ package com.askus.askus.domain.board.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.askus.askus.domain.board.domain.Board;
@@ -30,8 +31,8 @@ public class BoardResponse {
 		public static BoardResponse.Post ofEntity(
 			Board board,
 			Users users,
-			BoardImage thumbnailImage,
-			List<BoardImage> representativeImages) {
+			Optional<BoardImage> thumbnailImage,
+			Optional<List<BoardImage>> representativeImages) {
 			return new BoardResponse.Post(
 				board.getId(),
 				board.getTitle(),
@@ -40,10 +41,9 @@ public class BoardResponse {
 				board.getCategory(),
 				board.getContent(),
 				board.getTag(),
-				thumbnailImage.getUrl(),
-				representativeImages.stream()
-					.map(BoardImage::getUrl)
-					.collect(Collectors.toList())
+				thumbnailImage.isPresent() ? thumbnailImage.get().getUrl() : null,
+				representativeImages.isPresent() ?
+					representativeImages.get().stream().map(BoardImage::getUrl).collect(Collectors.toList()) : null
 			);
 		}
 	}

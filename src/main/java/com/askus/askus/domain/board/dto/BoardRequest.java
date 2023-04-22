@@ -31,8 +31,8 @@ public class BoardRequest {
 		private String ingredients;
 		private String content;
 		private String tag;
-		private Image thumbnailImage;
-		private List<Image> representativeImages;
+		private Optional<Image> thumbnailImage = Optional.empty();
+		private Optional<List<Image>> representativeImages = Optional.empty();
 
 		public Post(
 			String title,
@@ -53,15 +53,27 @@ public class BoardRequest {
 		}
 
 		public void setThumbnailImage(MultipartFile thumbnailImage) {
-			this.thumbnailImage = new Image(
+			if (thumbnailImage == null || thumbnailImage.isEmpty()) {
+				return;
+			}
+			this.thumbnailImage = Optional.of(new Image(
 				ImageType.THUMBNAIL, getInputStream(thumbnailImage), getOriginalFileName(thumbnailImage)
-			);
+			));
 		}
 
 		public void setRepresentativeImages(List<MultipartFile> representativeImages) {
-			this.representativeImages = representativeImages.stream()
-				.map(image -> new Image(ImageType.REPRESENTATIVE, getInputStream(image), getOriginalFileName(image)))
-				.collect(Collectors.toList());
+			if (representativeImages == null || representativeImages.isEmpty()) {
+				return;
+			}
+			long count = representativeImages.stream()
+				.filter(file -> !file.isEmpty())
+				.count();
+			if (count != 0) {
+				this.representativeImages = Optional.of(representativeImages.stream()
+					.map(
+						image -> new Image(ImageType.REPRESENTATIVE, getInputStream(image), getOriginalFileName(image)))
+					.collect(Collectors.toList()));
+			}
 		}
 
 		private InputStream getInputStream(MultipartFile image) {
