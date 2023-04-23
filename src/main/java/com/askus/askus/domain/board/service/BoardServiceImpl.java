@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.askus.askus.domain.board.domain.Board;
 import com.askus.askus.domain.board.dto.BoardRequest;
@@ -34,12 +35,16 @@ public class BoardServiceImpl implements BoardService {
 	private final ImageService imageService;
 
 	@Override
+	@Transactional
 	public BoardResponse.Post addBoard(long userId, BoardRequest.Post request) {
+		// 1. find user
 		Users users = usersRepository.findById(userId)
-			.orElseThrow(() -> new KookleRuntimeException("존재하지 않는 사용자입니다."));
+			.orElseThrow(() -> new KookleRuntimeException("user not found: " + userId));
 
+		// 2. save board
 		Board board = boardRepository.save(request.toEntity(users));
 
+		// 3. save images
 		BoardImage thumbnailImage = null;
 		List<BoardImage> representativeImages = null;
 		if (request.getThumbnailImage().isPresent()) {
@@ -51,6 +56,7 @@ public class BoardServiceImpl implements BoardService {
 				.collect(Collectors.toList());
 		}
 
+		// 4. return
 		return BoardResponse.Post.ofEntity(board, users, Optional.ofNullable(thumbnailImage),
 			Optional.ofNullable(representativeImages));
 	}

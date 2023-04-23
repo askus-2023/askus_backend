@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import com.askus.askus.domain.board.domain.Board;
@@ -20,23 +22,35 @@ import com.askus.askus.domain.users.domain.Users;
 import com.askus.askus.global.error.exception.KookleRuntimeException;
 import com.askus.askus.global.util.SortConditions;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 public class BoardRequest {
 	@Getter
 	public static class Post {
+		@NotNull
+		@Schema(description = "제목", example = "돼지고기 김치찌개")
 		private String title;
+		@NotNull
+		@Schema(description = "카테고리", example = "KOREAN")
 		private Category category;
+		@NotNull
+		@Schema(description = "재료", example = "김치, 돼지고기")
 		private String ingredients;
+		@NotNull
+		@Schema(description = "내용", example = "돼지고기와 김치를 넣고 끓입니다.")
 		private String content;
+		@Schema(description = "태그", example = "한식,김치,돼지고기")
 		private String tag;
+		@Schema(description = "썸네일 이미지", example = "thumbnail.png")
 		private Optional<Image> thumbnailImage = Optional.empty();
+		@Schema(description = "이미지 리스트", example = "[image1.png, image2.png]")
 		private Optional<List<Image>> representativeImages = Optional.empty();
 
 		public Post(
 			String title,
-			String category,
+			Category category,
 			String ingredients,
 			String content,
 			String tag,
@@ -44,7 +58,7 @@ public class BoardRequest {
 			List<MultipartFile> representativeImages
 		) {
 			this.title = title;
-			this.category = Category.valueOf(category);
+			this.category = category;
 			this.ingredients = ingredients;
 			this.content = content;
 			this.tag = tag;

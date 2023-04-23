@@ -1,4 +1,4 @@
-package com.askus.askus.infra.chat.configuration;
+package com.askus.askus.global.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;

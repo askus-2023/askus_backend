@@ -18,6 +18,11 @@ import com.askus.askus.domain.board.dto.BoardResponse;
 import com.askus.askus.domain.board.service.BoardService;
 import com.askus.askus.domain.users.security.SecurityUser;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -26,6 +31,12 @@ import lombok.RequiredArgsConstructor;
 public class BoardController {
 	private final BoardService boardService;
 
+	@Operation(
+		summary = "게시글 등록",
+		description = "현재 로그인된 사용자의 게시글을 작성합니다.",
+		security = {@SecurityRequirement(name = "bearer-key")}
+	)
+	@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(implementation = BoardResponse.Post.class)))
 	@PostMapping
 	public ResponseEntity<BoardResponse.Post> addBoard(
 		@AuthenticationPrincipal SecurityUser securityUser,

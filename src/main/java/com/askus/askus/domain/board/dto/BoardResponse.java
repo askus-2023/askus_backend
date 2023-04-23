@@ -11,6 +11,7 @@ import com.askus.askus.domain.image.domain.BoardImage;
 import com.askus.askus.domain.reply.dto.ReplyResponse;
 import com.askus.askus.domain.users.domain.Users;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -18,14 +19,23 @@ public class BoardResponse {
 	@Getter
 	@AllArgsConstructor
 	public static class Post {
+		@Schema(description = "게시글 ID", example = "1")
 		private final Long boardId;
+		@Schema(description = "제목", example = "돼지고기 김치찌개")
 		private final String title;
+		@Schema(description = "작성자", example = "쿠킹마마")
 		private final String nickname;
+		@Schema(description = "재료", example = "김치, 돼지고기")
 		private final String ingredients;
+		@Schema(description = "카테고리", example = "KOREAN")
 		private final Category category;
+		@Schema(description = "내용", example = "김치와 돼지고기를 넣고 끓입니다.")
 		private final String content;
+		@Schema(description = "태그", example = "한식,김치,돼지고기")
 		private final String tag;
+		@Schema(description = "썸네일 이미지 주소", example = "http://thumbnail/image/url")
 		private final String thumbnailImageUrl;
+		@Schema(description = "일반 이미지 주소 리스트", example = "[http://representative/image/url1, http://representative/image/url2]")
 		private final List<String> representativeImageUrls;
 
 		public static BoardResponse.Post ofEntity(

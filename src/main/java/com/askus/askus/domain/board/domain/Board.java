@@ -44,7 +44,6 @@ public class Board extends BaseEntity {
 	private String tag;
 	@Column
 	private Long likeCount = 0L;
-
 	@Column
 	private Long replyCount = 0L;
 
