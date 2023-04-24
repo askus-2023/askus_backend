@@ -26,9 +26,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 
-@RestController
-@RequestMapping("/v1/boards")
 @RequiredArgsConstructor
+@RequestMapping("/v1/boards")
+@RestController
 public class BoardController {
 	private final BoardService boardService;
 
@@ -79,12 +79,12 @@ public class BoardController {
 		description = "선택한 게시글의 정보를 수정 합니다.",
 		security = {@SecurityRequirement(name = "bearer-key")}
 	)
-	@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = BoardResponse.Patch.class)))
+	@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = BoardResponse.Post.class)))
 	@PatchMapping("/{boardId}")
-	public BoardResponse.Patch updateBoard(
+	public BoardResponse.Post updateBoard(
 		@AuthenticationPrincipal SecurityUser securityUser,
 		@PathVariable Long boardId,
-		BoardRequest.Patch request
+		BoardRequest.Post request
 	) {
 		return boardService.updateBoard(securityUser.getId(), boardId, request);
 	}

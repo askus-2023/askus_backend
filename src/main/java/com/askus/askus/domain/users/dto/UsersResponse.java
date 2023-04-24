@@ -1,6 +1,5 @@
 package com.askus.askus.domain.users.dto;
 
-import com.askus.askus.domain.image.domain.ProfileImage;
 import com.askus.askus.domain.users.domain.Users;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -12,7 +11,6 @@ import lombok.Getter;
 public class UsersResponse {
 	@Getter
 	public static class SignUp {
-
 		@Schema(description = "이메일", example = "email@email.com")
 		private final String email;
 		@Schema(description = "닉네임", example = "쿠킹마마")
@@ -29,15 +27,11 @@ public class UsersResponse {
 			this.imageUrl = imageUrl;
 		}
 
-		public static UsersResponse.SignUp ofEntity(
-			Users users,
-			ProfileImage profileImage) {
-			String imageUrl = (profileImage != null) ? profileImage.getUrl() : null;
-
+		public static UsersResponse.SignUp ofEntity(Users users) {
 			return new UsersResponse.SignUp(
 				users.getEmail(),
 				users.getNickname(),
-				imageUrl
+				users.getProfileImage().getUrl()
 			);
 		}
 	}
@@ -46,7 +40,6 @@ public class UsersResponse {
 	@Data
 	@AllArgsConstructor
 	public static class SignIn {
-
 		@Schema(description = "이메일", example = "email@email.com")
 		private String email;
 		@Schema(description = "엑세스 토큰(jwt)", example = "2&836dsag218#$%@$~")
@@ -77,12 +70,15 @@ public class UsersResponse {
 	@Getter
 	@AllArgsConstructor
 	public static class Patch {
+		@Schema(description = "이메일", example = "email@email.com")
 		private final String email;
+		@Schema(description = "닉네임", example = "쿠킹마마")
 		private final String nickname;
+		@Schema(description = "프로필 이미지 주소", example = "http://profile/image/url")
 		private final String profileImageUrl;
 
-		public static Patch ofEntity(Users users, ProfileImage profileImage) {
-			return new Patch(users.getEmail(), users.getNickname(), profileImage.getUrl());
+		public static Patch ofEntity(Users users) {
+			return new Patch(users.getEmail(), users.getNickname(), users.getProfileImage().getUrl());
 		}
 	}
 }

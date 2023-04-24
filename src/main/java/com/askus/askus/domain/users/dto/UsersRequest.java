@@ -7,7 +7,6 @@ import java.io.InputStream;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.askus.askus.domain.image.domain.Image;
-import com.askus.askus.domain.image.domain.ImageType;
 import com.askus.askus.domain.users.domain.Users;
 import com.askus.askus.global.error.exception.KookleRuntimeException;
 
@@ -20,6 +19,22 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 public class UsersRequest {
+
+	private static InputStream getInputStream(MultipartFile file) {
+		ByteArrayInputStream byteArrayInputStream;
+		try {
+			byte[] byteArray = file.getBytes();
+			byteArrayInputStream = new ByteArrayInputStream(byteArray);
+		} catch (IOException e) {
+			throw new KookleRuntimeException("이미지 파일 변환 실패", e);
+		}
+		return byteArrayInputStream;
+	}
+
+	private static String getOriginalFileName(MultipartFile file) {
+		return file.getOriginalFilename();
+	}
+
 
 	@Getter
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -46,31 +61,14 @@ public class UsersRequest {
 		}
 
 		public void setProfileImage(MultipartFile profileImage) {
-
 			if (profileImage == null) {
 				InputStream inputStream = getClass().getClassLoader().getResourceAsStream("defaultProfileImage.png");
-				this.profileImage = new Image(ImageType.PROFILE, inputStream, "defaultProfileImage.png");
+				this.profileImage = new Image(inputStream, "defaultProfileImage.png");
 				return;
 			}
-
 			InputStream inputStream = getInputStream(profileImage);
 			String originalFileName = getOriginalFileName(profileImage);
-			this.profileImage = new Image(ImageType.PROFILE, inputStream, originalFileName);
-		}
-
-		private InputStream getInputStream(MultipartFile file) {
-			ByteArrayInputStream byteArrayInputStream;
-			try {
-				byte[] byteArray = file.getBytes();
-				byteArrayInputStream = new ByteArrayInputStream(byteArray);
-			} catch (IOException e) {
-				throw new KookleRuntimeException("이미지 파일 변환 실패", e);
-			}
-			return byteArrayInputStream;
-		}
-
-		private String getOriginalFileName(MultipartFile file) {
-			return file.getOriginalFilename();
+			this.profileImage = new Image(inputStream, originalFileName);
 		}
 
 		public Users toEntity() {
@@ -106,8 +104,11 @@ public class UsersRequest {
 
 	@Getter
 	public static class Patch {
+		@Schema(description = "이메일", example = "email@email.com")
 		private String email;
+		@Schema(description = "닉네임", example = "쿠킹마마")
 		private String nickname;
+		@Schema(description = "프로필 이미지", example = "profileImage.png")
 		private Image profileImage;
 
 		public Patch(String email, String nickname, MultipartFile profileImage) {
@@ -117,31 +118,14 @@ public class UsersRequest {
 		}
 
 		public void setProfileImage(MultipartFile profileImage) {
-
-			if (profileImage == null) {
+			if (profileImage == null || profileImage.isEmpty()) {
 				InputStream inputStream = getClass().getClassLoader().getResourceAsStream("defaultProfileImage.png");
-				this.profileImage = new Image(ImageType.PROFILE, inputStream, "defaultProfileImage.png");
+				this.profileImage = new Image(inputStream, "defaultProfileImage.png");
 				return;
 			}
-
 			InputStream inputStream = getInputStream(profileImage);
 			String originalFileName = getOriginalFileName(profileImage);
-			this.profileImage = new Image(ImageType.PROFILE, inputStream, originalFileName);
-		}
-
-		private InputStream getInputStream(MultipartFile file) {
-			ByteArrayInputStream byteArrayInputStream;
-			try {
-				byte[] byteArray = file.getBytes();
-				byteArrayInputStream = new ByteArrayInputStream(byteArray);
-			} catch (IOException e) {
-				throw new KookleRuntimeException("이미지 파일 변환 실패", e);
-			}
-			return byteArrayInputStream;
-		}
-
-		private String getOriginalFileName(MultipartFile file) {
-			return file.getOriginalFilename();
+			this.profileImage = new Image(inputStream, originalFileName);
 		}
 
 		public void update(Users users) {
@@ -152,8 +136,11 @@ public class UsersRequest {
 	@Getter
 	@AllArgsConstructor
 	public static class PatchPassword {
+		@Schema(description = "기존 비밀번호", example = "existingPassword")
 		private String existingPassword;
+		@Schema(description = "변경할 비밀번호", example = "password")
 		private String password;
+		@Schema(description = "변경할 비밀번호 확인", example = "password")
 		private String checkedPassword;
 
 		public void update(Users users) {

@@ -3,9 +3,11 @@ package com.askus.askus.domain.users.controller;
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -77,6 +79,12 @@ public class UsersController {
 		return usersService.reissue(reissue);
 	}
 
+	@Operation(
+		summary = "프로필 수정",
+		description = "현재 로그인된 사용자의 프로필 정보를 수정한 후, 로그인 페이지로 리다이렉트 시킵니다.",
+		security = {@SecurityRequirement(name = "bearer-key")}
+	)
+	@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = UsersResponse.Patch.class)))
 	@PatchMapping("/profiles")
 	public UsersResponse.Patch updateUsers(
 		@AuthenticationPrincipal SecurityUser securityUser,
@@ -85,10 +93,15 @@ public class UsersController {
 		return usersService.updateUsers(securityUser.getId(), request);
 	}
 
+	@Operation(
+		summary = "비밀번호 수정",
+		description = "현재 로그인된 사용자의 비밀번호를 수정한 후, 로그인 페이지로 리다이렉트 시킵니다.",
+		security = {@SecurityRequirement(name = "bearer-key")}
+	)
 	@PatchMapping("/profiles/password")
 	public void updatePassword(
 		@AuthenticationPrincipal SecurityUser securityUser,
-		UsersRequest.PatchPassword request
+		@RequestBody UsersRequest.PatchPassword request
 	) {
 		usersService.updatePassword(securityUser.getId(), request);
 	}

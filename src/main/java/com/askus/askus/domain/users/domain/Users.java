@@ -1,15 +1,18 @@
 package com.askus.askus.domain.users.domain;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.askus.askus.domain.common.BaseEntity;
+import com.askus.askus.domain.image.domain.ProfileImage;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -30,11 +33,17 @@ public class Users extends BaseEntity {
 	private String password;
 	@Column(nullable = false)
 	private String nickname;
+	@OneToOne(mappedBy = "users", cascade = CascadeType.PERSIST, orphanRemoval = true)
+	private ProfileImage profileImage;
 
 	public Users(String email, String password, String nickname) {
 		this.email = email;
 		this.password = password;
 		this.nickname = nickname;
+	}
+
+	public void setProfileImage(ProfileImage profileImage) {
+		this.profileImage = profileImage;
 	}
 
 	public void encodePassword(PasswordEncoder passwordEncoder) {
