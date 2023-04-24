@@ -5,11 +5,13 @@ import com.askus.askus.domain.like.domain.Like;
 import com.askus.askus.domain.users.domain.Users;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 public class LikeRequest {
 	@Schema(description = "board ID", example = "1")
 	private long boardId;
