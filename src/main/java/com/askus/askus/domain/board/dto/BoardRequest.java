@@ -27,11 +27,29 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 public class BoardRequest {
+	private static InputStream getInputStream(MultipartFile image) {
+		ByteArrayInputStream byteArrayInputStream;
+		try {
+			byte[] byteArray = image.getBytes();
+			byteArrayInputStream = new ByteArrayInputStream(byteArray);
+		} catch (IOException e) {
+			throw new KookleRuntimeException("이미지 파일 변환 실패", e);
+		}
+		return byteArrayInputStream;
+	}
+
+	private static String getOriginalFileName(MultipartFile image) {
+		return image.getOriginalFilename();
+	}
+
 	@Getter
 	public static class Post {
 		@NotNull
-		@Schema(description = "제목", example = "돼지고기 김치찌개")
+		@Schema(description = "제목", example = "냉장고에 돼지고기와 김치찌개가 있다면???")
 		private String title;
+		@NotNull
+		@Schema(description = "음식이름", example = "돼지고기 김치찌개")
+		private String foodName;
 		@NotNull
 		@Schema(description = "카테고리", example = "KOREAN")
 		private Category category;
@@ -50,6 +68,7 @@ public class BoardRequest {
 
 		public Post(
 			String title,
+			String foodName,
 			Category category,
 			String ingredients,
 			String content,
@@ -58,6 +77,7 @@ public class BoardRequest {
 			List<MultipartFile> representativeImages
 		) {
 			this.title = title;
+			this.foodName = foodName;
 			this.category = category;
 			this.ingredients = ingredients;
 			this.content = content;
@@ -90,25 +110,11 @@ public class BoardRequest {
 			}
 		}
 
-		private InputStream getInputStream(MultipartFile image) {
-			ByteArrayInputStream byteArrayInputStream;
-			try {
-				byte[] byteArray = image.getBytes();
-				byteArrayInputStream = new ByteArrayInputStream(byteArray);
-			} catch (IOException e) {
-				throw new KookleRuntimeException("이미지 파일 변환 실패", e);
-			}
-			return byteArrayInputStream;
-		}
-
-		private String getOriginalFileName(MultipartFile image) {
-			return image.getOriginalFilename();
-		}
-
 		public Board toEntity(Users users) {
 			return new Board(
 				users,
 				this.title,
+				this.foodName,
 				this.category,
 				this.ingredients,
 				this.content,
@@ -120,6 +126,7 @@ public class BoardRequest {
 	@Getter
 	public static class Patch {
 		private String title;
+		private String foodName;
 		private Category category;
 		private String ingredients;
 		private String content;
@@ -129,7 +136,8 @@ public class BoardRequest {
 
 		public Patch(
 			String title,
-			String category,
+			String foodName,
+			Category category,
 			String ingredients,
 			String content,
 			String tag,
@@ -137,7 +145,8 @@ public class BoardRequest {
 			List<MultipartFile> representativeImages
 		) {
 			this.title = title;
-			this.category = Category.valueOf(category);
+			this.foodName = foodName;
+			this.category = category;
 			this.ingredients = ingredients;
 			this.content = content;
 			this.tag = tag;
@@ -169,24 +178,10 @@ public class BoardRequest {
 			}
 		}
 
-		private InputStream getInputStream(MultipartFile image) {
-			ByteArrayInputStream byteArrayInputStream;
-			try {
-				byte[] byteArray = image.getBytes();
-				byteArrayInputStream = new ByteArrayInputStream(byteArray);
-			} catch (IOException e) {
-				throw new KookleRuntimeException("이미지 파일 변환 실패", e);
-			}
-			return byteArrayInputStream;
-		}
-
-		private String getOriginalFileName(MultipartFile image) {
-			return image.getOriginalFilename();
-		}
-
 		public void update(Board board) {
 			board.update(
 				this.title,
+				this.foodName,
 				this.category,
 				this.ingredients,
 				this.content,
@@ -197,11 +192,13 @@ public class BoardRequest {
 
 	@Getter
 	public static class Summary {
-		/* 검색조건 */
+		@Schema(description = "카테고리 검색조건", example = "KOREAN")
 		private String tag;
+		@Schema(description = "게시글 등록 시작일 검색조건", example = "2023.04.21")
 		private Optional<LocalDateTime> dateLoe = Optional.empty();
+		@Schema(description = "게시글 등록 마감일 검색조건", example = "2023.04.27")
 		private Optional<LocalDateTime> dateGoe = Optional.empty();
-		/* 정렬기준 */
+		@Schema(description = "게시글 정렬기준", example = "CREATED_AT_DESC")
 		private SortConditions sortTarget;
 
 		public Summary(

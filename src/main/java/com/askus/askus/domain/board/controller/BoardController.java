@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -48,13 +49,24 @@ public class BoardController {
 			.body(response);
 	}
 
+	@Operation(
+		summary = "게시글 목록 조회",
+		description = "검색조건을 사용하여 필터링된 게시글 목록을 조회합니다."
+	)
+	@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = BoardResponse.Summary.class)))
 	@GetMapping
 	public List<BoardResponse.Summary> searchBoards(
-		BoardRequest.Summary request
+		@RequestBody BoardRequest.Summary request
 	) {
 		return boardService.searchBoards(request);
 	}
 
+	@Operation(
+		summary = "게시글 상세 조회",
+		description = "선택한 게시글의 정보를 상세조회 합니다.",
+		security = {@SecurityRequirement(name = "bearer-key")}
+	)
+	@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = BoardResponse.Detail.class)))
 	@GetMapping("/{boardId}")
 	public BoardResponse.Detail searchBoard(
 		@PathVariable Long boardId
@@ -62,6 +74,12 @@ public class BoardController {
 		return boardService.searchBoard(boardId);
 	}
 
+	@Operation(
+		summary = "게시글 수정",
+		description = "선택한 게시글의 정보를 수정 합니다.",
+		security = {@SecurityRequirement(name = "bearer-key")}
+	)
+	@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = BoardResponse.Patch.class)))
 	@PatchMapping("/{boardId}")
 	public BoardResponse.Patch updateBoard(
 		@AuthenticationPrincipal SecurityUser securityUser,
@@ -71,13 +89,17 @@ public class BoardController {
 		return boardService.updateBoard(securityUser.getId(), boardId, request);
 	}
 
+	@Operation(
+		summary = "게시글 삭제",
+		description = "선택한 게시글의 정보를 삭제 합니다.",
+		security = {@SecurityRequirement(name = "bearer-key")}
+	)
+	@ApiResponse(responseCode = "204", description = "No_Content")
 	@DeleteMapping
-	public ResponseEntity<BoardResponse.Delete> deleteBoard(
-		BoardRequest.Delete request
+	public ResponseEntity<Void> deleteBoard(
+		@RequestBody BoardRequest.Delete request
 	) {
-		BoardResponse.Delete response = boardService.deleteBoard(request);
-		return ResponseEntity
-			.status(HttpStatus.NO_CONTENT)
-			.body(response);
+		boardService.deleteBoard(request);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 }
