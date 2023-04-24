@@ -1,7 +1,13 @@
 package com.askus.askus.domain.users.service;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+import com.askus.askus.domain.board.dto.BoardRequest;
+import com.askus.askus.domain.board.dto.BoardResponse;
+import com.askus.askus.domain.board.repository.BoardRepository;
+import com.askus.askus.domain.board.service.BoardService;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -38,34 +44,31 @@ public class UsersServiceImpl implements UsersService {
 
 	@Transactional
 	@Override
-	public UsersResponse.SignUp signUp(UsersRequest.SignUp request) throws Exception {
+	public UsersResponse.SignUp signUp(UsersRequest.SignUp request) {
 
 		if (usersRepository.findByEmail(request.getEmail()).isPresent()) {
 			log.error("중복된 이메일로 가입 시도: {}", request.getEmail());
-			throw new Exception("이미 존재하는 이메일입니다.");
+			throw new KookleRuntimeException("이미 존재하는 이메일입니다.");
 		}
 
 		if (!request.getPassword().equals(request.getCheckedPassword())) {
 			log.error("가입 시 비밀번호 불일치: {}", request.getEmail());
-			throw new Exception("비밀번호가 일치하지 않습니다.");
+			throw new KookleRuntimeException("비밀번호가 일치하지 않습니다.");
 		}
 
+		// 회원정보 저장
 		Users users = usersRepository.save(request.toEntity());
-		ProfileImage profileImage = null;
-		if (request.getProfileImage() != null) {
-			profileImage = imageService.uploadProfileImage(users, request);
-		}
+		imageService.uploadProfileImage(users, request);
 
 		// 비밀번호 인코딩
 		users.encodePassword(passwordEncoder);
-		return UsersResponse.SignUp.ofEntity(users, profileImage);
+
+		return new UsersResponse.SignUp(users.getEmail());
 	}
 
 	@Override
 	public UsersResponse.DupEmail isDupEmail(String email) {
-		return UsersResponse.DupEmail.builder()
-			.duplicated(usersRepository.findByEmail(email).isPresent())
-			.build();
+		return new UsersResponse.DupEmail(usersRepository.findByEmail(email).isPresent());
 	}
 
 	@Transactional
@@ -89,11 +92,14 @@ public class UsersServiceImpl implements UsersService {
 				7,
 				TimeUnit.DAYS);
 
-		return UsersResponse.SignIn.builder()
-			.email(authentication.getName())
-			.accessToken(tokenInfo.getAccessToken())
-			.refreshToken(tokenInfo.getRefreshToken())
-			.build();
+		Users users = usersRepository.findByEmail(request.getEmail()).get();
+		Long userId = users.getId();
+		String email = users.getEmail();
+		String nickname = users.getNickname();
+
+		String profileImageUrl = imageService.getProfileImageUrl(userId);
+
+		return new UsersResponse.SignIn(email, nickname, profileImageUrl, tokenInfo);
 	}
 
 	public UsersResponse.TokenInfo reissue(UsersRequest.Reissue reissue) {
@@ -106,7 +112,7 @@ public class UsersServiceImpl implements UsersService {
 		Authentication authentication = jwtTokenProvider.getAuthentication(reissue.getAccessToken());
 
 		// 3. Redis 에서 User email 을 기반으로 저장된 Refresh Token 값을 가져온다.
-		String refreshToken = (String)redisTemplate.opsForValue().get("RT:" + authentication.getName());
+		String refreshToken = (String) redisTemplate.opsForValue().get("RT:" + authentication.getName());
 
 		// (로그아웃되어 Redis 에 RefreshToken 이 존재하지 않는 경우 처리)
 		if (ObjectUtils.isEmpty(refreshToken)) {
@@ -121,7 +127,7 @@ public class UsersServiceImpl implements UsersService {
 
 		// 5. RefreshToken Redis 업데이트
 		redisTemplate.opsForValue()
-			.set("RT:" + authentication.getName(), tokenInfo.getRefreshToken(), 7, TimeUnit.DAYS);
+				.set("RT:" + authentication.getName(), tokenInfo.getRefreshToken(), 7, TimeUnit.DAYS);
 
 		return tokenInfo;
 	}

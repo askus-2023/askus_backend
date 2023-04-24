@@ -41,6 +41,11 @@ public class ImageServiceImpl implements ImageService {
 	}
 
 	@Override
+	public String getProfileImageUrl(Long userId) {
+		return profileImageRepository.findUrlByUsers(userId).get();
+	}
+
+	@Override
 	public ProfileImage uploadProfileImage(Users users, UsersRequest.SignUp request) {
 
 		String profileImageUrl = request.getProfileImage().uploadBy(imageUploader);

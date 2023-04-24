@@ -13,6 +13,8 @@ public interface ImageService {
 
 	BoardImage uploadRepresentativeImage(Board board, Image image);
 
+	String getProfileImageUrl(Long userId);
+
 	ProfileImage uploadProfileImage(Users users, UsersRequest.SignUp request);
 
 	void deleteThumbnailImage(Board board);
