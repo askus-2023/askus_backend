@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import com.askus.askus.domain.image.domain.ProfileImage;
-import com.askus.askus.domain.image.service.ImageService;
+import com.askus.askus.domain.image.service.ImageUploader;
 import com.askus.askus.domain.users.domain.Users;
 import com.askus.askus.domain.users.dto.UsersRequest;
 import com.askus.askus.domain.users.dto.UsersResponse;
@@ -33,8 +33,8 @@ public class UsersServiceImpl implements UsersService {
 	private final PasswordEncoder passwordEncoder;
 	private final AuthenticationManagerBuilder authenticationManagerBuilder;
 	private final JwtTokenProvider jwtTokenProvider;
-	private final ImageService imageService;
 	private final RedisTemplate redisTemplate;
+	private final ImageUploader imageUploader;
 
 	@Transactional
 	@Override
@@ -51,14 +51,14 @@ public class UsersServiceImpl implements UsersService {
 		}
 
 		Users users = usersRepository.save(request.toEntity());
-		ProfileImage profileImage = null;
-		if (request.getProfileImage() != null) {
-			profileImage = imageService.uploadProfileImage(users, request);
-		}
+
+		String profileImageUrl = request.getProfileImage().uploadBy(imageUploader);
+		ProfileImage profileImage = new ProfileImage(users, profileImageUrl);
+		users.setProfileImage(profileImage);
 
 		// 비밀번호 인코딩
 		users.encodePassword(passwordEncoder);
-		return UsersResponse.SignUp.ofEntity(users, profileImage);
+		return UsersResponse.SignUp.ofEntity(users);
 	}
 
 	@Override
@@ -124,5 +124,44 @@ public class UsersServiceImpl implements UsersService {
 			.set("RT:" + authentication.getName(), tokenInfo.getRefreshToken(), 7, TimeUnit.DAYS);
 
 		return tokenInfo;
+	}
+
+	@Override
+	@Transactional
+	public UsersResponse.Patch updateUsers(long userId, UsersRequest.Patch request) {
+		// 1. find users
+		Users users = usersRepository.findById(userId)
+			.orElseThrow(() -> new KookleRuntimeException("user not found: " + userId));
+
+		// 2. update users & image
+		request.update(users);
+		String profileImageUrl = request.getProfileImage().uploadBy(imageUploader);
+		ProfileImage profileImage = new ProfileImage(users, profileImageUrl);
+		users.setProfileImage(profileImage);
+
+		// 3. return
+		return UsersResponse.Patch.ofEntity(users);
+	}
+
+	@Override
+	@Transactional
+	public void updatePassword(long userId, UsersRequest.PatchPassword request) {
+		// 1. find users
+		Users users = usersRepository.findById(userId)
+			.orElseThrow(() -> new KookleRuntimeException("user not found: " + userId));
+
+		// 2. validate
+		boolean matches = passwordEncoder.matches(request.getExistingPassword(), users.getPassword());
+		if (!matches) {
+			throw new KookleRuntimeException("does not matches with existing password: " + request.getExistingPassword());
+		}
+
+		if (!request.getPassword().equals(request.getCheckedPassword())) {
+			throw new KookleRuntimeException("does not matches with check password: " + request.getPassword());
+		}
+
+		// 3. update password
+		request.update(users);
+		users.encodePassword(passwordEncoder);
 	}
 }

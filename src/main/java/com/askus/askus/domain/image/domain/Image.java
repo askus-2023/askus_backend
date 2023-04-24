@@ -18,13 +18,11 @@ public class Image {
 	private static final List<String> ACCEPTED_FILE_EXTENSIONS
 		= List.of("png", "webp", "jpg", "jpeg", "gif", "bmp", "svg");
 
-	private final ImageType imageType;
 	private final InputStream inputStream;
 	private final String extension;
 	private final String originalFilename;
 
-	public Image(ImageType imageType, InputStream inputStream, String originalFilename) {
-		this.imageType = imageType;
+	public Image(InputStream inputStream, String originalFilename) {
 		this.inputStream = inputStream;
 		this.extension = checkAndGetExtension(originalFilename);
 		this.originalFilename = originalFilename;

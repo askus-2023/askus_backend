@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.amazonaws.services.s3.AmazonS3Client;
@@ -15,6 +14,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.askus.askus.domain.image.domain.Image;
 import com.askus.askus.domain.image.service.ImageUploader;
 import com.askus.askus.global.error.exception.KookleRuntimeException;
+import com.askus.askus.global.properties.S3Properties;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,8 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class S3ImageUploader implements ImageUploader {
 
 	private final AmazonS3Client amazonS3Client;
-	@Value("${cloud.aws.s3.bucket}")
-	private String bucket;
+	private final S3Properties s3Properties;
 
 	@Override
 	public String upload(Image image) {
@@ -53,9 +52,10 @@ public class S3ImageUploader implements ImageUploader {
 
 	private String putS3(File file, String filename) {
 		amazonS3Client.putObject(
-			new PutObjectRequest(bucket, filename, file).withCannedAcl(CannedAccessControlList.PublicRead)
+			new PutObjectRequest(s3Properties.getBucket(), filename, file).withCannedAcl(
+				CannedAccessControlList.PublicRead)
 		);
-		return amazonS3Client.getUrl(bucket, filename).toString();
+		return amazonS3Client.getUrl(s3Properties.getBucket(), filename).toString();
 	}
 
 	private void deleteFile(File file) {
@@ -68,6 +68,6 @@ public class S3ImageUploader implements ImageUploader {
 
 	@Override
 	public void delete(String filename) {
-		amazonS3Client.deleteObject(bucket, filename);
+		amazonS3Client.deleteObject(s3Properties.getBucket(), filename);
 	}
 }

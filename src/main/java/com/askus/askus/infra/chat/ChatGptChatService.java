@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import com.askus.askus.domain.chat.dto.ChatGptRequest;
 import com.askus.askus.domain.chat.dto.ChatGptResponse;
 import com.askus.askus.domain.chat.service.ChatService;
-import com.askus.askus.infra.chat.configuration.ChatGptProperties;
+import com.askus.askus.global.properties.ChatGptProperties;
 
 import io.github.flashvayne.chatgpt.dto.ChatRequest;
 import io.github.flashvayne.chatgpt.dto.ChatResponse;
