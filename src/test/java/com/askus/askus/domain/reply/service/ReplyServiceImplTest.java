@@ -49,10 +49,10 @@ class ReplyServiceImplTest {
 		Board savedBoard = boardRepository.save(board);
 
 		String content = "content";
-		ReplyRequest.Post request = new ReplyRequest.Post(content);
+		ReplyRequest request = new ReplyRequest(content);
 
 		// when
-		ReplyResponse.Post response = replyService.addReply(savedUsers.getId(), savedBoard.getId(), request);
+		ReplyResponse response = replyService.addReply(savedUsers.getId(), savedBoard.getId(), request);
 
 		// then
 		assertThat(response.getReplyAuthor()).isEqualTo(savedUsers.getNickname());
@@ -77,17 +77,17 @@ class ReplyServiceImplTest {
 		Board savedBoard = boardRepository.save(board);
 
 		String content = "content";
-		ReplyRequest.Post request = new ReplyRequest.Post(content);
-		ReplyResponse.Post response = replyService.addReply(savedUsers.getId(), savedBoard.getId(), request);
+		ReplyRequest request = new ReplyRequest(content);
+		ReplyResponse response = replyService.addReply(savedUsers.getId(), savedBoard.getId(), request);
 
 		List<Reply> findReplies = replyRepository.findAllByBoardAndDeletedAtNull(savedBoard);
 		assertThat(findReplies.get(0).getContent()).isEqualTo(response.getContent());
 
 		String updatedContent = "updated content";
-		ReplyRequest.Patch updateRequest = new ReplyRequest.Patch(updatedContent);
+		ReplyRequest updateRequest = new ReplyRequest(updatedContent);
 
 		// when
-		ReplyResponse.Patch updateResponse = replyService.updateReply(board.getId(), findReplies.get(0).getId(),
+		ReplyResponse updateResponse = replyService.updateReply(board.getId(), findReplies.get(0).getId(),
 			updateRequest);
 		List<Reply> updatedReplies = replyRepository.findAllByBoardAndDeletedAtNull(board);
 
@@ -114,20 +114,19 @@ class ReplyServiceImplTest {
 		Board savedBoard = boardRepository.save(board);
 
 		String content = "content";
-		ReplyRequest.Post request = new ReplyRequest.Post(content);
+		ReplyRequest request = new ReplyRequest(content);
 
-		ReplyResponse.Post response = replyService.addReply(savedUsers.getId(), savedBoard.getId(), request);
+		ReplyResponse response = replyService.addReply(savedUsers.getId(), savedBoard.getId(), request);
 
 		List<Reply> findReplies = replyRepository.findAllByBoardAndDeletedAtNull(savedBoard);
 		assertThat(findReplies.get(0).getDeletedAt()).isNull();
 		assertThat(savedBoard.getReplyCount()).isEqualTo(1L);
 
 		// when
-		ReplyResponse.Delete deleteResponse = replyService.deleteReply(savedBoard.getId(), findReplies.get(0).getId());
+		replyService.deleteReply(savedBoard.getId(), findReplies.get(0).getId());
 		List<Reply> deleteFindReplies = replyRepository.findAllByBoardAndDeletedAtNull(savedBoard);
 
 		// then
-		assertThat(deleteResponse.getReplyCount()).isEqualTo(0L);
 		assertThat(deleteFindReplies.size()).isEqualTo(0);
 	}
 }

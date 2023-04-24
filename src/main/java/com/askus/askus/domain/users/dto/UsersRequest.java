@@ -35,7 +35,6 @@ public class UsersRequest {
 		return file.getOriginalFilename();
 	}
 
-
 	@Getter
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	public static class SignUp {

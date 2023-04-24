@@ -57,28 +57,29 @@ class LikeServiceImplTest {
 
 	@Test
 	void 좋아요_삭제_성공() {
-		// // given
-		// Users users = new Users("email", "password", "nickname");
-		// Users savedUsers = usersRepository.save(users);
-		//
-		// Board board = new Board(
-		// 	savedUsers,
-		// 	"title",
-		// 	Category.KOREAN,
-		// 	"ingredients",
-		// 	"content",
-		// 	"tag"
-		// );
-		// Board savedBoard = boardRepository.save(board);
-		//
-		// LikeRequest request = new LikeRequest(savedBoard.getId());
-		// likeService.addLike(savedUsers.getId(), request);
-		//
-		// // when
-		// LikeResponse response = likeService.deleteLike(savedUsers.getId(), request);
-		//
-		// // then
-		// assertThat(response.getBoardId()).isEqualTo(savedBoard.getId());
-		// assertThat(response.getLikeCount()).isEqualTo(0L);
+		// given
+		Users users = new Users("email", "password", "nickname");
+		Users savedUsers = usersRepository.save(users);
+
+		Board board = new Board(
+			savedUsers,
+			"title",
+			"food name",
+			Category.KOREAN,
+			"ingredients",
+			"content",
+			"tag"
+		);
+		Board savedBoard = boardRepository.save(board);
+
+		LikeRequest request = new LikeRequest(savedBoard.getId());
+		likeService.addLike(savedUsers.getId(), request);
+
+		// when
+		LikeResponse response = likeService.deleteLike(savedUsers.getId(), request);
+
+		// then
+		assertThat(response.getBoardId()).isEqualTo(savedBoard.getId());
+		assertThat(response.getLikeCount()).isEqualTo(0L);
 	}
 }

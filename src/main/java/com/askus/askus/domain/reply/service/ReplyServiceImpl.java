@@ -1,6 +1,7 @@
 package com.askus.askus.domain.reply.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.askus.askus.domain.board.domain.Board;
 import com.askus.askus.domain.board.repository.BoardRepository;
@@ -22,49 +23,55 @@ public class ReplyServiceImpl implements ReplyService {
 	private final BoardRepository boardRepository;
 
 	@Override
-	public ReplyResponse.Post addReply(long userId, long boardId, ReplyRequest.Post request) {
+	@Transactional
+	public ReplyResponse addReply(long userId, long boardId, ReplyRequest request) {
+		// 1. find users
 		Users users = usersRepository.findById(userId)
-			.orElseThrow(() -> new KookleRuntimeException("User Not found"));
+			.orElseThrow(() -> new KookleRuntimeException("users not found: " + userId));
 
+		// 2. find board
 		Board board = boardRepository.findById(boardId)
-			.orElseThrow(() -> new KookleRuntimeException("Board Not Found"));
+			.orElseThrow(() -> new KookleRuntimeException("board not found: " + boardId));
 
+		// 3. save & update board
 		Reply reply = replyRepository.save(request.toEntity(users, board));
-
 		board.addReplyCount();
-		boardRepository.save(board);
 
-		return ReplyResponse.Post.ofEntity(board.getUsers(), reply);
+		// 4. return
+		return ReplyResponse.ofEntity(users, reply);
 	}
 
 	@Override
-	public ReplyResponse.Patch updateReply(long boardId, long replyId, ReplyRequest.Patch request) {
+	@Transactional
+	public ReplyResponse updateReply(long boardId, long replyId, ReplyRequest request) {
+		// 1. find board
 		Board board = boardRepository.findById(boardId)
-			.orElseThrow(() -> new KookleRuntimeException("Board Not Found"));
+			.orElseThrow(() -> new KookleRuntimeException("board not found: " + boardId));
 
+		// 2. find reply
 		Reply reply = replyRepository.findById(replyId)
-			.orElseThrow(() -> new KookleRuntimeException("Reply Not Found"));
+			.orElseThrow(() -> new KookleRuntimeException("reply not found: " + replyId));
 
+		// 3. update
 		request.update(reply);
-		Reply savedReply = replyRepository.save(reply);
 
-		return ReplyResponse.Patch.ofEntity(board.getUsers(), savedReply);
+		// 4. return
+		return ReplyResponse.ofEntity(reply.getUsers(), reply);
 	}
 
 	@Override
-	public ReplyResponse.Delete deleteReply(long boardId, long replyId) {
+	@Transactional
+	public void deleteReply(long boardId, long replyId) {
+		// 1. find board
 		Board board = boardRepository.findById(boardId)
-			.orElseThrow(() -> new KookleRuntimeException("Board Not Found"));
+			.orElseThrow(() -> new KookleRuntimeException("board not found: " + boardId));
 
+		// 2. find reply
 		Reply reply = replyRepository.findById(replyId)
-			.orElseThrow(() -> new KookleRuntimeException("Reply Not Found"));
+			.orElseThrow(() -> new KookleRuntimeException("reply not found: " + replyId));
 
+		// 3. update
 		reply.delete();
 		board.deleteReplyCount();
-
-		Board savedBoard = boardRepository.save(board);
-		replyRepository.save(reply);
-
-		return ReplyResponse.Delete.ofEntity(savedBoard);
 	}
 }
