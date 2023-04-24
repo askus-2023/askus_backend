@@ -73,11 +73,7 @@ public class JwtTokenProvider {
 
 		log.info("refreshToken = {}", refreshToken);
 
-		return UsersResponse.TokenInfo.builder()
-			.grantType("Bearer")
-			.accessToken(accessToken)
-			.refreshToken(refreshToken)
-			.build();
+		return new UsersResponse.TokenInfo("Bearer", accessToken, refreshToken);
 	}
 
 	// JWT 토큰 복호화

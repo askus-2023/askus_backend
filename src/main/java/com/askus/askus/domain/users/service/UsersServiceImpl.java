@@ -1,7 +1,12 @@
 package com.askus.askus.domain.users.service;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+import com.askus.askus.domain.board.dto.BoardResponse;
+import com.askus.askus.domain.board.service.BoardService;
+import com.askus.askus.domain.users.security.SecurityUser;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -30,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UsersServiceImpl implements UsersService {
 
 	private final UsersRepository usersRepository;
+	private final BoardService boardService;
 	private final PasswordEncoder passwordEncoder;
 	private final AuthenticationManagerBuilder authenticationManagerBuilder;
 	private final JwtTokenProvider jwtTokenProvider;
@@ -38,18 +44,19 @@ public class UsersServiceImpl implements UsersService {
 
 	@Transactional
 	@Override
-	public UsersResponse.SignUp signUp(UsersRequest.SignUp request) throws Exception {
+	public UsersResponse.SignUp signUp(UsersRequest.SignUp request) {
 
 		if (usersRepository.findByEmail(request.getEmail()).isPresent()) {
 			log.error("중복된 이메일로 가입 시도: {}", request.getEmail());
-			throw new Exception("이미 존재하는 이메일입니다.");
+			throw new KookleRuntimeException("이미 존재하는 이메일입니다.");
 		}
 
 		if (!request.getPassword().equals(request.getCheckedPassword())) {
 			log.error("가입 시 비밀번호 불일치: {}", request.getEmail());
-			throw new Exception("비밀번호가 일치하지 않습니다.");
+			throw new KookleRuntimeException("비밀번호가 일치하지 않습니다.");
 		}
 
+		// 회원정보 저장
 		Users users = usersRepository.save(request.toEntity());
 
 		String profileImageUrl = request.getProfileImage().uploadBy(imageUploader);
@@ -58,14 +65,12 @@ public class UsersServiceImpl implements UsersService {
 
 		// 비밀번호 인코딩
 		users.encodePassword(passwordEncoder);
-		return UsersResponse.SignUp.ofEntity(users);
+		return new UsersResponse.SignUp(users.getEmail());
 	}
 
 	@Override
 	public UsersResponse.DupEmail isDupEmail(String email) {
-		return UsersResponse.DupEmail.builder()
-			.duplicated(usersRepository.findByEmail(email).isPresent())
-			.build();
+		return new UsersResponse.DupEmail(usersRepository.findByEmail(email).isPresent());
 	}
 
 	@Transactional
@@ -89,11 +94,12 @@ public class UsersServiceImpl implements UsersService {
 				7,
 				TimeUnit.DAYS);
 
-		return UsersResponse.SignIn.builder()
-			.email(authentication.getName())
-			.accessToken(tokenInfo.getAccessToken())
-			.refreshToken(tokenInfo.getRefreshToken())
-			.build();
+		Users users = usersRepository.findByEmail(request.getEmail()).get();
+		String email = users.getEmail();
+		String nickname = users.getNickname();
+		String profileImageUrl = users.getProfileImage().getUrl();
+
+		return new UsersResponse.SignIn(email, nickname, profileImageUrl, tokenInfo);
 	}
 
 	public UsersResponse.TokenInfo reissue(UsersRequest.Reissue reissue) {
@@ -127,11 +133,28 @@ public class UsersServiceImpl implements UsersService {
 	}
 
 	@Override
+	public UsersResponse.ProfileInfo getProfileInfo(String boardType, SecurityUser securityUser) {
+
+		Long userId = securityUser.getId();
+		Users users = usersRepository.findById(userId)
+				.orElseThrow(() -> new KookleRuntimeException("user not found: " + userId));
+		String profileImageUrl = users.getProfileImage().getUrl();
+		List<BoardResponse.Summary> boards = boardService.searchBoardsByType(boardType, userId);
+
+		boards = boardService.searchBoardsByType(boardType, userId);
+
+		return new UsersResponse.ProfileInfo(
+				users.getEmail(),
+				profileImageUrl,
+				boards);
+	}
+
+	@Override
 	@Transactional
 	public UsersResponse.Patch updateUsers(long userId, UsersRequest.Patch request) {
 		// 1. find users
 		Users users = usersRepository.findById(userId)
-			.orElseThrow(() -> new KookleRuntimeException("user not found: " + userId));
+				.orElseThrow(() -> new KookleRuntimeException("user not found: " + userId));
 
 		// 2. update users & image
 		request.update(users);
@@ -148,13 +171,13 @@ public class UsersServiceImpl implements UsersService {
 	public void updatePassword(long userId, UsersRequest.PatchPassword request) {
 		// 1. find users
 		Users users = usersRepository.findById(userId)
-			.orElseThrow(() -> new KookleRuntimeException("user not found: " + userId));
+				.orElseThrow(() -> new KookleRuntimeException("user not found: " + userId));
 
 		// 2. validate
 		boolean matches = passwordEncoder.matches(request.getExistingPassword(), users.getPassword());
 		if (!matches) {
 			throw new KookleRuntimeException(
-				"does not matches with existing password: " + request.getExistingPassword());
+					"does not matches with existing password: " + request.getExistingPassword());
 		}
 
 		if (!request.getPassword().equals(request.getCheckedPassword())) {

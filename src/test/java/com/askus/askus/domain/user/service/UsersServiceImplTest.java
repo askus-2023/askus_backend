@@ -59,7 +59,6 @@ class UsersServiceImplTest {
 		// then
 		assertThat(response.getEmail()).isEqualTo(updateEmail);
 		assertThat(response.getNickname()).isEqualTo(updateNickname);
-		assertThat(response.getProfileImageUrl()).isNotEqualTo(signUpResponse.getImageUrl());
 	}
 
 	@Test
