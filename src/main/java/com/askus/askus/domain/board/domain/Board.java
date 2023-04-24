@@ -34,6 +34,8 @@ public class Board extends BaseEntity {
 	@Column
 	private String title;
 	@Column
+	private String foodName;
+	@Column
 	@Enumerated(EnumType.STRING)
 	private Category category;
 	@Column
@@ -44,21 +46,23 @@ public class Board extends BaseEntity {
 	private String tag;
 	@Column
 	private Long likeCount = 0L;
-
 	@Column
 	private Long replyCount = 0L;
 
-	public Board(Users users, String title, Category category, String ingredients, String content, String tag) {
+	public Board(Users users, String title, String foodName, Category category, String ingredients, String content,
+		String tag) {
 		this.users = users;
 		this.title = title;
+		this.foodName = foodName;
 		this.category = category;
 		this.ingredients = ingredients;
 		this.content = content;
 		this.tag = tag;
 	}
 
-	public void update(String title, Category category, String ingredients, String content, String tag) {
+	public void update(String title, String foodName, Category category, String ingredients, String content, String tag) {
 		this.title = title;
+		this.foodName = foodName;
 		this.category = category;
 		this.ingredients = ingredients;
 		this.content = content;

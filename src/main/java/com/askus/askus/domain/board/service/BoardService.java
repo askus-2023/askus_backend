@@ -14,5 +14,5 @@ public interface BoardService {
 
 	BoardResponse.Patch updateBoard(long userId, long boardId, BoardRequest.Patch request);
 
-	BoardResponse.Delete deleteBoard(BoardRequest.Delete request);
+	void deleteBoard(BoardRequest.Delete request);
 }

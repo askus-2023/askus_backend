@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.askus.askus.domain.board.domain.Board;
 import com.askus.askus.domain.board.dto.BoardRequest;
@@ -34,83 +35,104 @@ public class BoardServiceImpl implements BoardService {
 	private final ImageService imageService;
 
 	@Override
+	@Transactional
 	public BoardResponse.Post addBoard(long userId, BoardRequest.Post request) {
+		// 1. find user
 		Users users = usersRepository.findById(userId)
-			.orElseThrow(() -> new KookleRuntimeException("존재하지 않는 사용자입니다."));
+			.orElseThrow(() -> new KookleRuntimeException("user not found: " + userId));
 
+		// 2. save board
 		Board board = boardRepository.save(request.toEntity(users));
 
-		BoardImage thumbnailImage = null;
-		List<BoardImage> representativeImages = null;
+		// 3. save images
+		Optional<BoardImage> thumbnailImage = Optional.empty();
+		Optional<List<BoardImage>> representativeImages = Optional.empty();
 		if (request.getThumbnailImage().isPresent()) {
-			thumbnailImage = imageService.uploadThumbnailImage(board, request.getThumbnailImage().get());
+			thumbnailImage = Optional.ofNullable(
+				imageService.uploadThumbnailImage(board, request.getThumbnailImage().get()));
 		}
 		if (request.getRepresentativeImages().isPresent()) {
-			representativeImages = request.getRepresentativeImages().get().stream()
+			representativeImages = Optional.of(request.getRepresentativeImages().get().stream()
 				.map(image -> imageService.uploadRepresentativeImage(board, image))
-				.collect(Collectors.toList());
+				.collect(Collectors.toList()));
 		}
 
-		return BoardResponse.Post.ofEntity(board, users, Optional.ofNullable(thumbnailImage),
-			Optional.ofNullable(representativeImages));
+		// 4. return
+		return BoardResponse.Post.ofEntity(board, users, thumbnailImage, representativeImages);
 	}
 
 	@Override
 	public List<BoardResponse.Summary> searchBoards(BoardRequest.Summary request) {
+		// get & return
 		return boardRepository.searchBoards(request);
 	}
 
 	@Override
 	public BoardResponse.Detail searchBoard(long boardId) {
+		// 1. find board
 		Board board = boardRepository.findByIdAndDeletedAtNull(boardId)
-			.orElseThrow(() -> new KookleRuntimeException("Board Not Found"));
+			.orElseThrow(() -> new KookleRuntimeException("board not found: " + boardId));
 
+		// 2. find images
+		Optional<BoardImage> thumbnailImage = boardImageRepository.findByBoardAndImageTypeAndDeletedAtNull(
+			board, ImageType.THUMBNAIL);
 		List<BoardImage> representativeImages = boardImageRepository.findAllByBoardAndImageTypeAndDeletedAtNull(
-			board, ImageType.REPRESENTATIVE
-		);
+			board, ImageType.REPRESENTATIVE);
 
+		// 3. find replies
 		List<ReplyResponse.Summary> replies = replyRepository.findAllByBoardAndDeletedAtNull(board).stream()
 			.map(reply -> ReplyResponse.Summary.ofEntity(board.getUsers(), reply))
 			.collect(Collectors.toList());
 
-		return BoardResponse.Detail.ofEntity(board.getUsers(), board, representativeImages, replies);
+		// 4. return
+		return BoardResponse.Detail.ofEntity(board.getUsers(), board, thumbnailImage, representativeImages, replies);
 	}
 
 	@Override
+	@Transactional
 	public BoardResponse.Patch updateBoard(long userId, long boardId, BoardRequest.Patch request) {
+		// 1. find users
 		Users user = usersRepository.findById(userId)
-			.orElseThrow(() -> new KookleRuntimeException("User Not Found"));
+			.orElseThrow(() -> new KookleRuntimeException("user not found: " + userId));
 
+		// 2. find board
 		Board board = boardRepository.findById(boardId)
-			.orElseThrow(() -> new KookleRuntimeException("Board Not Found"));
+			.orElseThrow(() -> new KookleRuntimeException("board not found: " + boardId));
 
+		// 3. update
 		request.update(board);
-		boardRepository.save(board);
 
-		BoardImage thumbnailImage;
-		List<BoardImage> representativeImages;
+		// 4. update images
+		Optional<BoardImage> thumbnailImage = Optional.empty();
+		Optional<List<BoardImage>> representativeImages = Optional.empty();
 		if (request.getThumbnailImage().isPresent()) {
 			imageService.deleteThumbnailImage(board);
-			thumbnailImage = imageService.uploadThumbnailImage(board, request.getThumbnailImage().get());
+			thumbnailImage = Optional.ofNullable(imageService.uploadThumbnailImage(board, request.getThumbnailImage().get()));
 		} else {
-			thumbnailImage = boardImageRepository.findByBoardAndImageTypeAndDeletedAtNull(board, ImageType.THUMBNAIL)
-				.orElseThrow(() -> new KookleRuntimeException("thumbnail image not found"));
+			Optional<BoardImage> optionalImage = boardImageRepository.findByBoardAndImageTypeAndDeletedAtNull(board, ImageType.THUMBNAIL);
+			if (optionalImage.isPresent()) {
+				thumbnailImage = Optional.of(optionalImage.get());
+			}
 		}
 		if (request.getRepresentativeImages().isPresent()) {
 			imageService.deleteRepresentativeImages(board);
-			representativeImages = request.getRepresentativeImages().get().stream()
+			representativeImages = Optional.of(request.getRepresentativeImages().get().stream()
 				.map(image -> imageService.uploadRepresentativeImage(board, image))
-				.collect(Collectors.toList());
+				.collect(Collectors.toList()));
 		} else {
-			representativeImages = boardImageRepository.findAllByBoardAndImageTypeAndDeletedAtNull(board,
-				ImageType.REPRESENTATIVE);
+			representativeImages = Optional.ofNullable(
+				boardImageRepository.findAllByBoardAndImageTypeAndDeletedAtNull(board,
+					ImageType.REPRESENTATIVE));
 		}
 
+		// 5. return
 		return BoardResponse.Patch.ofEntity(board, user, thumbnailImage, representativeImages);
 	}
 
 	@Override
-	public BoardResponse.Delete deleteBoard(BoardRequest.Delete request) {
+	@Transactional
+	public void deleteBoard(BoardRequest.Delete request) {
+		// find & delete
 		List<Board> deletedBoards = new ArrayList<>();
 
 		List<Board> boards = boardRepository.findAllById(request.getBoardIds());
@@ -118,11 +140,5 @@ public class BoardServiceImpl implements BoardService {
 			board.delete();
 			deletedBoards.add(board);
 		}
-
-		List<Long> boardIds = boardRepository.saveAll(deletedBoards).stream()
-			.map(board -> board.getId())
-			.collect(Collectors.toList());
-
-		return BoardResponse.Delete.ofEntity(boardIds);
 	}
 }

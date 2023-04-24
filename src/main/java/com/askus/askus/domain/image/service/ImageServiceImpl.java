@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.askus.askus.domain.board.domain.Board;
 import com.askus.askus.domain.image.domain.BoardImage;
@@ -26,6 +27,7 @@ public class ImageServiceImpl implements ImageService {
 	private final ProfileImageRepository profileImageRepository;
 
 	@Override
+	@Transactional
 	public BoardImage uploadThumbnailImage(Board board, Image image) {
 		String url = image.uploadBy(imageUploader);
 		BoardImage boardImage = new BoardImage(board, ImageType.THUMBNAIL, url);
@@ -33,6 +35,7 @@ public class ImageServiceImpl implements ImageService {
 	}
 
 	@Override
+	@Transactional
 	public BoardImage uploadRepresentativeImage(Board board, Image image) {
 		String url = image.uploadBy(imageUploader);
 		BoardImage boardImage = new BoardImage(board, ImageType.REPRESENTATIVE, url);
