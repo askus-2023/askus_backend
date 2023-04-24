@@ -1,13 +1,11 @@
 package com.askus.askus.domain.users.service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-import com.askus.askus.domain.board.dto.BoardRequest;
 import com.askus.askus.domain.board.dto.BoardResponse;
-import com.askus.askus.domain.board.repository.BoardRepository;
 import com.askus.askus.domain.board.service.BoardService;
+import com.askus.askus.domain.users.security.SecurityUser;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -17,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
-import com.askus.askus.domain.image.domain.ProfileImage;
 import com.askus.askus.domain.image.service.ImageService;
 import com.askus.askus.domain.users.domain.Users;
 import com.askus.askus.domain.users.dto.UsersRequest;
@@ -36,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UsersServiceImpl implements UsersService {
 
 	private final UsersRepository usersRepository;
+	private final BoardService boardService;
 	private final PasswordEncoder passwordEncoder;
 	private final AuthenticationManagerBuilder authenticationManagerBuilder;
 	private final JwtTokenProvider jwtTokenProvider;
@@ -131,4 +129,23 @@ public class UsersServiceImpl implements UsersService {
 
 		return tokenInfo;
 	}
+
+    @Override
+    public UsersResponse.profileInfo getProfileInfo(String boardType, SecurityUser securityUser) {
+
+		List<BoardResponse.Summary> boards;
+		Long userId = securityUser.getId();
+		String profileImageUrl = imageService.getProfileImageUrl(userId);
+
+		if(boardType.equals("posts")) {
+			boards = boardService.searchBoardsByUsers(userId);
+		} else {
+			boards = boardService.searchBoardsByLiked(userId);
+		}
+
+		return new UsersResponse.profileInfo(
+				securityUser.getEmail(),
+				profileImageUrl,
+				boards);
+    }
 }

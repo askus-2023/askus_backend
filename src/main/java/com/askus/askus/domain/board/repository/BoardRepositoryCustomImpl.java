@@ -2,6 +2,7 @@ package com.askus.askus.domain.board.repository;
 
 import static com.askus.askus.domain.board.domain.QBoard.*;
 import static com.askus.askus.domain.image.domain.QBoardImage.*;
+import static com.askus.askus.domain.like.domain.QLike.*;
 import static com.askus.askus.domain.users.domain.QUsers.*;
 
 import java.util.List;
@@ -52,6 +53,59 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 			)
 			.orderBy(sort(request))
 			.distinct().fetch();
+	}
+
+	@Override
+	public List<BoardResponse.Summary> searchBoardsByUsers(Long userId) {
+		return queryFactory
+				.select(Projections.constructor(BoardResponse.Summary.class,
+						board.id,
+						users.nickname,
+						board.createdAt,
+						ExpressionUtils.as(
+								JPAExpressions
+										.select(boardImage.url).from(boardImage)
+										.where(
+												boardImage.board.id.eq(board.id),
+												boardImage.imageType.eq(ImageType.THUMBNAIL),
+												boardImage.deletedAt.isNull()), "url"
+						),
+						board.likeCount,
+						board.replyCount
+				))
+				.from(board)
+				.join(board.users, users)
+				.where(
+						users.id.eq(userId)
+				)
+				.distinct().fetch();
+	}
+
+	@Override
+	public List<BoardResponse.Summary> searchBoardsByLiked(Long userId) {
+		return queryFactory
+				.select(Projections.constructor(BoardResponse.Summary.class,
+						board.id,
+						users.nickname,
+						board.createdAt,
+						ExpressionUtils.as(
+								JPAExpressions
+										.select(boardImage.url).from(boardImage)
+										.where(
+												boardImage.board.id.eq(board.id),
+												boardImage.imageType.eq(ImageType.THUMBNAIL),
+												boardImage.deletedAt.isNull()), "url"
+						),
+						board.likeCount,
+						board.replyCount
+				))
+				.from(board)
+				.join(board.users, users)
+				.join(like.board, board)
+				.where(
+						like.users.id.eq(userId)
+				)
+				.distinct().fetch();
 	}
 
 	private BooleanExpression searchTag(BoardRequest.Summary request) {

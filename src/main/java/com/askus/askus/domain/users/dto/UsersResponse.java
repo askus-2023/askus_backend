@@ -1,9 +1,10 @@
 package com.askus.askus.domain.users.dto;
 
+import com.askus.askus.domain.board.dto.BoardResponse;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
+
+import java.util.List;
 
 public class UsersResponse {
 
@@ -48,5 +49,12 @@ public class UsersResponse {
 		private String grantType;
 		private String accessToken;
 		private String refreshToken;
+	}
+
+	@AllArgsConstructor
+	public static class profileInfo {
+		private String nickname;
+		private String profileImageUrl;
+		List<BoardResponse.Summary> boards;
 	}
 }

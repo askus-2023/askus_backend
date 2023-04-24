@@ -2,11 +2,10 @@ package com.askus.askus.domain.users.controller;
 
 import javax.validation.Valid;
 
+import com.askus.askus.domain.users.security.SecurityUser;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import com.askus.askus.domain.users.dto.UsersRequest;
 import com.askus.askus.domain.users.dto.UsersResponse;
@@ -46,5 +45,13 @@ public class UsersController {
 	@ResponseStatus(HttpStatus.OK)
 	public UsersResponse.TokenInfo reissue(UsersRequest.Reissue reissue) {
 		return usersService.reissue(reissue);
+	}
+
+	@GetMapping("/profiles")
+	public UsersResponse.profileInfo getProfileInfo(@RequestParam(name = "board", required = false) String boardType, @AuthenticationPrincipal SecurityUser securityUser) {
+		if(boardType == null) {
+			boardType = "posts";
+		}
+		return usersService.getProfileInfo(boardType, securityUser);
 	}
 }

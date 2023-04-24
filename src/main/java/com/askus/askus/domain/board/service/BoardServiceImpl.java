@@ -53,6 +53,16 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
+	public List<BoardResponse.Summary> searchBoardsByUsers(Long userId) {
+		return boardRepository.searchBoardsByUsers(userId);
+	}
+
+	@Override
+	public List<BoardResponse.Summary> searchBoardsByLiked(Long userId) {
+		return boardRepository.searchBoardsByLiked(userId);
+	}
+
+	@Override
 	public BoardResponse.Detail searchBoard(long boardId) {
 		Board board = boardRepository.findByIdAndDeletedAtNull(boardId)
 			.orElseThrow(() -> new KookleRuntimeException("Board Not Found"));
