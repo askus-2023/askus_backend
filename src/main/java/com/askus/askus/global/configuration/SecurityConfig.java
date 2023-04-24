@@ -1,6 +1,5 @@
 package com.askus.askus.global.configuration;
 
-import com.askus.askus.domain.users.security.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -15,6 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.askus.askus.domain.users.repository.UsersRepository;
+import com.askus.askus.domain.users.security.CustomUserDetailsService;
 import com.askus.askus.domain.users.security.JwtAuthenticationFilter;
 import com.askus.askus.domain.users.security.JwtTokenProvider;
 

@@ -1,165 +1,206 @@
 package com.askus.askus.domain.user.service;
 
-import com.askus.askus.domain.users.dto.UsersRequest;
-import com.askus.askus.domain.users.dto.UsersResponse;
-import com.askus.askus.domain.users.repository.UsersRepository;
-import com.askus.askus.domain.users.service.UsersService;
-import com.askus.askus.global.config.TestConfig;
-import com.askus.askus.global.error.exception.KookleRuntimeException;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
+import static org.assertj.core.api.AssertionsForClassTypes.*;
 
 import java.io.FileInputStream;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.transaction.annotation.Transactional;
 
-@Import({TestConfig.class})
+import com.askus.askus.domain.users.domain.Users;
+import com.askus.askus.domain.users.dto.UsersRequest;
+import com.askus.askus.domain.users.dto.UsersResponse;
+import com.askus.askus.domain.users.repository.UsersRepository;
+import com.askus.askus.domain.users.service.UsersServiceImpl;
+import com.askus.askus.global.error.exception.KookleRuntimeException;
+
+// @ExtendWith(MockitoExtension.class)
 @SpringBootTest
 @Transactional
 class UsersServiceImplTest {
+	@Autowired
+	private UsersServiceImpl sut;
+	@Autowired
+	private UsersRepository usersRepository;
 
-    @Autowired
-    private UsersRepository usersRepository;
-    @Autowired
-    private UsersService usersService;
+	@Test
+	void 프로필_이메일_닉네임_이미지_수정_성공() throws Exception {
+		// given
+		String email = "email0417@email.com";
+		String password = "password";
+		String nickname = "nickname";
+		MockMultipartFile profileImage = new MockMultipartFile(
+			"profileImage",
+			"profileImage.png",
+			"image/png",
+			new FileInputStream("/Users/hyeonjinlee/Documents/askus/src/test/resources/store/images/image.png"));
 
-    private String email;
-    private String password;
-    private String checkedPassword;
-    private String nickname;
-    private MultipartFile profileImage;
+		UsersRequest.SignUp signUpRequest = new UsersRequest.SignUp(
+			email,
+			password,
+			password,
+			nickname,
+			profileImage
+		);
+		UsersResponse.SignUp signUpResponse = sut.signUp(signUpRequest);
+		Users users = usersRepository.findByEmail(signUpResponse.getEmail()).get();
 
-    @BeforeEach
-    void init() {
-        email = "test@gmail.com";
-        password = "password";
-        checkedPassword = "password";
-        nickname = "nickname";
-        profileImage = null;
-    }
+		String updateEmail = "updateEmail@email.com";
+		String updateNickname = "updateNickname";
 
-    @Test
-    void 회원가입_프로필O() throws Exception {
-        // given
-        profileImage = new MockMultipartFile(
-                "profileImage",
-                "profileImage.png",
-                "image/png",
-                new FileInputStream("/Users/kimhandong/repository/cookle/cookle_backend/src/test/resources/store/images/image.png"));
-        UsersRequest.SignUp request = new UsersRequest.SignUp(
-                email,
-                password,
-                checkedPassword,
-                nickname,
-                profileImage);
+		UsersRequest.Patch request = new UsersRequest.Patch(updateEmail, updateNickname, null);
 
-        // when
-        UsersResponse.SignUp response = usersService.signUp(request);
+		// when
+		UsersResponse.Patch response = sut.updateUsers(users.getId(), request);
 
-        // then
-        assertThat(response.getEmail()).isEqualTo(email);
-    }
+		// then
+		assertThat(response.getEmail()).isEqualTo(updateEmail);
+		assertThat(response.getNickname()).isEqualTo(updateNickname);
+	}
 
-    @Test
-    void 회원가입_프로필X() throws Exception {
-        // given
-        profileImage = null;
-        UsersRequest.SignUp request = new UsersRequest.SignUp(
-                email,
-                password,
-                checkedPassword,
-                nickname,
-                profileImage);
+	@Test
+	void 프로필_비밀번호_수정() throws Exception {
+		// given
+		String email = "email0417@email.com";
+		String password = "password";
+		String nickname = "nickname";
+		MockMultipartFile profileImage = new MockMultipartFile(
+			"profileImage",
+			"profileImage.png",
+			"image/png",
+			new FileInputStream("/Users/hyeonjinlee/Documents/askus/src/test/resources/store/images/image.png"));
 
-        // when
-        UsersResponse.SignUp response = usersService.signUp(request);
+		UsersRequest.SignUp signUpRequest = new UsersRequest.SignUp(
+			email,
+			password,
+			password,
+			nickname,
+			profileImage
+		);
+		UsersResponse.SignUp signUpResponse = sut.signUp(signUpRequest);
+		Users users = usersRepository.findByEmail(signUpResponse.getEmail()).get();
+		String existingPassword = users.getPassword();
 
-        // then
-        assertThat(response.getEmail()).isEqualTo(email);
-    }
+		String updatePassword = "updatePassword";
+		UsersRequest.PatchPassword request = new UsersRequest.PatchPassword(
+			password,
+			updatePassword,
+			updatePassword
+		);
 
-    @Test
-    void 이메일_중복확인() throws Exception {
-        // given
-        UsersRequest.SignUp request = new UsersRequest.SignUp(
-                email,
-                password,
-                checkedPassword,
-                nickname,
-                profileImage);
-        usersService.signUp(request);
+		// when
+		sut.updatePassword(users.getId(), request);
+		Users updatedUsers = usersRepository.findById(users.getId()).get();
 
-        // when
-        UsersResponse.DupEmail dupEmail = usersService.isDupEmail(email);
+		// then
+		assertThat(updatedUsers.getPassword()).isNotEqualTo(existingPassword);
+	}
 
-        // then
-        assertThat(dupEmail.isDuplicated()).isTrue();
-    }
+	@Test
+	void 프로필_기존비밀번호_일치X() throws Exception {
+		// given
+		String email = "email0417@email.com";
+		String password = "password";
+		String nickname = "nickname";
+		MockMultipartFile profileImage = new MockMultipartFile(
+			"profileImage",
+			"profileImage.png",
+			"image/png",
+			new FileInputStream("/Users/hyeonjinlee/Documents/askus/src/test/resources/store/images/image.png"));
 
-    @Test
-    void 중복_회원가입() throws Exception {
-        // given
-        UsersRequest.SignUp request = new UsersRequest.SignUp(
-                email,
-                password,
-                checkedPassword,
-                nickname,
-                profileImage);
+		UsersRequest.SignUp signUpRequest = new UsersRequest.SignUp(
+			email,
+			password,
+			password,
+			nickname,
+			profileImage
+		);
+		UsersResponse.SignUp signUpResponse = sut.signUp(signUpRequest);
+		Users users = usersRepository.findByEmail(signUpResponse.getEmail()).get();
 
-        // when
-        usersService.signUp(request);
+		String updatePassword = "updatePassword";
+		UsersRequest.PatchPassword request = new UsersRequest.PatchPassword(
+			"differentPassword",
+			updatePassword,
+			updatePassword
+		);
 
-        // then
-        Assertions.assertThatThrownBy(() -> usersService.signUp(request))
-                .isInstanceOf(KookleRuntimeException.class)
-                .hasMessageContaining("이메일");
-    }
+		// when & then
+		assertThatExceptionOfType(KookleRuntimeException.class)
+			.isThrownBy(() -> sut.updatePassword(users.getId(), request));
+	}
 
-	 @Test
-	 void 가입시_비밀번호_다름() {
-         // given
-         password = "password1";
-         checkedPassword = "password2";
-         UsersRequest.SignUp request = new UsersRequest.SignUp(
-                 email,
-                 password,
-                 checkedPassword,
-                 nickname,
-                 profileImage);
-
-	     // then
-	     Assertions.assertThatThrownBy(() -> usersService.signUp(request))
-	             .isInstanceOf(KookleRuntimeException.class)
-	             .hasMessageContaining("비밀번호");
-	 }
-
-//     @Test
-//     void 로그인_성공() throws Exception {
-//         // given
-//         UsersRequest.SignUp request = new UsersRequest.SignUp(
-//                 email,
-//                 password,
-//                 checkedPassword,
-//                 nickname,
-//                 profileImage);
-//         usersService.signUp(request);
-//
-//         // when
-//         UsersRequest.SignIn  reqeust = new UsersRequest.SignIn(email, password);
-//         UsersResponse.SignIn response = usersService.signIn(reqeust);
-//
-//         // then
-//         assertThat(response.getEmail()).isEqualTo(email);
-//         assertThat(response.getNickname()).isEqualTo(nickname);
-//         assertThat(response.getImageUrl()).isNotNull();
-//         assertThat(response.getAccessToken()).isNotNull();
-//         assertThat(response.getRefreshToken()).isNotNull();
-//     }
+	//
+	// @Mock
+	// private UsersRepository usersRepository;
+	// @Mock
+	// private PasswordEncoder passwordEncoder;
+	//
+	// @InjectMocks
+	// private UsersServiceImpl userService;
+	//
+	// @Test
+	// void 기본_회원가입(){
+	//     // given
+	//     SignUpRequest requestDto = new SignUpRequest("nickname", "password", "password", "email");
+	//     SignUpRequest requestDto = SignUpRequest.builder()
+	//             .nickname("nickname")
+	//             .password("password")
+	//             .checkedPassword("password")
+	//             .email("email")
+	//             .build();
+	//     Users users = requestDto.toEntity();
+	//     given(usersRepository.save(any(Users.class))).willReturn(users);
+	//
+	//     // when
+	//     try {
+	//         SignUpResponse responseDto = userService.signUp(requestDto);
+	//
+	//         // then
+	//         Assertions.assertThat(responseDto.getEmail()).isEqualTo(requestDto.getEmail());
+	//         Assertions.assertThat(responseDto.getNickname()).isEqualTo(requestDto.getNickname());
+	//     } catch (Exception e) {
+	//         fail();
+	//     }
+	// }
+	//
+	// @Test
+	// void 중복_회원가입() {
+	//     // given
+	//     SignUpRequest requestDto = SignUpRequest.builder()
+	//             .nickname("nickname")
+	//             .password("password")
+	//             .checkedPassword("password")
+	//             .email("email")
+	//             .build();
+	//     given(usersRepository.findByEmail("email")).willReturn(Optional.of(Users.builder()
+	//             .nickname("nickname")
+	//             .password("password")
+	//             .email("email")
+	//             .build()));
+	//
+	//     // when
+	//     Assertions.assertThatThrownBy(() -> userService.signUp(requestDto))
+	//             .isInstanceOf(Exception.class)
+	//             .hasMessageContaining("이메일");
+	// }
+	//
+	// @Test
+	// void 가입시_비밀번호_다름() {
+	//     // given
+	//     SignUpRequest requestDto = SignUpRequest.builder()
+	//             .nickname("nickname")
+	//             .password("password")
+	//             .checkedPassword("password123")
+	//             .email("email")
+	//             .build();
+	//
+	//     // when
+	//     Assertions.assertThatThrownBy(() -> userService.signUp(requestDto))
+	//             .isInstanceOf(Exception.class)
+	//             .hasMessageContaining("비밀번호");
+	// }
 }

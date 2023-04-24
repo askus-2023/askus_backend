@@ -1,19 +1,20 @@
 package com.askus.askus.domain.board.service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.askus.askus.domain.board.domain.Board;
 import com.askus.askus.domain.board.dto.BoardRequest;
 import com.askus.askus.domain.board.dto.BoardResponse;
 import com.askus.askus.domain.board.repository.BoardRepository;
-import com.askus.askus.domain.image.domain.BoardImage;
-import com.askus.askus.domain.image.domain.ImageType;
-import com.askus.askus.domain.image.repository.BoardImageRepository;
-import com.askus.askus.domain.image.service.ImageService;
+import com.askus.askus.domain.image.domain.Image;
+import com.askus.askus.domain.image.domain.RepresentativeImage;
+import com.askus.askus.domain.image.domain.ThumbnailImage;
+import com.askus.askus.domain.image.service.ImageUploader;
 import com.askus.askus.domain.reply.dto.ReplyResponse;
 import com.askus.askus.domain.reply.repository.ReplyRepository;
 import com.askus.askus.domain.users.domain.Users;
@@ -22,109 +23,104 @@ import com.askus.askus.global.error.exception.KookleRuntimeException;
 
 import lombok.RequiredArgsConstructor;
 
-@Service
 @RequiredArgsConstructor
+@Service
 public class BoardServiceImpl implements BoardService {
 
 	private final BoardRepository boardRepository;
 	private final UsersRepository usersRepository;
 	private final ReplyRepository replyRepository;
-	private final BoardImageRepository boardImageRepository;
-	private final ImageService imageService;
+	private final ImageUploader imageUploader;
 
 	@Override
+	@Transactional
 	public BoardResponse.Post addBoard(long userId, BoardRequest.Post request) {
+		// 1. find user
 		Users users = usersRepository.findById(userId)
-			.orElseThrow(() -> new KookleRuntimeException("존재하지 않는 사용자입니다."));
+			.orElseThrow(() -> new KookleRuntimeException("user not found: " + userId));
 
+		// 2. save board
 		Board board = boardRepository.save(request.toEntity(users));
 
-		BoardImage thumbnailImage = imageService.uploadThumbnailImage(board, request.getThumbnailImage());
-		List<BoardImage> representativeImages = request.getRepresentativeImages().stream()
-			.map(image -> imageService.uploadRepresentativeImage(board, image))
-			.collect(Collectors.toList());
+		// 3. save images
+		uploadImages(board, request.getThumbnailImage(), request.getRepresentativeImages());
 
-		return BoardResponse.Post.ofEntity(board, users, thumbnailImage, representativeImages);
+		// 4. return
+		return BoardResponse.Post.ofEntity(board, users);
 	}
 
 	@Override
 	public List<BoardResponse.Summary> searchBoards(BoardRequest.Summary request) {
+		// get & return
 		return boardRepository.searchBoards(request);
 	}
 
 	@Override
-	public List<BoardResponse.Summary> searchBoardsByUsers(Long userId) {
-		return boardRepository.searchBoardsByUsers(userId);
-	}
-
-	@Override
-	public List<BoardResponse.Summary> searchBoardsByLiked(Long userId) {
-		return boardRepository.searchBoardsByLiked(userId);
+	public List<BoardResponse.Summary> searchBoardsByType(String boardType, Long userId) {
+		return boardRepository.searchBoardsByType(boardType, userId);
 	}
 
 	@Override
 	public BoardResponse.Detail searchBoard(long boardId) {
-		Board board = boardRepository.findByIdAndDeletedAtNull(boardId)
-			.orElseThrow(() -> new KookleRuntimeException("Board Not Found"));
-
-		List<BoardImage> representativeImages = boardImageRepository.findAllByBoardAndImageTypeAndDeletedAtNull(
-			board, ImageType.REPRESENTATIVE
-		);
-
-		List<ReplyResponse.Summary> replies = replyRepository.findAllByBoardAndDeletedAtNull(board).stream()
-			.map(reply -> ReplyResponse.Summary.ofEntity(board.getUsers(), reply))
-			.collect(Collectors.toList());
-
-		return BoardResponse.Detail.ofEntity(board.getUsers(), board, representativeImages, replies);
-	}
-
-	@Override
-	public BoardResponse.Patch updateBoard(long userId, long boardId, BoardRequest.Patch request) {
-		Users user = usersRepository.findById(userId)
-			.orElseThrow(() -> new KookleRuntimeException("User Not Found"));
-
+		// 1. find board
 		Board board = boardRepository.findById(boardId)
-			.orElseThrow(() -> new KookleRuntimeException("Board Not Found"));
+			.orElseThrow(() -> new KookleRuntimeException("board not found: " + boardId));
 
-		request.update(board);
-		boardRepository.save(board);
+		// 2. find replies
+		List<ReplyResponse> replies = replyRepository.findAllByBoardAndDeletedAtNull(board).stream()
+			.map(reply -> ReplyResponse.ofEntity(board.getUsers(), reply))
+			.collect(Collectors.toList());
 
-		BoardImage thumbnailImage;
-		List<BoardImage> representativeImages;
-		if (request.getThumbnailImage().isPresent()) {
-			imageService.deleteThumbnailImage(board);
-			thumbnailImage = imageService.uploadThumbnailImage(board, request.getThumbnailImage().get());
-		} else {
-			thumbnailImage = boardImageRepository.findByBoardAndImageTypeAndDeletedAtNull(board, ImageType.THUMBNAIL)
-				.orElseThrow(() -> new KookleRuntimeException("thumbnail image not found"));
-		}
-		if (request.getRepresentativeImages().isPresent()) {
-			imageService.deleteRepresentativeImages(board);
-			representativeImages = request.getRepresentativeImages().get().stream()
-				.map(image -> imageService.uploadRepresentativeImage(board, image))
-				.collect(Collectors.toList());
-		} else {
-			representativeImages = boardImageRepository.findAllByBoardAndImageTypeAndDeletedAtNull(board,
-				ImageType.REPRESENTATIVE);
-		}
-
-		return BoardResponse.Patch.ofEntity(board, user, thumbnailImage, representativeImages);
+		// 3. return
+		return BoardResponse.Detail.ofEntity(board.getUsers(), board, replies);
 	}
 
 	@Override
-	public BoardResponse.Delete deleteBoard(BoardRequest.Delete request) {
-		List<Board> deletedBoards = new ArrayList<>();
+	@Transactional
+	public BoardResponse.Post updateBoard(long userId, long boardId, BoardRequest.Post request) {
+		// 1. find users
+		Users user = usersRepository.findById(userId)
+			.orElseThrow(() -> new KookleRuntimeException("user not found: " + userId));
 
-		List<Board> boards = boardRepository.findAllById(request.getBoardIds());
-		for (Board board : boards) {
-			board.delete();
-			deletedBoards.add(board);
+		// 2. find board
+		Board board = boardRepository.findById(boardId)
+			.orElseThrow(() -> new KookleRuntimeException("board not found: " + boardId));
+
+		// 3. update board
+		request.update(board);
+
+		// 4. update images
+		board.resetThumbnailImage();
+		board.resetRepresentativeImages();
+		uploadImages(board, request.getThumbnailImage(), request.getRepresentativeImages());
+
+		// 5. return
+		return BoardResponse.Post.ofEntity(board, user);
+	}
+
+	private void uploadImages(
+		Board board,
+		Optional<Image> optionalThumbnailImage,
+		Optional<List<Image>> optionalRepresentativeImages
+	) {
+		if (optionalThumbnailImage.isPresent()) {
+			String thumbnailImageUrl = optionalThumbnailImage.get().uploadBy(imageUploader);
+			ThumbnailImage thumbnailImage = new ThumbnailImage(board, thumbnailImageUrl);
+			board.setThumbnailImage(thumbnailImage);
 		}
+		if (optionalRepresentativeImages.isPresent()) {
+			List<RepresentativeImage> representativeImages = optionalRepresentativeImages.get().stream()
+				.map(image -> new RepresentativeImage(board, image.uploadBy(imageUploader)))
+				.collect(Collectors.toList());
+			representativeImages.stream()
+				.forEach(representativeImage -> board.addRepresentativeImage(representativeImage));
+		}
+	}
 
-		List<Long> boardIds = boardRepository.saveAll(deletedBoards).stream()
-			.map(board -> board.getId())
-			.collect(Collectors.toList());
-
-		return BoardResponse.Delete.ofEntity(boardIds);
+	@Override
+	@Transactional
+	public void deleteBoard(BoardRequest.Delete request) {
+		// find & delete
+		boardRepository.findAllById(request.getBoardIds()).stream().forEach(board -> board.delete());
 	}
 }

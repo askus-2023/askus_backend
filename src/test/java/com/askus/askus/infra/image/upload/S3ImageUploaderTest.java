@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ClassPathResource;
 
 import com.askus.askus.domain.image.domain.Image;
-import com.askus.askus.domain.image.domain.ImageType;
 
 import io.findify.s3mock.S3Mock;
 
@@ -32,12 +31,11 @@ class S3ImageUploaderTest {
 	@Test
 	void upload() throws IOException {
 		//given
-		ImageType imageType = ImageType.THUMBNAIL;
 		String filename = "image.png";
 		ClassPathResource testImage = new ClassPathResource("store/images/" + filename);
 		assertThat(testImage.exists()).isTrue();
 
-		Image image = new Image(imageType, testImage.getInputStream(), testImage.getFilename());
+		Image image = new Image(testImage.getInputStream(), testImage.getFilename());
 
 		//when
 		String imageUrl = s3ImageUploader.upload(image);

@@ -37,6 +37,7 @@ class LikeServiceImplTest {
 		Board board = new Board(
 			savedUsers,
 			"title",
+			"food name",
 			Category.KOREAN,
 			"ingredients",
 			"content",
@@ -63,6 +64,7 @@ class LikeServiceImplTest {
 		Board board = new Board(
 			savedUsers,
 			"title",
+			"food name",
 			Category.KOREAN,
 			"ingredients",
 			"content",

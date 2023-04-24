@@ -9,14 +9,11 @@ public interface BoardService {
 	BoardResponse.Post addBoard(long userId, BoardRequest.Post request);
 
 	List<BoardResponse.Summary> searchBoards(BoardRequest.Summary request);
-
-	List<BoardResponse.Summary> searchBoardsByUsers(Long userId);
-
-	List<BoardResponse.Summary> searchBoardsByLiked(Long userId);
+	List<BoardResponse.Summary> searchBoardsByType(String boardType, Long userId);
 
 	BoardResponse.Detail searchBoard(long boardId);
 
-	BoardResponse.Patch updateBoard(long userId, long boardId, BoardRequest.Patch request);
+	BoardResponse.Post updateBoard(long userId, long boardId, BoardRequest.Post request);
 
-	BoardResponse.Delete deleteBoard(BoardRequest.Delete request);
+	void deleteBoard(BoardRequest.Delete request);
 }

@@ -4,9 +4,9 @@ import com.askus.askus.domain.reply.dto.ReplyRequest;
 import com.askus.askus.domain.reply.dto.ReplyResponse;
 
 public interface ReplyService {
-	ReplyResponse.Post addReply(long userId, long boardId, ReplyRequest.Post request);
+	ReplyResponse addReply(long userId, long boardId, ReplyRequest request);
 
-	ReplyResponse.Patch updateReply(long boardId, long replyId, ReplyRequest.Patch request);
+	ReplyResponse updateReply(long boardId, long replyId, ReplyRequest request);
 
-	ReplyResponse.Delete deleteReply(long boardId, long replyId);
+	void deleteReply(long boardId, long replyId);
 }

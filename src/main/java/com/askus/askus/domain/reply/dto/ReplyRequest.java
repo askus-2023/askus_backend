@@ -6,25 +6,19 @@ import com.askus.askus.domain.users.domain.Users;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ReplyRequest {
-	@Getter
-	@AllArgsConstructor
-	public static class Post {
-		private final String content;
+	private String content;
 
-		public Reply toEntity(Users users, Board board) {
-			return new Reply(users, board, this.content);
-		}
+	public Reply toEntity(Users users, Board board) {
+		return new Reply(users, board, this.content);
 	}
 
-	@Getter
-	@AllArgsConstructor
-	public static class Patch {
-		private final String content;
-
-		public void update(Reply reply) {
-			reply.update(this.content);
-		}
+	public void update(Reply reply) {
+		reply.update(this.content);
 	}
 }

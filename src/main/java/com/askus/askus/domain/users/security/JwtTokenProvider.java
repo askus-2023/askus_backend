@@ -6,16 +6,12 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
-import com.askus.askus.domain.users.dto.UsersResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
@@ -77,11 +73,7 @@ public class JwtTokenProvider {
 
 		log.info("refreshToken = {}", refreshToken);
 
-		return UsersResponse.TokenInfo.builder()
-			.grantType("Bearer")
-			.accessToken(accessToken)
-			.refreshToken(refreshToken)
-			.build();
+		return new UsersResponse.TokenInfo("Bearer", accessToken, refreshToken);
 	}
 
 	// JWT 토큰 복호화
@@ -97,7 +89,7 @@ public class JwtTokenProvider {
 		String username = claims.getSubject();
 
 		// 사용자 이름으로 로그인한 유저 정보 가져오기
-		SecurityUser securityUser = (SecurityUser) userDetailsService.loadUserByUsername(username);
+		SecurityUser securityUser = (SecurityUser)userDetailsService.loadUserByUsername(username);
 
 		// 클레임에서 권한 정보 가져오기
 		Collection<? extends GrantedAuthority> authorities =

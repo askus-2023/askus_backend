@@ -1,5 +1,9 @@
 package com.askus.askus.domain.board.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -10,9 +14,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.askus.askus.domain.common.BaseEntity;
+import com.askus.askus.domain.image.domain.RepresentativeImage;
+import com.askus.askus.domain.image.domain.ThumbnailImage;
 import com.askus.askus.domain.users.domain.Users;
 
 import lombok.AccessLevel;
@@ -34,6 +42,8 @@ public class Board extends BaseEntity {
 	@Column
 	private String title;
 	@Column
+	private String foodName;
+	@Column
 	@Enumerated(EnumType.STRING)
 	private Category category;
 	@Column
@@ -42,27 +52,50 @@ public class Board extends BaseEntity {
 	private String content;
 	@Column
 	private String tag;
+	@OneToOne(mappedBy = "board", cascade = CascadeType.PERSIST, orphanRemoval = true)
+	private ThumbnailImage thumbnailImage;
+	@OneToMany(mappedBy = "board", cascade = CascadeType.PERSIST, orphanRemoval = true)
+	private List<RepresentativeImage> representativeImages = new ArrayList<>();
 	@Column
 	private Long likeCount = 0L;
-
 	@Column
 	private Long replyCount = 0L;
 
-	public Board(Users users, String title, Category category, String ingredients, String content, String tag) {
+	public Board(Users users, String title, String foodName, Category category, String ingredients, String content,
+		String tag) {
 		this.users = users;
 		this.title = title;
+		this.foodName = foodName;
 		this.category = category;
 		this.ingredients = ingredients;
 		this.content = content;
 		this.tag = tag;
 	}
 
-	public void update(String title, Category category, String ingredients, String content, String tag) {
+	public void update(String title, String foodName, Category category, String ingredients, String content,
+		String tag) {
 		this.title = title;
+		this.foodName = foodName;
 		this.category = category;
 		this.ingredients = ingredients;
 		this.content = content;
 		this.tag = tag;
+	}
+
+	public void resetThumbnailImage() {
+		this.thumbnailImage = null;
+	}
+
+	public void setThumbnailImage(ThumbnailImage thumbnailImage) {
+		this.thumbnailImage = thumbnailImage;
+	}
+
+	public void resetRepresentativeImages() {
+		this.representativeImages.clear();
+	}
+
+	public void addRepresentativeImage(RepresentativeImage representativeImage) {
+		this.representativeImages.add(representativeImage);
 	}
 
 	public void addLikeCount() {
