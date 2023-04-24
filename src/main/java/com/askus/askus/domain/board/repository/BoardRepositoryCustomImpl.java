@@ -1,21 +1,18 @@
 package com.askus.askus.domain.board.repository;
 
 import static com.askus.askus.domain.board.domain.QBoard.*;
-import static com.askus.askus.domain.image.domain.QBoardImage.*;
+import static com.askus.askus.domain.image.domain.QThumbnailImage.*;
 import static com.askus.askus.domain.users.domain.QUsers.*;
 
 import java.util.List;
 
 import com.askus.askus.domain.board.dto.BoardRequest;
 import com.askus.askus.domain.board.dto.BoardResponse;
-import com.askus.askus.domain.image.domain.ImageType;
 import com.askus.askus.global.util.SortConditions;
 import com.askus.askus.global.util.StringUtil;
-import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -31,19 +28,13 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 				board.id,
 				users.nickname,
 				board.createdAt,
-				ExpressionUtils.as(
-					JPAExpressions
-						.select(boardImage.url).from(boardImage)
-						.where(
-							boardImage.board.id.eq(board.id),
-							boardImage.imageType.eq(ImageType.THUMBNAIL),
-							boardImage.deletedAt.isNull()), "url"
-				),
+				thumbnailImage.url,
 				board.likeCount,
 				board.replyCount
 			))
 			.from(board)
-			.join(board.users, users)
+			.innerJoin(board.users, users)
+			.leftJoin(board.thumbnailImage, thumbnailImage)
 			.where(
 				searchTag(request),
 				dateLoe(request),

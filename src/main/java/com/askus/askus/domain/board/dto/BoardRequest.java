@@ -25,6 +25,7 @@ import com.askus.askus.global.util.SortConditions;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 public class BoardRequest {
 	private static InputStream getInputStream(MultipartFile image) {
@@ -125,13 +126,21 @@ public class BoardRequest {
 
 	@Getter
 	public static class Patch {
+		@Schema(description = "제목", example = "냉장고에 돼지고기와 김치찌개가 있다면???")
 		private String title;
+		@Schema(description = "음식이름", example = "돼지고기 김치찌개")
 		private String foodName;
+		@Schema(description = "카테고리", example = "KOREAN")
 		private Category category;
+		@Schema(description = "재료", example = "김치, 돼지고기")
 		private String ingredients;
+		@Schema(description = "내용", example = "돼지고기와 김치를 넣고 끓입니다.")
 		private String content;
+		@Schema(description = "태그", example = "한식,김치,돼지고기")
 		private String tag;
+		@Schema(description = "썸네일 이미지", example = "thumbnail.png")
 		private Optional<Image> thumbnailImage = Optional.empty();
+		@Schema(description = "이미지 리스트", example = "[image1.png, image2.png]")
 		private Optional<List<Image>> representativeImages = Optional.empty();
 
 		public Patch(
@@ -219,7 +228,9 @@ public class BoardRequest {
 
 	@Getter
 	@AllArgsConstructor
+	@NoArgsConstructor
 	public static class Delete {
+		@Schema(description = "삭제할 board ID 리스트", example = "[1,2]")
 		private List<Long> boardIds;
 	}
 }

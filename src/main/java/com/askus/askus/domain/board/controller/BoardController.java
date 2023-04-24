@@ -26,9 +26,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 
-@RestController
-@RequestMapping("/v1/boards")
 @RequiredArgsConstructor
+@RequestMapping("/v1/boards")
+@RestController
 public class BoardController {
 	private final BoardService boardService;
 

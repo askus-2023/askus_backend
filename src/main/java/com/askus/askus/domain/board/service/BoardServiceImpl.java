@@ -1,6 +1,5 @@
 package com.askus.askus.domain.board.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -12,10 +11,10 @@ import com.askus.askus.domain.board.domain.Board;
 import com.askus.askus.domain.board.dto.BoardRequest;
 import com.askus.askus.domain.board.dto.BoardResponse;
 import com.askus.askus.domain.board.repository.BoardRepository;
-import com.askus.askus.domain.image.domain.BoardImage;
-import com.askus.askus.domain.image.domain.ImageType;
-import com.askus.askus.domain.image.repository.BoardImageRepository;
-import com.askus.askus.domain.image.service.ImageService;
+import com.askus.askus.domain.image.domain.Image;
+import com.askus.askus.domain.image.domain.RepresentativeImage;
+import com.askus.askus.domain.image.domain.ThumbnailImage;
+import com.askus.askus.domain.image.service.ImageUploader;
 import com.askus.askus.domain.reply.dto.ReplyResponse;
 import com.askus.askus.domain.reply.repository.ReplyRepository;
 import com.askus.askus.domain.users.domain.Users;
@@ -24,15 +23,14 @@ import com.askus.askus.global.error.exception.KookleRuntimeException;
 
 import lombok.RequiredArgsConstructor;
 
-@Service
 @RequiredArgsConstructor
+@Service
 public class BoardServiceImpl implements BoardService {
 
 	private final BoardRepository boardRepository;
 	private final UsersRepository usersRepository;
 	private final ReplyRepository replyRepository;
-	private final BoardImageRepository boardImageRepository;
-	private final ImageService imageService;
+	private final ImageUploader imageUploader;
 
 	@Override
 	@Transactional
@@ -45,20 +43,10 @@ public class BoardServiceImpl implements BoardService {
 		Board board = boardRepository.save(request.toEntity(users));
 
 		// 3. save images
-		Optional<BoardImage> thumbnailImage = Optional.empty();
-		Optional<List<BoardImage>> representativeImages = Optional.empty();
-		if (request.getThumbnailImage().isPresent()) {
-			thumbnailImage = Optional.ofNullable(
-				imageService.uploadThumbnailImage(board, request.getThumbnailImage().get()));
-		}
-		if (request.getRepresentativeImages().isPresent()) {
-			representativeImages = Optional.of(request.getRepresentativeImages().get().stream()
-				.map(image -> imageService.uploadRepresentativeImage(board, image))
-				.collect(Collectors.toList()));
-		}
+		uploadImages(board, request.getThumbnailImage(), request.getRepresentativeImages());
 
 		// 4. return
-		return BoardResponse.Post.ofEntity(board, users, thumbnailImage, representativeImages);
+		return BoardResponse.Post.ofEntity(board, users);
 	}
 
 	@Override
@@ -70,22 +58,16 @@ public class BoardServiceImpl implements BoardService {
 	@Override
 	public BoardResponse.Detail searchBoard(long boardId) {
 		// 1. find board
-		Board board = boardRepository.findByIdAndDeletedAtNull(boardId)
+		Board board = boardRepository.findById(boardId)
 			.orElseThrow(() -> new KookleRuntimeException("board not found: " + boardId));
 
-		// 2. find images
-		Optional<BoardImage> thumbnailImage = boardImageRepository.findByBoardAndImageTypeAndDeletedAtNull(
-			board, ImageType.THUMBNAIL);
-		List<BoardImage> representativeImages = boardImageRepository.findAllByBoardAndImageTypeAndDeletedAtNull(
-			board, ImageType.REPRESENTATIVE);
-
-		// 3. find replies
+		// 2. find replies
 		List<ReplyResponse.Summary> replies = replyRepository.findAllByBoardAndDeletedAtNull(board).stream()
 			.map(reply -> ReplyResponse.Summary.ofEntity(board.getUsers(), reply))
 			.collect(Collectors.toList());
 
-		// 4. return
-		return BoardResponse.Detail.ofEntity(board.getUsers(), board, thumbnailImage, representativeImages, replies);
+		// 3. return
+		return BoardResponse.Detail.ofEntity(board.getUsers(), board, replies);
 	}
 
 	@Override
@@ -99,46 +81,41 @@ public class BoardServiceImpl implements BoardService {
 		Board board = boardRepository.findById(boardId)
 			.orElseThrow(() -> new KookleRuntimeException("board not found: " + boardId));
 
-		// 3. update
+		// 3. update board
 		request.update(board);
 
 		// 4. update images
-		Optional<BoardImage> thumbnailImage = Optional.empty();
-		Optional<List<BoardImage>> representativeImages = Optional.empty();
-		if (request.getThumbnailImage().isPresent()) {
-			imageService.deleteThumbnailImage(board);
-			thumbnailImage = Optional.ofNullable(imageService.uploadThumbnailImage(board, request.getThumbnailImage().get()));
-		} else {
-			Optional<BoardImage> optionalImage = boardImageRepository.findByBoardAndImageTypeAndDeletedAtNull(board, ImageType.THUMBNAIL);
-			if (optionalImage.isPresent()) {
-				thumbnailImage = Optional.of(optionalImage.get());
-			}
-		}
-		if (request.getRepresentativeImages().isPresent()) {
-			imageService.deleteRepresentativeImages(board);
-			representativeImages = Optional.of(request.getRepresentativeImages().get().stream()
-				.map(image -> imageService.uploadRepresentativeImage(board, image))
-				.collect(Collectors.toList()));
-		} else {
-			representativeImages = Optional.ofNullable(
-				boardImageRepository.findAllByBoardAndImageTypeAndDeletedAtNull(board,
-					ImageType.REPRESENTATIVE));
-		}
+		board.resetThumbnailImage();
+		board.resetRepresentativeImages();
+		uploadImages(board, request.getThumbnailImage(), request.getRepresentativeImages());
 
 		// 5. return
-		return BoardResponse.Patch.ofEntity(board, user, thumbnailImage, representativeImages);
+		return BoardResponse.Patch.ofEntity(board, user);
+	}
+
+	private void uploadImages(
+		Board board,
+		Optional<Image> optionalThumbnailImage,
+		Optional<List<Image>> optionalRepresentativeImages
+	) {
+		if (optionalThumbnailImage.isPresent()) {
+			String thumbnailImageUrl = optionalThumbnailImage.get().uploadBy(imageUploader);
+			ThumbnailImage thumbnailImage = new ThumbnailImage(board, thumbnailImageUrl);
+			board.setThumbnailImage(thumbnailImage);
+		}
+		if (optionalRepresentativeImages.isPresent()) {
+			List<RepresentativeImage> representativeImages = optionalRepresentativeImages.get().stream()
+				.map(image -> new RepresentativeImage(board, image.uploadBy(imageUploader)))
+				.collect(Collectors.toList());
+			representativeImages.stream()
+				.forEach(representativeImage -> board.addRepresentativeImage(representativeImage));
+		}
 	}
 
 	@Override
 	@Transactional
 	public void deleteBoard(BoardRequest.Delete request) {
 		// find & delete
-		List<Board> deletedBoards = new ArrayList<>();
-
-		List<Board> boards = boardRepository.findAllById(request.getBoardIds());
-		for (Board board : boards) {
-			board.delete();
-			deletedBoards.add(board);
-		}
+		boardRepository.findAllById(request.getBoardIds()).stream().forEach(board -> board.delete());
 	}
 }
