@@ -97,7 +97,7 @@ public class BoardResponse {
 		@Schema(description = "태그", example = "한식,김치,돼지고기")
 		private final String tag;
 		@Schema(description = "게시글 댓글 리스트", example = "댓글 관련 내용 리스트")
-		private final List<ReplyResponse.Summary> replies;
+		private final List<ReplyResponse> replies;
 
 		public Detail(
 			String title,
@@ -109,7 +109,7 @@ public class BoardResponse {
 			String thumbnailImageUrl,
 			List<String> representativeImageUrls,
 			String tag,
-			List<ReplyResponse.Summary> replies) {
+			List<ReplyResponse> replies) {
 			this.title = title;
 			this.foodName = foodName;
 			this.author = author;
@@ -125,7 +125,7 @@ public class BoardResponse {
 		public static Detail ofEntity(
 			Users users,
 			Board board,
-			List<ReplyResponse.Summary> replies
+			List<ReplyResponse> replies
 		) {
 			return new Detail(
 				board.getTitle(),

@@ -62,8 +62,8 @@ public class BoardServiceImpl implements BoardService {
 			.orElseThrow(() -> new KookleRuntimeException("board not found: " + boardId));
 
 		// 2. find replies
-		List<ReplyResponse.Summary> replies = replyRepository.findAllByBoardAndDeletedAtNull(board).stream()
-			.map(reply -> ReplyResponse.Summary.ofEntity(board.getUsers(), reply))
+		List<ReplyResponse> replies = replyRepository.findAllByBoardAndDeletedAtNull(board).stream()
+			.map(reply -> ReplyResponse.ofEntity(board.getUsers(), reply))
 			.collect(Collectors.toList());
 
 		// 3. return

@@ -27,43 +27,50 @@ public class LikeServiceImpl implements LikeService {
 	@Override
 	@Transactional
 	public LikeResponse addLike(long usersId, LikeRequest request) {
+		// 1. find users
 		Users users = usersRepository.findById(usersId)
-			.orElseThrow(() -> new KookleRuntimeException("Users Not Found"));
+			.orElseThrow(() -> new KookleRuntimeException("users not found: " + usersId));
 
+		// 2. find board
 		Board board = boardRepository.findById(request.getBoardId())
-			.orElseThrow(() -> new KookleRuntimeException("Board Not Found"));
+			.orElseThrow(() -> new KookleRuntimeException("board not found: " + request.getBoardId()));
 
+		// 3. validate
 		Optional<Like> optionalLike = likeRepository.findByUsersAndBoard(users, board);
-
 		if (optionalLike.isPresent()) {
-			throw new KookleRuntimeException("이미 존재하는 좋아요");
+			throw new KookleRuntimeException("like entity already exists: " + optionalLike.get().getId());
 		}
 
+		// 4. save
 		likeRepository.save(request.toEntity(users, board));
 
+		// 5. update board
 		board.addLikeCount();
-		boardRepository.save(board);
 
+		// 6. return
 		return LikeResponse.ofEntity(board);
 	}
 
 	@Override
 	@Transactional
 	public LikeResponse deleteLike(long usersId, LikeRequest request) {
+		// 1. find users
 		Users users = usersRepository.findById(usersId)
-			.orElseThrow(() -> new KookleRuntimeException("Users Not Found"));
+			.orElseThrow(() -> new KookleRuntimeException("users not found: " + usersId));
 
+		// 2. find board
 		Board board = boardRepository.findById(request.getBoardId())
-			.orElseThrow(() -> new KookleRuntimeException("Board Not Found"));
+			.orElseThrow(() -> new KookleRuntimeException("board not found: " + request.getBoardId()));
 
+		// 3. find like
 		Like like = likeRepository.findByUsersAndBoard(users, board)
-			.orElseThrow(() -> new KookleRuntimeException("Like Not Found"));
+			.orElseThrow(() -> new KookleRuntimeException("like not found"));
 
+		// 4. delete & update board
 		likeRepository.delete(like);
-
 		board.deleteLikeCount();
-		boardRepository.save(board);
 
+		// 5. return
 		return LikeResponse.ofEntity(board);
 	}
 }

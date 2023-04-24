@@ -153,7 +153,8 @@ public class UsersServiceImpl implements UsersService {
 		// 2. validate
 		boolean matches = passwordEncoder.matches(request.getExistingPassword(), users.getPassword());
 		if (!matches) {
-			throw new KookleRuntimeException("does not matches with existing password: " + request.getExistingPassword());
+			throw new KookleRuntimeException(
+				"does not matches with existing password: " + request.getExistingPassword());
 		}
 
 		if (!request.getPassword().equals(request.getCheckedPassword())) {
