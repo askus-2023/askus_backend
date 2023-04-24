@@ -40,6 +40,7 @@ class ReplyServiceImplTest {
 		Board board = new Board(
 			savedUsers,
 			"title",
+			"food name",
 			Category.KOREAN,
 			"ingredients",
 			"content",
@@ -67,6 +68,7 @@ class ReplyServiceImplTest {
 		Board board = new Board(
 			savedUsers,
 			"title",
+			"food name",
 			Category.KOREAN,
 			"ingredients",
 			"content",
@@ -103,6 +105,7 @@ class ReplyServiceImplTest {
 		Board board = new Board(
 			savedUsers,
 			"title",
+			"food name",
 			Category.KOREAN,
 			"ingredients",
 			"content",

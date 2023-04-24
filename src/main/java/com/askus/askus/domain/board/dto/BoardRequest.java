@@ -17,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.askus.askus.domain.board.domain.Board;
 import com.askus.askus.domain.board.domain.Category;
 import com.askus.askus.domain.image.domain.Image;
-import com.askus.askus.domain.image.domain.ImageType;
 import com.askus.askus.domain.users.domain.Users;
 import com.askus.askus.global.error.exception.KookleRuntimeException;
 import com.askus.askus.global.util.SortConditions;
@@ -28,20 +27,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 public class BoardRequest {
-	private static InputStream getInputStream(MultipartFile image) {
-		ByteArrayInputStream byteArrayInputStream;
-		try {
-			byte[] byteArray = image.getBytes();
-			byteArrayInputStream = new ByteArrayInputStream(byteArray);
-		} catch (IOException e) {
-			throw new KookleRuntimeException("이미지 파일 변환 실패", e);
-		}
-		return byteArrayInputStream;
-	}
-
-	private static String getOriginalFileName(MultipartFile image) {
-		return image.getOriginalFilename();
-	}
 
 	@Getter
 	public static class Post {
@@ -92,7 +77,7 @@ public class BoardRequest {
 				return;
 			}
 			this.thumbnailImage = Optional.of(new Image(
-				ImageType.THUMBNAIL, getInputStream(thumbnailImage), getOriginalFileName(thumbnailImage)
+				getInputStream(thumbnailImage), getOriginalFileName(thumbnailImage)
 			));
 		}
 
@@ -105,10 +90,24 @@ public class BoardRequest {
 				.count();
 			if (count != 0) {
 				this.representativeImages = Optional.of(representativeImages.stream()
-					.map(
-						image -> new Image(ImageType.REPRESENTATIVE, getInputStream(image), getOriginalFileName(image)))
+					.map(image -> new Image(getInputStream(image), getOriginalFileName(image)))
 					.collect(Collectors.toList()));
 			}
+		}
+
+		private InputStream getInputStream(MultipartFile image) {
+			ByteArrayInputStream byteArrayInputStream;
+			try {
+				byte[] byteArray = image.getBytes();
+				byteArrayInputStream = new ByteArrayInputStream(byteArray);
+			} catch (IOException e) {
+				throw new KookleRuntimeException("exception converting file", e);
+			}
+			return byteArrayInputStream;
+		}
+
+		private String getOriginalFileName(MultipartFile image) {
+			return image.getOriginalFilename();
 		}
 
 		public Board toEntity(Users users) {
@@ -121,70 +120,6 @@ public class BoardRequest {
 				this.content,
 				this.tag
 			);
-		}
-	}
-
-	@Getter
-	public static class Patch {
-		@Schema(description = "제목", example = "냉장고에 돼지고기와 김치찌개가 있다면???")
-		private String title;
-		@Schema(description = "음식이름", example = "돼지고기 김치찌개")
-		private String foodName;
-		@Schema(description = "카테고리", example = "KOREAN")
-		private Category category;
-		@Schema(description = "재료", example = "김치, 돼지고기")
-		private String ingredients;
-		@Schema(description = "내용", example = "돼지고기와 김치를 넣고 끓입니다.")
-		private String content;
-		@Schema(description = "태그", example = "한식,김치,돼지고기")
-		private String tag;
-		@Schema(description = "썸네일 이미지", example = "thumbnail.png")
-		private Optional<Image> thumbnailImage = Optional.empty();
-		@Schema(description = "이미지 리스트", example = "[image1.png, image2.png]")
-		private Optional<List<Image>> representativeImages = Optional.empty();
-
-		public Patch(
-			String title,
-			String foodName,
-			Category category,
-			String ingredients,
-			String content,
-			String tag,
-			MultipartFile thumbnailImage,
-			List<MultipartFile> representativeImages
-		) {
-			this.title = title;
-			this.foodName = foodName;
-			this.category = category;
-			this.ingredients = ingredients;
-			this.content = content;
-			this.tag = tag;
-			setThumbnailImage(thumbnailImage);
-			setRepresentativeImages(representativeImages);
-		}
-
-		public void setThumbnailImage(MultipartFile thumbnailImage) {
-			if (thumbnailImage == null || thumbnailImage.isEmpty()) {
-				return;
-			}
-			this.thumbnailImage = Optional.of(new Image(
-				ImageType.THUMBNAIL, getInputStream(thumbnailImage), getOriginalFileName(thumbnailImage)
-			));
-		}
-
-		public void setRepresentativeImages(List<MultipartFile> representativeImages) {
-			if (representativeImages == null || representativeImages.isEmpty()) {
-				return;
-			}
-			long count = representativeImages.stream()
-				.filter(file -> !file.isEmpty())
-				.count();
-			if (count != 0) {
-				this.representativeImages = Optional.of(representativeImages.stream()
-					.map(
-						image -> new Image(ImageType.REPRESENTATIVE, getInputStream(image), getOriginalFileName(image)))
-					.collect(Collectors.toList()));
-			}
 		}
 
 		public void update(Board board) {

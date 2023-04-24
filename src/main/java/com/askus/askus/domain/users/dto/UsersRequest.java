@@ -7,7 +7,6 @@ import java.io.InputStream;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.askus.askus.domain.image.domain.Image;
-import com.askus.askus.domain.image.domain.ImageType;
 import com.askus.askus.domain.users.domain.Users;
 import com.askus.askus.global.error.exception.KookleRuntimeException;
 
@@ -49,13 +48,13 @@ public class UsersRequest {
 
 			if (profileImage == null) {
 				InputStream inputStream = getClass().getClassLoader().getResourceAsStream("defaultProfileImage.png");
-				this.profileImage = new Image(ImageType.PROFILE, inputStream, "defaultProfileImage.png");
+				this.profileImage = new Image(inputStream, "defaultProfileImage.png");
 				return;
 			}
 
 			InputStream inputStream = getInputStream(profileImage);
 			String originalFileName = getOriginalFileName(profileImage);
-			this.profileImage = new Image(ImageType.PROFILE, inputStream, originalFileName);
+			this.profileImage = new Image(inputStream, originalFileName);
 		}
 
 		private InputStream getInputStream(MultipartFile file) {
@@ -120,13 +119,13 @@ public class UsersRequest {
 
 			if (profileImage == null) {
 				InputStream inputStream = getClass().getClassLoader().getResourceAsStream("defaultProfileImage.png");
-				this.profileImage = new Image(ImageType.PROFILE, inputStream, "defaultProfileImage.png");
+				this.profileImage = new Image(inputStream, "defaultProfileImage.png");
 				return;
 			}
 
 			InputStream inputStream = getInputStream(profileImage);
 			String originalFileName = getOriginalFileName(profileImage);
-			this.profileImage = new Image(ImageType.PROFILE, inputStream, originalFileName);
+			this.profileImage = new Image(inputStream, originalFileName);
 		}
 
 		private InputStream getInputStream(MultipartFile file) {

@@ -12,7 +12,7 @@ public interface BoardService {
 
 	BoardResponse.Detail searchBoard(long boardId);
 
-	BoardResponse.Patch updateBoard(long userId, long boardId, BoardRequest.Patch request);
+	BoardResponse.Post updateBoard(long userId, long boardId, BoardRequest.Post request);
 
 	void deleteBoard(BoardRequest.Delete request);
 }

@@ -72,7 +72,7 @@ public class BoardServiceImpl implements BoardService {
 
 	@Override
 	@Transactional
-	public BoardResponse.Patch updateBoard(long userId, long boardId, BoardRequest.Patch request) {
+	public BoardResponse.Post updateBoard(long userId, long boardId, BoardRequest.Post request) {
 		// 1. find users
 		Users user = usersRepository.findById(userId)
 			.orElseThrow(() -> new KookleRuntimeException("user not found: " + userId));
@@ -90,7 +90,7 @@ public class BoardServiceImpl implements BoardService {
 		uploadImages(board, request.getThumbnailImage(), request.getRepresentativeImages());
 
 		// 5. return
-		return BoardResponse.Patch.ofEntity(board, user);
+		return BoardResponse.Post.ofEntity(board, user);
 	}
 
 	private void uploadImages(
