@@ -56,6 +56,11 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
+	public List<BoardResponse.Summary> searchBoardsByType(String boardType, Long userId) {
+		return boardRepository.searchBoardsByType(boardType, userId);
+	}
+
+	@Override
 	public BoardResponse.Detail searchBoard(long boardId) {
 		// 1. find board
 		Board board = boardRepository.findById(boardId)

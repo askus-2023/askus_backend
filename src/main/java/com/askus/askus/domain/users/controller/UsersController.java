@@ -2,6 +2,11 @@ package com.askus.askus.domain.users.controller;
 
 import javax.validation.Valid;
 
+import com.askus.askus.domain.users.dto.UsersRequest;
+import com.askus.askus.domain.users.dto.UsersResponse;
+import com.askus.askus.domain.users.security.SecurityUser;
+import com.askus.askus.domain.users.service.UsersService;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -10,11 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.askus.askus.domain.users.dto.UsersRequest;
-import com.askus.askus.domain.users.dto.UsersResponse;
-import com.askus.askus.domain.users.security.SecurityUser;
-import com.askus.askus.domain.users.service.UsersService;
+import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -76,6 +77,20 @@ public class UsersController {
 	@ResponseStatus(HttpStatus.OK)
 	public UsersResponse.TokenInfo reissue(UsersRequest.Reissue reissue) {
 		return usersService.reissue(reissue);
+	}
+
+	@Operation(
+			summary = "프로필 조회",
+			description = "프로필과 게시글 정보를 가져옵니다.",
+			security = {@SecurityRequirement(name = "bearer-key")}
+	)
+	@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = UsersResponse.ProfileInfo.class)))
+	@GetMapping("/profiles")
+	public UsersResponse.ProfileInfo getProfileInfo(@RequestParam(name = "board", required = false) String boardType, @AuthenticationPrincipal SecurityUser securityUser) {
+		if(boardType == null) {
+			boardType = "posts";
+		}
+		return usersService.getProfileInfo(boardType, securityUser);
 	}
 
 	@Operation(
