@@ -42,7 +42,7 @@ public class Reply extends BaseEntity {
 	@JoinColumn(name = "board_id")
 	private Board board;
 
-	@Column
+	@Column(columnDefinition = "TEXT")
 	private String content;
 
 	public Reply(Users users, Board board, String content) {

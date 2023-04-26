@@ -28,28 +28,29 @@ import lombok.NoArgsConstructor;
 
 public class BoardRequest {
 
+	@Schema(description = "게시글 등록 request dto")
 	@Getter
 	public static class Post {
 		@NotNull
-		@Schema(description = "제목", example = "냉장고에 돼지고기와 김치찌개가 있다면???")
+		@Schema(description = "제목", example = "냉장고에 돼지고기와 김치찌개가 있다면???", required = true)
 		private String title;
 		@NotNull
-		@Schema(description = "음식이름", example = "돼지고기 김치찌개")
+		@Schema(description = "음식이름", example = "돼지고기 김치찌개", required = true)
 		private String foodName;
 		@NotNull
-		@Schema(description = "카테고리", example = "KOREAN")
+		@Schema(description = "카테고리", example = "KOREAN", required = true)
 		private Category category;
 		@NotNull
-		@Schema(description = "재료", example = "김치, 돼지고기")
+		@Schema(description = "재료", example = "김치, 돼지고기", required = true)
 		private String ingredients;
 		@NotNull
-		@Schema(description = "내용", example = "돼지고기와 김치를 넣고 끓입니다.")
+		@Schema(description = "내용", example = "돼지고기와 김치를 넣고 끓입니다.", required = true)
 		private String content;
 		@Schema(description = "태그", example = "한식,김치,돼지고기")
 		private String tag;
 		@Schema(description = "썸네일 이미지", example = "thumbnail.png")
 		private Optional<Image> thumbnailImage = Optional.empty();
-		@Schema(description = "이미지 리스트", example = "[image1.png, image2.png]")
+		@Schema(description = "일반 이미지", example = "image1.png, ...")
 		private Optional<List<Image>> representativeImages = Optional.empty();
 
 		public Post(
@@ -142,7 +143,8 @@ public class BoardRequest {
 		private Optional<LocalDateTime> dateLoe = Optional.empty();
 		@Schema(description = "게시글 등록 마감일 검색조건", example = "2023.04.27")
 		private Optional<LocalDateTime> dateGoe = Optional.empty();
-		@Schema(description = "게시글 정렬기준", example = "CREATED_AT_DESC")
+		@NotNull
+		@Schema(description = "게시글 정렬기준", example = "CREATED_AT_DESC", required = true)
 		private SortConditions sortTarget;
 
 		public Summary(
@@ -165,7 +167,8 @@ public class BoardRequest {
 	@AllArgsConstructor
 	@NoArgsConstructor
 	public static class Delete {
-		@Schema(description = "삭제할 board ID 리스트", example = "[1,2]")
+		@NotNull
+		@Schema(description = "삭제할 board ID", example = "1, ... ")
 		private List<Long> boardIds;
 	}
 }

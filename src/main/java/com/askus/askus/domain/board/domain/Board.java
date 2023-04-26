@@ -54,7 +54,7 @@ public class Board extends BaseEntity {
 	private Category category;
 	@Column
 	private String ingredients;
-	@Column
+	@Column(columnDefinition = "TEXT")
 	private String content;
 	@Column
 	private String tag;
