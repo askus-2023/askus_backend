@@ -16,10 +16,17 @@ import com.askus.askus.domain.users.domain.Users;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
+/**
+ * ProfileImage entity
+ *
+ * @Mapping - mapped with Users
+ * @Function - create
+ * @AggregateRoot - Users
+ */
 @Getter
-@Table(name = "profile_image")
 @NoArgsConstructor
+@Table(name = "profile_image")
+@Entity
 public class ProfileImage extends BaseEntity {
 
 	@Id

@@ -11,6 +11,11 @@ import com.askus.askus.domain.image.service.ImageUploader;
 
 import lombok.Getter;
 
+/**
+ * Image model
+ *
+ * @Function - check extension, extract extension, validate extension, upload by imageUploader
+ */
 @Getter
 public class Image {
 

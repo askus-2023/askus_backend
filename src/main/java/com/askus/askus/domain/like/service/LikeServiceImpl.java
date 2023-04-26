@@ -17,8 +17,8 @@ import com.askus.askus.global.error.exception.KookleRuntimeException;
 
 import lombok.RequiredArgsConstructor;
 
-@Service
 @RequiredArgsConstructor
+@Service
 public class LikeServiceImpl implements LikeService {
 	private final LikeRepository likeRepository;
 	private final UsersRepository usersRepository;

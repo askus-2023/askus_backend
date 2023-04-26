@@ -1,12 +1,8 @@
 package com.askus.askus.domain.users.service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-import com.askus.askus.domain.board.dto.BoardResponse;
-import com.askus.askus.domain.board.service.BoardService;
-import com.askus.askus.domain.users.security.SecurityUser;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -16,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import com.askus.askus.domain.board.dto.BoardResponse;
+import com.askus.askus.domain.board.service.BoardService;
 import com.askus.askus.domain.image.domain.ProfileImage;
 import com.askus.askus.domain.image.service.ImageUploader;
 import com.askus.askus.domain.users.domain.Users;
@@ -23,6 +21,7 @@ import com.askus.askus.domain.users.dto.UsersRequest;
 import com.askus.askus.domain.users.dto.UsersResponse;
 import com.askus.askus.domain.users.repository.UsersRepository;
 import com.askus.askus.domain.users.security.JwtTokenProvider;
+import com.askus.askus.domain.users.security.SecurityUser;
 import com.askus.askus.global.error.exception.KookleRuntimeException;
 
 import lombok.RequiredArgsConstructor;
@@ -134,19 +133,12 @@ public class UsersServiceImpl implements UsersService {
 
 	@Override
 	public UsersResponse.ProfileInfo getProfileInfo(String boardType, SecurityUser securityUser) {
-
 		Long userId = securityUser.getId();
 		Users users = usersRepository.findById(userId)
-				.orElseThrow(() -> new KookleRuntimeException("user not found: " + userId));
-		String profileImageUrl = users.getProfileImage().getUrl();
+			.orElseThrow(() -> new KookleRuntimeException("user not found: " + userId));
 		List<BoardResponse.Summary> boards = boardService.searchBoardsByType(boardType, userId);
 
-		boards = boardService.searchBoardsByType(boardType, userId);
-
-		return new UsersResponse.ProfileInfo(
-				users.getEmail(),
-				profileImageUrl,
-				boards);
+		return UsersResponse.ProfileInfo.ofEntity(boards, users);
 	}
 
 	@Override
@@ -154,7 +146,7 @@ public class UsersServiceImpl implements UsersService {
 	public UsersResponse.Patch updateUsers(long userId, UsersRequest.Patch request) {
 		// 1. find users
 		Users users = usersRepository.findById(userId)
-				.orElseThrow(() -> new KookleRuntimeException("user not found: " + userId));
+			.orElseThrow(() -> new KookleRuntimeException("user not found: " + userId));
 
 		// 2. update users & image
 		request.update(users);
@@ -171,13 +163,13 @@ public class UsersServiceImpl implements UsersService {
 	public void updatePassword(long userId, UsersRequest.PatchPassword request) {
 		// 1. find users
 		Users users = usersRepository.findById(userId)
-				.orElseThrow(() -> new KookleRuntimeException("user not found: " + userId));
+			.orElseThrow(() -> new KookleRuntimeException("user not found: " + userId));
 
 		// 2. validate
 		boolean matches = passwordEncoder.matches(request.getExistingPassword(), users.getPassword());
 		if (!matches) {
 			throw new KookleRuntimeException(
-					"does not matches with existing password: " + request.getExistingPassword());
+				"does not matches with existing password: " + request.getExistingPassword());
 		}
 
 		if (!request.getPassword().equals(request.getCheckedPassword())) {

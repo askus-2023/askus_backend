@@ -16,7 +16,20 @@ public interface UsersService {
 
 	UsersResponse.ProfileInfo getProfileInfo(String boardType, SecurityUser securityUser);
 
+	/**
+	 * update users email,nickname by given request(UsersRequest.Patch)
+	 *
+	 * @param userId - current userId
+	 * @param request - UsersRequest.Patch
+	 * @return - updated users data(UsersResponse.Patch)
+	 */
 	UsersResponse.Patch updateUsers(long userId, UsersRequest.Patch request);
 
+	/**
+	 * update users password by given request(UsersRequest.PatchPassword)
+	 *
+	 * @param userId - current userId
+	 * @param request - UsersRequest.PatchPassword
+	 */
 	void updatePassword(long userId, UsersRequest.PatchPassword request);
 }

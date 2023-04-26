@@ -15,8 +15,8 @@ import com.askus.askus.global.error.exception.KookleRuntimeException;
 
 import lombok.RequiredArgsConstructor;
 
-@Service
 @RequiredArgsConstructor
+@Service
 public class ReplyServiceImpl implements ReplyService {
 	private final ReplyRepository replyRepository;
 	private final UsersRepository usersRepository;
