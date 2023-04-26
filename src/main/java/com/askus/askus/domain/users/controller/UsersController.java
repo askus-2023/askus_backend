@@ -3,6 +3,7 @@ package com.askus.askus.domain.users.controller;
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -23,6 +24,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,9 +42,9 @@ public class UsersController {
 	)
 	@ApiResponse(responseCode = "201", description = "created", content = @Content(schema = @Schema(implementation = UsersResponse.SignUp.class)))
 	@PostMapping("/signup")
-	@ResponseStatus(HttpStatus.CREATED)
-	public UsersResponse.SignUp signUp(@Valid UsersRequest.SignUp request) throws Exception {
-		return usersService.signUp(request);
+	public ResponseEntity<UsersResponse.SignUp> signUp(@Valid UsersRequest.SignUp request) throws Exception {
+		UsersResponse.SignUp response = usersService.signUp(request);
+		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
 	@Operation(
@@ -51,7 +53,6 @@ public class UsersController {
 	)
 	@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = UsersResponse.DupEmail.class)))
 	@PostMapping("/signup/email/duplicated")
-	@ResponseStatus(HttpStatus.OK)
 	public UsersResponse.DupEmail checkDupEmail(UsersRequest.DupEmail request) {
 		log.info("====={}=====", request.getEmail());
 		return usersService.isDupEmail(request.getEmail());
@@ -63,7 +64,6 @@ public class UsersController {
 	)
 	@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = UsersResponse.SignIn.class)))
 	@PostMapping("/signin")
-	@ResponseStatus(HttpStatus.OK)
 	public UsersResponse.SignIn signIn(@Valid UsersRequest.SignIn request) {
 		return usersService.signIn(request);
 	}
@@ -75,7 +75,6 @@ public class UsersController {
 	)
 	@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = UsersResponse.TokenInfo.class)))
 	@PostMapping("/reissue")
-	@ResponseStatus(HttpStatus.OK)
 	public UsersResponse.TokenInfo reissue(UsersRequest.Reissue reissue) {
 		return usersService.reissue(reissue);
 	}

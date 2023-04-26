@@ -56,7 +56,7 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public List<BoardResponse.Summary> searchBoardsByType(String boardType, Long userId) {
+	public List<BoardResponse.Summary> searchBoardsByType(String boardType, long userId) {
 		return boardRepository.searchBoardsByType(boardType, userId);
 	}
 
@@ -87,7 +87,7 @@ public class BoardServiceImpl implements BoardService {
 			.orElseThrow(() -> new NotFoundException("board", boardId));
 
 		// 3. update board
-		request.update(board);
+		board.update(request);
 
 		// 4. update images
 		board.resetThumbnailImage();
