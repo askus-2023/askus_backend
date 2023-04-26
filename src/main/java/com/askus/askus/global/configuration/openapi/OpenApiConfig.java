@@ -1,4 +1,4 @@
-package com.askus.askus.global.configuration;
+package com.askus.askus.global.configuration.openapi;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

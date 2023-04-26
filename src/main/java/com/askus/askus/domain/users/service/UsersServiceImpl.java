@@ -22,7 +22,9 @@ import com.askus.askus.domain.users.dto.UsersResponse;
 import com.askus.askus.domain.users.repository.UsersRepository;
 import com.askus.askus.domain.users.security.JwtTokenProvider;
 import com.askus.askus.domain.users.security.SecurityUser;
-import com.askus.askus.global.error.exception.KookleRuntimeException;
+import com.askus.askus.global.error.exception.AlreadyExistException;
+import com.askus.askus.global.error.exception.MissMatchException;
+import com.askus.askus.global.error.exception.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,13 +48,11 @@ public class UsersServiceImpl implements UsersService {
 	public UsersResponse.SignUp signUp(UsersRequest.SignUp request) {
 
 		if (usersRepository.findByEmail(request.getEmail()).isPresent()) {
-			log.error("중복된 이메일로 가입 시도: {}", request.getEmail());
-			throw new KookleRuntimeException("이미 존재하는 이메일입니다.");
+			throw new AlreadyExistException("email", request.getEmail());
 		}
 
 		if (!request.getPassword().equals(request.getCheckedPassword())) {
-			log.error("가입 시 비밀번호 불일치: {}", request.getEmail());
-			throw new KookleRuntimeException("비밀번호가 일치하지 않습니다.");
+			throw new MissMatchException("checking password", request.getCheckedPassword());
 		}
 
 		// 회원정보 저장
@@ -104,7 +104,7 @@ public class UsersServiceImpl implements UsersService {
 	public UsersResponse.TokenInfo reissue(UsersRequest.Reissue reissue) {
 		// 1. Refresh Token 검증
 		if (!jwtTokenProvider.validateToken(reissue.getRefreshToken())) {
-			throw new KookleRuntimeException("Refresh Token이 유효하지 않습니다.");
+			throw new MissMatchException("refresh token", reissue.getRefreshToken());
 		}
 
 		// 2. Access Token 에서 User email 을 가져온다.
@@ -115,10 +115,10 @@ public class UsersServiceImpl implements UsersService {
 
 		// (로그아웃되어 Redis 에 RefreshToken 이 존재하지 않는 경우 처리)
 		if (ObjectUtils.isEmpty(refreshToken)) {
-			throw new KookleRuntimeException("잘못된 요청입니다.");
+			throw new NotFoundException("refresh token", refreshToken);
 		}
 		if (!refreshToken.equals(reissue.getRefreshToken())) {
-			throw new KookleRuntimeException("Refresh Token 정보가 일치하지 않습니다.");
+			throw new MissMatchException("refresh token", reissue.getRefreshToken());
 		}
 
 		// 4. 새로운 토큰 생성
@@ -135,7 +135,7 @@ public class UsersServiceImpl implements UsersService {
 	public UsersResponse.ProfileInfo getProfileInfo(String boardType, SecurityUser securityUser) {
 		Long userId = securityUser.getId();
 		Users users = usersRepository.findById(userId)
-			.orElseThrow(() -> new KookleRuntimeException("user not found: " + userId));
+			.orElseThrow(() -> new NotFoundException("users", userId));
 		List<BoardResponse.Summary> boards = boardService.searchBoardsByType(boardType, userId);
 
 		return UsersResponse.ProfileInfo.ofEntity(boards, users);
@@ -146,7 +146,7 @@ public class UsersServiceImpl implements UsersService {
 	public UsersResponse.Patch updateUsers(long userId, UsersRequest.Patch request) {
 		// 1. find users
 		Users users = usersRepository.findById(userId)
-			.orElseThrow(() -> new KookleRuntimeException("user not found: " + userId));
+			.orElseThrow(() -> new NotFoundException("users", userId));
 
 		// 2. update users & image
 		request.update(users);
@@ -163,17 +163,16 @@ public class UsersServiceImpl implements UsersService {
 	public void updatePassword(long userId, UsersRequest.PatchPassword request) {
 		// 1. find users
 		Users users = usersRepository.findById(userId)
-			.orElseThrow(() -> new KookleRuntimeException("user not found: " + userId));
+			.orElseThrow(() -> new NotFoundException("users", userId));
 
 		// 2. validate
 		boolean matches = passwordEncoder.matches(request.getExistingPassword(), users.getPassword());
 		if (!matches) {
-			throw new KookleRuntimeException(
-				"does not matches with existing password: " + request.getExistingPassword());
+			throw new MissMatchException("with existing password", request.getExistingPassword());
 		}
 
 		if (!request.getPassword().equals(request.getCheckedPassword())) {
-			throw new KookleRuntimeException("does not matches with check password: " + request.getPassword());
+			throw new MissMatchException("with checking password", request.getCheckedPassword());
 		}
 
 		// 3. update password

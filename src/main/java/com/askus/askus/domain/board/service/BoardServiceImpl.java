@@ -19,7 +19,7 @@ import com.askus.askus.domain.reply.dto.ReplyResponse;
 import com.askus.askus.domain.reply.repository.ReplyRepository;
 import com.askus.askus.domain.users.domain.Users;
 import com.askus.askus.domain.users.repository.UsersRepository;
-import com.askus.askus.global.error.exception.KookleRuntimeException;
+import com.askus.askus.global.error.exception.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -37,7 +37,7 @@ public class BoardServiceImpl implements BoardService {
 	public BoardResponse.Post addBoard(long userId, BoardRequest.Post request) {
 		// 1. find user
 		Users users = usersRepository.findById(userId)
-			.orElseThrow(() -> new KookleRuntimeException("user not found: " + userId));
+			.orElseThrow(() -> new NotFoundException("users", userId));
 
 		// 2. save board
 		Board board = boardRepository.save(request.toEntity(users));
@@ -64,7 +64,7 @@ public class BoardServiceImpl implements BoardService {
 	public BoardResponse.Detail searchBoard(long boardId) {
 		// 1. find board
 		Board board = boardRepository.findById(boardId)
-			.orElseThrow(() -> new KookleRuntimeException("board not found: " + boardId));
+			.orElseThrow(() -> new NotFoundException("board", boardId));
 
 		// 2. find replies
 		List<ReplyResponse> replies = replyRepository.findAllByBoardAndDeletedAtNull(board).stream()
@@ -80,11 +80,11 @@ public class BoardServiceImpl implements BoardService {
 	public BoardResponse.Post updateBoard(long userId, long boardId, BoardRequest.Post request) {
 		// 1. find users
 		Users user = usersRepository.findById(userId)
-			.orElseThrow(() -> new KookleRuntimeException("user not found: " + userId));
+			.orElseThrow(() -> new NotFoundException("users", userId));
 
 		// 2. find board
 		Board board = boardRepository.findById(boardId)
-			.orElseThrow(() -> new KookleRuntimeException("board not found: " + boardId));
+			.orElseThrow(() -> new NotFoundException("board", boardId));
 
 		// 3. update board
 		request.update(board);

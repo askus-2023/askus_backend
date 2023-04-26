@@ -37,7 +37,6 @@ public class BoardController {
 		description = "현재 로그인된 사용자의 게시글을 작성합니다.",
 		security = {@SecurityRequirement(name = "bearer-key")}
 	)
-	@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(implementation = BoardResponse.Post.class)))
 	@PostMapping
 	public ResponseEntity<BoardResponse.Post> addBoard(
 		@AuthenticationPrincipal SecurityUser securityUser,
