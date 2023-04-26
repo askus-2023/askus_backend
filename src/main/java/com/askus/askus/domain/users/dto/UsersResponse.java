@@ -1,13 +1,13 @@
 package com.askus.askus.domain.users.dto;
 
+import java.util.List;
+
 import com.askus.askus.domain.board.dto.BoardResponse;
 import com.askus.askus.domain.users.domain.Users;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.util.List;
 
 public class UsersResponse {
 
@@ -32,9 +32,9 @@ public class UsersResponse {
 		private String refreshToken;
 
 		public SignIn(String email,
-					  String nickname,
-					  String imageUrl,
-					  TokenInfo tokenInfo) {
+			String nickname,
+			String imageUrl,
+			TokenInfo tokenInfo) {
 			this.email = email;
 			this.nickname = nickname;
 			this.imageUrl = imageUrl;
@@ -63,12 +63,16 @@ public class UsersResponse {
 
 	@AllArgsConstructor
 	public static class ProfileInfo {
+		@Schema(description = "글 목록", example = "[대충 보드 리스트,,,]")
+		List<BoardResponse.Summary> boards;
 		@Schema(description = "닉네임", example = "쿠킹마마")
 		private String nickname;
 		@Schema(description = "프로필 이미지 주소", example = "http://profile/image/url")
 		private String profileImageUrl;
-		@Schema(description = "글 목록", example = "[대충 보드 리스트,,,]")
-		List<BoardResponse.Summary> boards;
+
+		public static ProfileInfo ofEntity(List<BoardResponse.Summary> boards, Users users) {
+			return new ProfileInfo(boards, users.getNickname(), users.getProfileImage().getUrl());
+		}
 	}
 
 	@Getter

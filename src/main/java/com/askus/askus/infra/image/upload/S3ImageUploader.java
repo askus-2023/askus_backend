@@ -13,7 +13,7 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.askus.askus.domain.image.domain.Image;
 import com.askus.askus.domain.image.service.ImageUploader;
-import com.askus.askus.global.error.exception.KookleRuntimeException;
+import com.askus.askus.global.error.exception.FileException;
 import com.askus.askus.global.properties.S3Properties;
 
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class S3ImageUploader implements ImageUploader {
 	@Override
 	public String upload(Image image) {
 		File file = convert(image)
-			.orElseThrow(() -> new KookleRuntimeException("로컬 파일 저장 실패"));
+			.orElseThrow(() -> new FileException("while converting file"));
 
 		String filename = UUID.randomUUID().toString();
 		String imageUrl = putS3(file, filename);
@@ -45,7 +45,7 @@ public class S3ImageUploader implements ImageUploader {
 				}
 			}
 		} catch (IOException e) {
-			throw new KookleRuntimeException("로컬 파일 저장 실패", e);
+			throw new FileException("while saving local file", e);
 		}
 		return Optional.of(file);
 	}
@@ -62,7 +62,7 @@ public class S3ImageUploader implements ImageUploader {
 		try {
 			file.delete();
 		} catch (IllegalArgumentException e) {
-			throw new KookleRuntimeException("로컬 파일 삭제 실패", e);
+			throw new FileException("while deleting local file", e);
 		}
 	}
 

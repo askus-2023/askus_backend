@@ -17,10 +17,17 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
+/**
+ * RepresentativeImage entity
+ *
+ * @Mapping - mapped with Board
+ * @Function - create
+ * @AggregateRoot - Board
+ */
 @Getter
-@Table(name = "representative_image")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "representative_image")
+@Entity
 public class RepresentativeImage extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

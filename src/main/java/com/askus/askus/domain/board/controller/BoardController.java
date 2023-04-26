@@ -24,8 +24,10 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "board REST API", description = "게시글 API")
 @RequiredArgsConstructor
 @RequestMapping("/v1/boards")
 @RestController
@@ -37,7 +39,6 @@ public class BoardController {
 		description = "현재 로그인된 사용자의 게시글을 작성합니다.",
 		security = {@SecurityRequirement(name = "bearer-key")}
 	)
-	@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(implementation = BoardResponse.Post.class)))
 	@PostMapping
 	public ResponseEntity<BoardResponse.Post> addBoard(
 		@AuthenticationPrincipal SecurityUser securityUser,

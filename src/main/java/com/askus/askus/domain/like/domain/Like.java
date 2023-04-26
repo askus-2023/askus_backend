@@ -18,10 +18,16 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
+/**
+ * Like entity
+ *
+ * @Mapping - mapped with Users, Board
+ * @Function - create
+ */
 @Getter
-@Table(name = "likes")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "likes")
+@Entity
 public class Like extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

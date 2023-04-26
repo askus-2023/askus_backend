@@ -18,10 +18,16 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
+/**
+ * Reply entity
+ *
+ * @Mapping - mapped with Users, Board
+ * @Function - create, update
+ */
 @Getter
-@Table(name = "reply")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "reply")
+@Entity
 public class Reply extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +42,7 @@ public class Reply extends BaseEntity {
 	@JoinColumn(name = "board_id")
 	private Board board;
 
-	@Column
+	@Column(columnDefinition = "TEXT")
 	private String content;
 
 	public Reply(Users users, Board board, String content) {

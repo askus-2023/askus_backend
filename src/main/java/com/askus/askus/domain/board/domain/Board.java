@@ -27,10 +27,16 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
+/**
+ * Board entity
+ *
+ * @Mapping - mapped with Users, ThumbnailImage, RepresentativeImages
+ * @Function - create, update, reset images, add images, like count, reply count, delete like count, reply count
+ */
 @Getter
-@Table(name = "board")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "board")
+@Entity
 public class Board extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,7 +54,7 @@ public class Board extends BaseEntity {
 	private Category category;
 	@Column
 	private String ingredients;
-	@Column
+	@Column(columnDefinition = "TEXT")
 	private String content;
 	@Column
 	private String tag;

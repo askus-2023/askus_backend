@@ -18,10 +18,16 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * Users entity
+ *
+ * @Mapping - mapped with ProfileImage
+ * @Function - create, update email, nickname, password, set profileImage, encode password
+ */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Entity
 @Table(name = "users")
+@Entity
 public class Users extends BaseEntity {
 
 	@Id
