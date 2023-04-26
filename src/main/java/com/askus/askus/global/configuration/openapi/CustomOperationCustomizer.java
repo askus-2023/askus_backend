@@ -19,10 +19,10 @@ import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 
 /**
- * Custom API 예외 응답 Customizer
+ * Custom API exception response Customizer
  *
- * 기본적으로 적용되는 400, 404, 500 예외 응답을 제거하고
- * ErrorResponseWithMessages 에 정의된 메시지를 ErrorResponse 의 형태로 응답한다.
+ * delete default exception responses(400, 404, 500)
+ * response messages defined in ErrorResponseWithMessages by ErrorResponse
  */
 @Component
 public class CustomOperationCustomizer implements OperationCustomizer {

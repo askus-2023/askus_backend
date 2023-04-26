@@ -8,6 +8,11 @@ import org.springframework.context.annotation.Configuration;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
+/**
+ * JpaQueryFactory configuration for querydsl
+ *
+ * @Bean JPAQueryFactory
+ */
 @Configuration
 public class QuerydslConfig {
 	@PersistenceContext

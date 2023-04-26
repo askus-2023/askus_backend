@@ -9,6 +9,11 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 
+/**
+ * AmazonS3Client configuration for image upload
+ *
+ * @Bean AmazonS3Client
+ */
 @Configuration
 public class S3Config {
 	@Value("${cloud.aws.credentials.access-key}")
