@@ -6,7 +6,6 @@ import com.askus.askus.domain.board.dto.BoardResponse;
 import com.askus.askus.domain.users.domain.Users;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -38,11 +37,11 @@ public class UsersResponse {
 			TokenInfo tokenInfo
 		) {
 			return new UsersResponse.SignIn(
-					users.getEmail(),
-					users.getNickname(),
-					users.getProfileImage().getUrl(),
-					tokenInfo.getAccessToken(),
-					tokenInfo.getRefreshToken());
+				users.getEmail(),
+				users.getNickname(),
+				users.getProfileImage().getUrl(),
+				tokenInfo.getAccessToken(),
+				tokenInfo.getRefreshToken());
 		}
 	}
 
