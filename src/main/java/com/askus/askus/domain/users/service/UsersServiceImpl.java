@@ -57,7 +57,6 @@ public class UsersServiceImpl implements UsersService {
 
 		// 회원정보 저장
 		Users users = usersRepository.save(request.toEntity());
-
 		String profileImageUrl = request.getProfileImage().uploadBy(imageUploader);
 		ProfileImage profileImage = new ProfileImage(users, profileImageUrl);
 		users.setProfileImage(profileImage);
@@ -93,12 +92,10 @@ public class UsersServiceImpl implements UsersService {
 				7,
 				TimeUnit.DAYS);
 
-		Users users = usersRepository.findByEmail(request.getEmail()).get();
-		String email = users.getEmail();
-		String nickname = users.getNickname();
-		String profileImageUrl = users.getProfileImage().getUrl();
+		Users users = usersRepository.findByEmail(request.getEmail())
+				.orElseThrow(() -> new NotFoundException("users", request.getEmail()));
 
-		return new UsersResponse.SignIn(email, nickname, profileImageUrl, tokenInfo);
+		return UsersResponse.SignIn.ofEntity(users, tokenInfo);
 	}
 
 	public UsersResponse.TokenInfo reissue(UsersRequest.Reissue reissue) {
@@ -149,7 +146,7 @@ public class UsersServiceImpl implements UsersService {
 			.orElseThrow(() -> new NotFoundException("users", userId));
 
 		// 2. update users & image
-		request.update(users);
+		users.update(request);
 		String profileImageUrl = request.getProfileImage().uploadBy(imageUploader);
 		ProfileImage profileImage = new ProfileImage(users, profileImageUrl);
 		users.setProfileImage(profileImage);

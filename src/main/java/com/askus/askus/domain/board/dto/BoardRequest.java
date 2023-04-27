@@ -22,6 +22,7 @@ import com.askus.askus.global.error.exception.FileException;
 import com.askus.askus.global.util.SortConditions;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -114,17 +115,6 @@ public class BoardRequest {
 		public Board toEntity(Users users) {
 			return new Board(
 				users,
-				this.title,
-				this.foodName,
-				this.category,
-				this.ingredients,
-				this.content,
-				this.tag
-			);
-		}
-
-		public void update(Board board) {
-			board.update(
 				this.title,
 				this.foodName,
 				this.category,

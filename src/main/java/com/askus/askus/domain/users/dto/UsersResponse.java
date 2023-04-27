@@ -6,6 +6,7 @@ import com.askus.askus.domain.board.dto.BoardResponse;
 import com.askus.askus.domain.users.domain.Users;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -19,6 +20,7 @@ public class UsersResponse {
 	}
 
 	@Getter
+	@AllArgsConstructor
 	public static class SignIn {
 		@Schema(description = "이메일", example = "email@email.com")
 		private final String email;
@@ -31,15 +33,16 @@ public class UsersResponse {
 		@Schema(description = "리프레시 토큰(jwt)", example = "2&836dsag218#$%@$~")
 		private String refreshToken;
 
-		public SignIn(String email,
-			String nickname,
-			String imageUrl,
-			TokenInfo tokenInfo) {
-			this.email = email;
-			this.nickname = nickname;
-			this.imageUrl = imageUrl;
-			this.accessToken = tokenInfo.getAccessToken();
-			this.refreshToken = tokenInfo.getRefreshToken();
+		public static UsersResponse.SignIn ofEntity(
+			Users users,
+			TokenInfo tokenInfo
+		) {
+			return new UsersResponse.SignIn(
+					users.getEmail(),
+					users.getNickname(),
+					users.getProfileImage().getUrl(),
+					tokenInfo.getAccessToken(),
+					tokenInfo.getRefreshToken());
 		}
 	}
 
@@ -70,8 +73,8 @@ public class UsersResponse {
 		@Schema(description = "프로필 이미지 주소", example = "http://profile/image/url")
 		private String profileImageUrl;
 
-		public static ProfileInfo ofEntity(List<BoardResponse.Summary> boards, Users users) {
-			return new ProfileInfo(boards, users.getNickname(), users.getProfileImage().getUrl());
+		public static UsersResponse.ProfileInfo ofEntity(List<BoardResponse.Summary> boards, Users users) {
+			return new UsersResponse.ProfileInfo(boards, users.getNickname(), users.getProfileImage().getUrl());
 		}
 	}
 

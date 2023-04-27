@@ -23,7 +23,7 @@ public interface BoardService {
 	 */
 	List<BoardResponse.Summary> searchBoards(BoardRequest.Summary request);
 
-	List<BoardResponse.Summary> searchBoardsByType(String boardType, Long userId);
+	List<BoardResponse.Summary> searchBoardsByType(String boardType, long userId);
 
 	/**
 	 * search board by given request

@@ -18,7 +18,7 @@ public class BoardResponse {
 	@AllArgsConstructor
 	public static class Post {
 		@Schema(description = "게시글 ID", example = "1")
-		private final Long boardId;
+		private final long boardId;
 		@Schema(description = "제목", example = "냉장고에 돼지고기와 김치찌개가 있다면???")
 		private final String title;
 		@Schema(description = "음식이름", example = "돼지고기 김치찌개")

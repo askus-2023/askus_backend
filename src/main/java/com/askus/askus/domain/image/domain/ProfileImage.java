@@ -35,7 +35,7 @@ public class ProfileImage extends BaseEntity {
 	private Long id;
 
 	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id")
+	@JoinColumn(name = "users_id")
 	private Users users;
 
 	@Column

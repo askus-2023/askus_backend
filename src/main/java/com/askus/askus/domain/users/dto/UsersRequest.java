@@ -126,10 +126,6 @@ public class UsersRequest {
 			String originalFileName = getOriginalFileName(profileImage);
 			this.profileImage = new Image(inputStream, originalFileName);
 		}
-
-		public void update(Users users) {
-			users.update(this.email, this.nickname);
-		}
 	}
 
 	@Getter

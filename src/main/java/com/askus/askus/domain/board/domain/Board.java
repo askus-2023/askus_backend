@@ -18,6 +18,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.askus.askus.domain.board.dto.BoardRequest;
 import com.askus.askus.domain.common.BaseEntity;
 import com.askus.askus.domain.image.domain.RepresentativeImage;
 import com.askus.askus.domain.image.domain.ThumbnailImage;
@@ -78,14 +79,13 @@ public class Board extends BaseEntity {
 		this.tag = tag;
 	}
 
-	public void update(String title, String foodName, Category category, String ingredients, String content,
-		String tag) {
-		this.title = title;
-		this.foodName = foodName;
-		this.category = category;
-		this.ingredients = ingredients;
-		this.content = content;
-		this.tag = tag;
+	public void update(BoardRequest.Post request) {
+		this.title = request.getTitle();
+		this.foodName = request.getFoodName();
+		this.category = request.getCategory();
+		this.ingredients = request.getIngredients();
+		this.content = request.getContent();
+		this.tag = request.getTag();
 	}
 
 	public void resetThumbnailImage() {
