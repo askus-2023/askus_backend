@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.askus.askus.domain.board.dto.BoardRequest;
@@ -25,7 +26,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
 import lombok.RequiredArgsConstructor;
 
 @Tag(name = "board REST API", description = "게시글 API")
@@ -58,8 +58,12 @@ public class BoardController {
 	@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = BoardResponse.Summary.class)))
 	@GetMapping
 	public List<BoardResponse.Summary> searchBoards(
-		@RequestBody BoardRequest.Summary request
+		@RequestParam String tag,
+		@RequestParam String dateLoe,
+		@RequestParam String dateGoe,
+		@RequestParam String sortTarget
 	) {
+		BoardRequest.Summary request = new BoardRequest.Summary(tag, dateLoe, dateGoe, sortTarget);
 		return boardService.searchBoards(request);
 	}
 

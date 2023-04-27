@@ -9,11 +9,11 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import com.askus.askus.domain.users.dto.UsersRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.askus.askus.domain.common.BaseEntity;
 import com.askus.askus.domain.image.domain.ProfileImage;
+import com.askus.askus.domain.users.dto.UsersRequest;
 
 import lombok.AccessLevel;
 import lombok.Getter;

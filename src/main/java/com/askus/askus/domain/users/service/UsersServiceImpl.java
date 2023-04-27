@@ -93,7 +93,7 @@ public class UsersServiceImpl implements UsersService {
 				TimeUnit.DAYS);
 
 		Users users = usersRepository.findByEmail(request.getEmail())
-				.orElseThrow(() -> new NotFoundException("users", request.getEmail()));
+			.orElseThrow(() -> new NotFoundException("users", request.getEmail()));
 
 		return UsersResponse.SignIn.ofEntity(users, tokenInfo);
 	}
