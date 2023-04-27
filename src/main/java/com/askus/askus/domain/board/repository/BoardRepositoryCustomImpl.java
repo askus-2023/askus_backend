@@ -14,6 +14,7 @@ import com.askus.askus.global.util.StringUtil;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -48,7 +49,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
 	@Override
 	public List<BoardResponse.Summary> searchBoardsByType(String boardType, Long userId) {
-		return queryFactory
+		JPAQuery<BoardResponse.Summary> baseQuery = queryFactory
 			.select(Projections.constructor(BoardResponse.Summary.class,
 				board.id,
 				users.nickname,
@@ -59,11 +60,16 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 			))
 			.from(board)
 			.innerJoin(board.users, users)
-			.leftJoin(board.thumbnailImage, thumbnailImage)
-			.where(
-				searchType(boardType, userId)
-			)
-			.distinct().fetch();
+			.leftJoin(board.thumbnailImage, thumbnailImage);
+
+		if (boardType.equals("like")) {
+			baseQuery.leftJoin(like).on(board.eq(like.board))
+					.where(like.users.id.eq(userId));
+		} else {
+			baseQuery.where(board.users.id.eq(userId));
+		}
+
+		return baseQuery.distinct().fetch();
 	}
 
 	private BooleanExpression searchTag(BoardRequest.Summary request) {
@@ -85,13 +91,6 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 			return null;
 		}
 		return board.createdAt.before(request.getDateGoe().get());
-	}
-
-	private BooleanExpression searchType(String boardType, Long userId) {
-		if (boardType.equals("like")) {
-			return like.users.id.eq(userId);
-		}
-		return board.users.id.eq(userId);
 	}
 
 	private OrderSpecifier<?> sort(BoardRequest.Summary request) {
