@@ -64,6 +64,7 @@ public class UsersResponse {
 		private String refreshToken;
 	}
 
+	@Getter
 	@AllArgsConstructor
 	public static class ProfileInfo {
 		@Schema(description = "글 목록", example = "[대충 보드 리스트,,,]")
