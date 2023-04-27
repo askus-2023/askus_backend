@@ -64,7 +64,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
 		if (boardType.equals("like")) {
 			baseQuery.leftJoin(like).on(board.eq(like.board))
-					.where(like.users.id.eq(userId));
+				.where(like.users.id.eq(userId));
 		} else {
 			baseQuery.where(board.users.id.eq(userId));
 		}

@@ -22,7 +22,6 @@ import com.askus.askus.global.error.exception.FileException;
 import com.askus.askus.global.util.SortConditions;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -129,9 +128,9 @@ public class BoardRequest {
 	public static class Summary {
 		@Schema(description = "카테고리 검색조건", example = "KOREAN")
 		private String tag;
-		@Schema(description = "게시글 등록 시작일 검색조건", example = "2023.04.21")
+		@Schema(description = "게시글 등록 시작일 검색조건", example = "2023-04-21")
 		private Optional<LocalDateTime> dateLoe = Optional.empty();
-		@Schema(description = "게시글 등록 마감일 검색조건", example = "2023.04.27")
+		@Schema(description = "게시글 등록 마감일 검색조건", example = "2023-04-27")
 		private Optional<LocalDateTime> dateGoe = Optional.empty();
 		@NotNull
 		@Schema(description = "게시글 정렬기준", example = "CREATED_AT_DESC", required = true)
