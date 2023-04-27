@@ -16,9 +16,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 
-@RestController
-@RequestMapping("/v1/chats")
 @RequiredArgsConstructor
+@RequestMapping("/v1/chats")
+@RestController
 public class ChatController {
 	private final ChatService chatService;
 

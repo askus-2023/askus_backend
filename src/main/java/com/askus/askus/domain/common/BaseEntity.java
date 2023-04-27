@@ -12,8 +12,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import lombok.Getter;
 
 /**
- * 객체의 공통 매핑 정보
- * 생성일시, 수정일시
+ * common mapping information
+ * created time, deleted time
  */
 @Getter
 @MappedSuperclass

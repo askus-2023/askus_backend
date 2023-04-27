@@ -2,26 +2,29 @@ package com.askus.askus.domain.users.controller;
 
 import javax.validation.Valid;
 
-import com.askus.askus.domain.users.dto.UsersRequest;
-import com.askus.askus.domain.users.dto.UsersResponse;
-import com.askus.askus.domain.users.security.SecurityUser;
-import com.askus.askus.domain.users.service.UsersService;
-
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.*;
+
+import com.askus.askus.domain.users.dto.UsersRequest;
+import com.askus.askus.domain.users.dto.UsersResponse;
+import com.askus.askus.domain.users.security.SecurityUser;
+import com.askus.askus.domain.users.service.UsersService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,9 +42,9 @@ public class UsersController {
 	)
 	@ApiResponse(responseCode = "201", description = "created", content = @Content(schema = @Schema(implementation = UsersResponse.SignUp.class)))
 	@PostMapping("/signup")
-	@ResponseStatus(HttpStatus.CREATED)
-	public UsersResponse.SignUp signUp(@Valid UsersRequest.SignUp request) throws Exception {
-		return usersService.signUp(request);
+	public ResponseEntity<UsersResponse.SignUp> signUp(@Valid UsersRequest.SignUp request) throws Exception {
+		UsersResponse.SignUp response = usersService.signUp(request);
+		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
 	@Operation(
@@ -50,7 +53,6 @@ public class UsersController {
 	)
 	@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = UsersResponse.DupEmail.class)))
 	@PostMapping("/signup/email/duplicated")
-	@ResponseStatus(HttpStatus.OK)
 	public UsersResponse.DupEmail checkDupEmail(UsersRequest.DupEmail request) {
 		log.info("====={}=====", request.getEmail());
 		return usersService.isDupEmail(request.getEmail());
@@ -62,7 +64,6 @@ public class UsersController {
 	)
 	@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = UsersResponse.SignIn.class)))
 	@PostMapping("/signin")
-	@ResponseStatus(HttpStatus.OK)
 	public UsersResponse.SignIn signIn(@Valid UsersRequest.SignIn request) {
 		return usersService.signIn(request);
 	}
@@ -74,20 +75,20 @@ public class UsersController {
 	)
 	@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = UsersResponse.TokenInfo.class)))
 	@PostMapping("/reissue")
-	@ResponseStatus(HttpStatus.OK)
 	public UsersResponse.TokenInfo reissue(UsersRequest.Reissue reissue) {
 		return usersService.reissue(reissue);
 	}
 
 	@Operation(
-			summary = "프로필 조회",
-			description = "프로필과 게시글 정보를 가져옵니다.",
-			security = {@SecurityRequirement(name = "bearer-key")}
+		summary = "프로필 조회",
+		description = "프로필과 게시글 정보를 가져옵니다.",
+		security = {@SecurityRequirement(name = "bearer-key")}
 	)
 	@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = UsersResponse.ProfileInfo.class)))
 	@GetMapping("/profiles")
-	public UsersResponse.ProfileInfo getProfileInfo(@RequestParam(name = "board", required = false) String boardType, @AuthenticationPrincipal SecurityUser securityUser) {
-		if(boardType == null) {
+	public UsersResponse.ProfileInfo getProfileInfo(@RequestParam(name = "board", required = false) String boardType,
+		@AuthenticationPrincipal SecurityUser securityUser) {
+		if (boardType == null) {
 			boardType = "posts";
 		}
 		return usersService.getProfileInfo(boardType, securityUser);

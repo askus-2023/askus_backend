@@ -18,7 +18,7 @@ public class BoardResponse {
 	@AllArgsConstructor
 	public static class Post {
 		@Schema(description = "게시글 ID", example = "1")
-		private final Long boardId;
+		private final long boardId;
 		@Schema(description = "제목", example = "냉장고에 돼지고기와 김치찌개가 있다면???")
 		private final String title;
 		@Schema(description = "음식이름", example = "돼지고기 김치찌개")
@@ -86,6 +86,8 @@ public class BoardResponse {
 		private final String author;
 		@Schema(description = "재료", example = "김치, 돼지고기")
 		private final String ingredients;
+		@Schema(description = "카테고리", example = "KOREAN")
+		private final Category category;
 		@Schema(description = "내용", example = "김치와 돼지고기를 넣고 끓입니다.")
 		private final String content;
 		@Schema(description = "게시글 작성일", example = "2023.04.17")
@@ -104,6 +106,7 @@ public class BoardResponse {
 			String foodName,
 			String author,
 			String ingredients,
+			Category category,
 			String content,
 			LocalDateTime createdAt,
 			String thumbnailImageUrl,
@@ -114,6 +117,7 @@ public class BoardResponse {
 			this.foodName = foodName;
 			this.author = author;
 			this.ingredients = ingredients;
+			this.category = category;
 			this.content = content;
 			this.createdAt = createdAt;
 			this.thumbnailImageUrl = thumbnailImageUrl;
@@ -132,6 +136,7 @@ public class BoardResponse {
 				board.getFoodName(),
 				users.getNickname(),
 				board.getIngredients(),
+				board.getCategory(),
 				board.getContent(),
 				board.getCreatedAt(),
 				board.getThumbnailImage() == null ? null : board.getThumbnailImage().getUrl(),

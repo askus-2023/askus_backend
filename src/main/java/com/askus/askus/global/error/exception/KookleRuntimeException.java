@@ -3,27 +3,21 @@ package com.askus.askus.global.error.exception;
 /**
  * Root RuntimeException for this Application
  */
-public class KookleRuntimeException extends RuntimeException {
-	public KookleRuntimeException() {
+public abstract class KookleRuntimeException extends RuntimeException {
+
+	private final String messageKey;
+	private final Object[] params;
+
+	public KookleRuntimeException(String messageKey, Object[] params) {
+		this.messageKey = messageKey;
+		this.params = params;
 	}
 
-	public KookleRuntimeException(String message) {
-		super(message);
+	public String getMessageKey() {
+		return messageKey;
 	}
 
-	public KookleRuntimeException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
-	public KookleRuntimeException(Throwable cause) {
-		super(cause);
-	}
-
-	public KookleRuntimeException(
-		String message,
-		Throwable cause,
-		boolean enableSuppression,
-		boolean writableStackTrace) {
-		super(message, cause, enableSuppression, writableStackTrace);
+	public Object[] getParams() {
+		return params;
 	}
 }

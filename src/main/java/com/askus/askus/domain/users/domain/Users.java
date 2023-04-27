@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.askus.askus.domain.users.dto.UsersRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.askus.askus.domain.common.BaseEntity;
@@ -18,10 +19,16 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * Users entity
+ *
+ * @Mapping - mapped with ProfileImage
+ * @Function - create, update email, nickname, password, set profileImage, encode password
+ */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Entity
 @Table(name = "users")
+@Entity
 public class Users extends BaseEntity {
 
 	@Id
@@ -50,9 +57,9 @@ public class Users extends BaseEntity {
 		this.password = passwordEncoder.encode(password);
 	}
 
-	public void update(String email, String nickname) {
-		this.email = email;
-		this.nickname = nickname;
+	public void update(UsersRequest.Patch request) {
+		this.email = request.getEmail();
+		this.nickname = request.getNickname();
 	}
 
 	public void updatePassword(String password) {

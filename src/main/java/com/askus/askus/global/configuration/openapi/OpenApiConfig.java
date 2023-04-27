@@ -1,4 +1,4 @@
-package com.askus.askus.global.configuration;
+package com.askus.askus.global.configuration.openapi;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,6 +8,11 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 
+/**
+ * OpenAPI configuration swagger-ui
+ *
+ * @Bean OpenAPI
+ */
 @Configuration(proxyBeanMethods = false)
 public class OpenApiConfig {
 	@Bean

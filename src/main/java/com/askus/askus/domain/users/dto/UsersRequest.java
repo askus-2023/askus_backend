@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.askus.askus.domain.image.domain.Image;
 import com.askus.askus.domain.users.domain.Users;
-import com.askus.askus.global.error.exception.KookleRuntimeException;
+import com.askus.askus.global.error.exception.FileException;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
@@ -26,7 +26,7 @@ public class UsersRequest {
 			byte[] byteArray = file.getBytes();
 			byteArrayInputStream = new ByteArrayInputStream(byteArray);
 		} catch (IOException e) {
-			throw new KookleRuntimeException("이미지 파일 변환 실패", e);
+			throw new FileException("while converting file", e);
 		}
 		return byteArrayInputStream;
 	}
@@ -125,10 +125,6 @@ public class UsersRequest {
 			InputStream inputStream = getInputStream(profileImage);
 			String originalFileName = getOriginalFileName(profileImage);
 			this.profileImage = new Image(inputStream, originalFileName);
-		}
-
-		public void update(Users users) {
-			users.update(this.email, this.nickname);
 		}
 	}
 

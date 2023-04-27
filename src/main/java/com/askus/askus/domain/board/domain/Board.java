@@ -18,6 +18,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.askus.askus.domain.board.dto.BoardRequest;
 import com.askus.askus.domain.common.BaseEntity;
 import com.askus.askus.domain.image.domain.RepresentativeImage;
 import com.askus.askus.domain.image.domain.ThumbnailImage;
@@ -27,10 +28,16 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
+/**
+ * Board entity
+ *
+ * @Mapping - mapped with Users, ThumbnailImage, RepresentativeImages
+ * @Function - create, update, reset images, add images, like count, reply count, delete like count, reply count
+ */
 @Getter
-@Table(name = "board")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "board")
+@Entity
 public class Board extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,7 +55,7 @@ public class Board extends BaseEntity {
 	private Category category;
 	@Column
 	private String ingredients;
-	@Column
+	@Column(columnDefinition = "TEXT")
 	private String content;
 	@Column
 	private String tag;
@@ -72,14 +79,13 @@ public class Board extends BaseEntity {
 		this.tag = tag;
 	}
 
-	public void update(String title, String foodName, Category category, String ingredients, String content,
-		String tag) {
-		this.title = title;
-		this.foodName = foodName;
-		this.category = category;
-		this.ingredients = ingredients;
-		this.content = content;
-		this.tag = tag;
+	public void update(BoardRequest.Post request) {
+		this.title = request.getTitle();
+		this.foodName = request.getFoodName();
+		this.category = request.getCategory();
+		this.ingredients = request.getIngredients();
+		this.content = request.getContent();
+		this.tag = request.getTag();
 	}
 
 	public void resetThumbnailImage() {
