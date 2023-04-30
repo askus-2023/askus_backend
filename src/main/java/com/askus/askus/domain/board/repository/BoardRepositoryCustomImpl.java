@@ -15,7 +15,6 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -27,27 +26,24 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
 	@Override
 	public List<BoardResponse.Summary> searchBoards(long userId, BoardRequest.Summary request) {
-		List<Long> likeIds = queryFactory
-			.select(like.board.id)
-			.from(like)
-			.where(like.users.id.eq(userId))
-			.fetch();
+
+		List<Long> likeIds = getLikeIds(userId);
 
 		return queryFactory
-			.select(Projections.constructor(BoardResponse.Summary.class,
-				board.id,
-				board.foodName,
-				board.category,
-				new CaseBuilder()
-					.when(board.id.in(likeIds)).then(true)
-					.otherwise(false),
-				users.profileImage.url,
-				board.title,
-				users.nickname,
-				board.createdAt,
-				thumbnailImage.url,
-				board.likeCount,
-				board.replyCount
+				.select(Projections.constructor(BoardResponse.Summary.class,
+						board.id,
+						board.foodName,
+						board.category,
+						new CaseBuilder()
+								.when(board.id.in(likeIds)).then(true)
+								.otherwise(false),
+						users.profileImage.url,
+						board.title,
+						users.nickname,
+						board.createdAt,
+						thumbnailImage.url,
+						board.likeCount,
+						board.replyCount
 			))
 			.from(board)
 			.innerJoin(board.users, users)
@@ -64,27 +60,39 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
 	@Override
 	public List<BoardResponse.Summary> searchBoardsByType(String boardType, Long userId) {
-		JPAQuery<BoardResponse.Summary> baseQuery = queryFactory
-			.select(Projections.constructor(BoardResponse.Summary.class,
-				board.id,
-				users.nickname,
-				board.createdAt,
-				thumbnailImage.url,
-				board.likeCount,
-				board.replyCount
-			))
-			.from(board)
-			.innerJoin(board.users, users)
-			.leftJoin(board.thumbnailImage, thumbnailImage);
 
+		List<Long> likeIds = getLikeIds(userId);
+
+		BooleanExpression predicate = board.users.id.eq(userId);
 		if (boardType.equals("like")) {
-			baseQuery.leftJoin(like).on(board.eq(like.board))
-				.where(like.users.id.eq(userId));
-		} else {
-			baseQuery.where(board.users.id.eq(userId));
+			predicate = board.id.in(likeIds);
 		}
 
-		return baseQuery.distinct().fetch();
+		return queryFactory
+				.select(Projections.constructor(BoardResponse.Summary.class,
+						board.id,
+						board.foodName,
+						board.category,
+						new CaseBuilder()
+								.when(board.id.in(likeIds)).then(true)
+								.otherwise(false),
+						users.profileImage.url,
+						board.title,
+						users.nickname,
+						board.createdAt,
+						thumbnailImage.url,
+						board.likeCount,
+						board.replyCount
+				))
+				.from(board)
+				.innerJoin(board.users, users)
+				.leftJoin(board.thumbnailImage, thumbnailImage)
+				.where(
+						predicate,
+						board.deletedAt.isNull()
+				)
+				.orderBy(board.createdAt.desc())
+				.distinct().fetch();
 	}
 
 	private List<Long> getLikeIds(long userId) {
