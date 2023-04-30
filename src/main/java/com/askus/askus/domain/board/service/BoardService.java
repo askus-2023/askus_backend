@@ -21,7 +21,7 @@ public interface BoardService {
 	 * @param request - BoardRequest.Summary
 	 * @return - searched boards data list(BoardResponse.Summary)
 	 */
-	List<BoardResponse.Summary> searchBoards(BoardRequest.Summary request);
+	List<BoardResponse.Summary> searchBoards(long userId, BoardRequest.Summary request);
 
 	List<BoardResponse.Summary> searchBoardsByType(String boardType, long userId);
 

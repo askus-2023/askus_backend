@@ -58,13 +58,14 @@ public class BoardController {
 	@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = BoardResponse.Summary.class)))
 	@GetMapping
 	public List<BoardResponse.Summary> searchBoards(
+		@AuthenticationPrincipal SecurityUser securityUser,
 		@RequestParam String tag,
 		@RequestParam String dateLoe,
 		@RequestParam String dateGoe,
 		@RequestParam String sortTarget
 	) {
 		BoardRequest.Summary request = new BoardRequest.Summary(tag, dateLoe, dateGoe, sortTarget);
-		return boardService.searchBoards(request);
+		return boardService.searchBoards(securityUser.getId(), request);
 	}
 
 	@Operation(
