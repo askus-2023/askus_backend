@@ -14,6 +14,8 @@ import com.askus.askus.global.util.StringUtil;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -24,10 +26,23 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public List<BoardResponse.Summary> searchBoards(BoardRequest.Summary request) {
+	public List<BoardResponse.Summary> searchBoards(long userId, BoardRequest.Summary request) {
+		List<Long> likeIds = queryFactory
+			.select(like.board.id)
+			.from(like)
+			.where(like.users.id.eq(userId))
+			.fetch();
+
 		return queryFactory
 			.select(Projections.constructor(BoardResponse.Summary.class,
 				board.id,
+				board.foodName,
+				board.category,
+				new CaseBuilder()
+					.when(board.id.in(likeIds)).then(true)
+					.otherwise(false),
+				users.profileImage.url,
+				board.title,
 				users.nickname,
 				board.createdAt,
 				thumbnailImage.url,
@@ -70,6 +85,14 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 		}
 
 		return baseQuery.distinct().fetch();
+	}
+
+	private List<Long> getLikeIds(long userId) {
+		return queryFactory
+			.select(like.board.id)
+			.from(like)
+			.where(like.users.id.eq(userId))
+			.fetch();
 	}
 
 	private BooleanExpression searchTag(BoardRequest.Summary request) {

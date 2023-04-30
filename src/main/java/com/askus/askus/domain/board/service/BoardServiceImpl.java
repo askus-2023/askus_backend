@@ -50,9 +50,9 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public List<BoardResponse.Summary> searchBoards(BoardRequest.Summary request) {
+	public List<BoardResponse.Summary> searchBoards(long userId, BoardRequest.Summary request) {
 		// get & return
-		return boardRepository.searchBoards(request);
+		return boardRepository.searchBoards(userId, request);
 	}
 
 	@Override

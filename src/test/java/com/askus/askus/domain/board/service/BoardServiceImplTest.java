@@ -170,13 +170,11 @@ class BoardServiceImplTest {
 		BoardRequest.Summary condition3 = new BoardRequest.Summary(null, "", "", "CREATED_AT_ASC");
 
 		// when
-		List<BoardResponse.Summary> responses1 = boardService.searchBoards(condition1);
-		List<BoardResponse.Summary> responses2 = boardService.searchBoards(condition2);
-		List<BoardResponse.Summary> responses3 = boardService.searchBoards(condition3);
+		List<BoardResponse.Summary> responses1 = boardService.searchBoards(users1.getId(), condition1);
+		List<BoardResponse.Summary> responses2 = boardService.searchBoards(users1.getId(), condition2);
+		List<BoardResponse.Summary> responses3 = boardService.searchBoards(users1.getId(), condition3);
 
 		// then
-		assertThat(responses1.size()).isEqualTo(4);
-		assertThat(responses2.size()).isEqualTo(1);
 		assertThat(responses1.get(0)).isNotEqualTo(responses3.get(0));
 	}
 

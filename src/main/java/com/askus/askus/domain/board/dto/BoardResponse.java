@@ -64,6 +64,11 @@ public class BoardResponse {
 	public static class Summary {
 		@Schema(description = "게시글 ID", example = "1")
 		private long id;
+		private String foodsName;
+		private Category category;
+		private boolean myLike;
+		private String authorProfileImageUrl;
+		private String title;
 		@Schema(description = "작성자", example = "쿠킹마마")
 		private String author;
 		@Schema(description = "게시글 등록일", example = "2023.04.18")
