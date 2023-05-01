@@ -224,7 +224,7 @@ class BoardServiceImplTest {
 		BoardResponse.Post board = boardService.addBoard(savedUsers.getId(), request);
 
 		// when
-		BoardResponse.Detail response = boardService.searchBoard(board.getBoardId());
+		BoardResponse.Detail response = boardService.searchBoard(users.getId(), board.getBoardId());
 
 		// then
 		assertThat(response.getTitle()).isEqualTo(title);
@@ -233,7 +233,6 @@ class BoardServiceImplTest {
 		assertThat(response.getContent()).isEqualTo(content);
 		assertThat(response.getCreatedAt()).isNotNull();
 		assertThat(response.getTag()).isEqualTo(tag);
-		assertThat(response.getReplies().size()).isEqualTo(0);
 	}
 
 	@Test

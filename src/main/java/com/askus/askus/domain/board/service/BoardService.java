@@ -31,7 +31,7 @@ public interface BoardService {
 	 * @param boardId - selected boardId
 	 * @return - searched board data(BoardResponse.Detail)
 	 */
-	BoardResponse.Detail searchBoard(long boardId);
+	BoardResponse.Detail searchBoard(long userId, long boardId);
 
 	/**
 	 * update board by given request(BoardRequest.Post)

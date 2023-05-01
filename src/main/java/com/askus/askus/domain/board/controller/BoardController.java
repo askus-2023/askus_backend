@@ -76,9 +76,10 @@ public class BoardController {
 	@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = BoardResponse.Detail.class)))
 	@GetMapping("/{boardId}")
 	public BoardResponse.Detail searchBoard(
+		@AuthenticationPrincipal SecurityUser securityUser,
 		@PathVariable Long boardId
 	) {
-		return boardService.searchBoard(boardId);
+		return boardService.searchBoard(securityUser.getId(), boardId);
 	}
 
 	@Operation(
