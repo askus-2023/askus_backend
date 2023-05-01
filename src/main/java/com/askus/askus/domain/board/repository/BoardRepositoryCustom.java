@@ -15,4 +15,6 @@ public interface BoardRepositoryCustom {
 	List<BoardResponse.Summary> searchBoards(long userId, BoardRequest.Summary request);
 
 	List<BoardResponse.Summary> searchBoardsByType(String boardType, Long userId);
+
+	BoardResponse.Detail searchBoard(long userId, long boardId);
 }

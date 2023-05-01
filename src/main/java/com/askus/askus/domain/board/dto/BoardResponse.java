@@ -6,11 +6,11 @@ import java.util.stream.Collectors;
 
 import com.askus.askus.domain.board.domain.Board;
 import com.askus.askus.domain.board.domain.Category;
-import com.askus.askus.domain.reply.dto.ReplyResponse;
 import com.askus.askus.domain.users.domain.Users;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 
 public class BoardResponse {
@@ -81,7 +81,7 @@ public class BoardResponse {
 		private long replyCount;
 	}
 
-	@Getter
+	@Data
 	public static class Detail {
 		@Schema(description = "제목", example = "돼지고기 김치찌개")
 		private final String title;
@@ -89,6 +89,8 @@ public class BoardResponse {
 		private final String foodName;
 		@Schema(description = "작성자", example = "쿠킹마마")
 		private final String author;
+		@Schema(description = "현재 로그인된 사용자가 해당 게시글의 작성자인지 여부", example = "true/false")
+		private final boolean myBoard;
 		@Schema(description = "재료", example = "김치, 돼지고기")
 		private final String ingredients;
 		@Schema(description = "카테고리", example = "KOREAN")
@@ -99,58 +101,41 @@ public class BoardResponse {
 		private final LocalDateTime createdAt;
 		@Schema(description = "썸네일 이미지 주소", example = "http://thumbnail/image/url")
 		private final String thumbnailImageUrl;
-		@Schema(description = "일반 이미지 주소 리스트", example = "[http://representative/image/url1, http://representative/image/url2]")
-		private final List<String> representativeImageUrls;
 		@Schema(description = "태그", example = "한식,김치,돼지고기")
 		private final String tag;
-		@Schema(description = "게시글 댓글 리스트", example = "댓글 관련 내용 리스트")
-		private final List<ReplyResponse> replies;
+		@Schema(description = "게시글 좋아요 개수", example = "36")
+		private final long likeCount;
+		@Schema(description = "현재 로그인된 사용자가 해당 게시글에 좋아요를 눌렀는지 여부", example = "true/false")
+		private final boolean myLike;
+		@Schema(description = "일반 이미지 주소 리스트", example = "[http://representative/image/url1, http://representative/image/url2]")
+		private List<String> representativeImageUrls;
 
 		public Detail(
 			String title,
 			String foodName,
 			String author,
+			boolean myBoard,
 			String ingredients,
 			Category category,
 			String content,
 			LocalDateTime createdAt,
 			String thumbnailImageUrl,
-			List<String> representativeImageUrls,
 			String tag,
-			List<ReplyResponse> replies) {
+			long likeCount,
+			boolean myLike
+		) {
 			this.title = title;
 			this.foodName = foodName;
 			this.author = author;
+			this.myBoard = myBoard;
 			this.ingredients = ingredients;
 			this.category = category;
 			this.content = content;
 			this.createdAt = createdAt;
 			this.thumbnailImageUrl = thumbnailImageUrl;
-			this.representativeImageUrls = representativeImageUrls;
 			this.tag = tag;
-			this.replies = replies;
-		}
-
-		public static Detail ofEntity(
-			Users users,
-			Board board,
-			List<ReplyResponse> replies
-		) {
-			return new Detail(
-				board.getTitle(),
-				board.getFoodName(),
-				users.getNickname(),
-				board.getIngredients(),
-				board.getCategory(),
-				board.getContent(),
-				board.getCreatedAt(),
-				board.getThumbnailImage() == null ? null : board.getThumbnailImage().getUrl(),
-				board.getRepresentativeImages().stream()
-					.map(representativeImage -> representativeImage.getUrl())
-					.collect(Collectors.toList()),
-				board.getTag(),
-				replies
-			);
+			this.likeCount = likeCount;
+			this.myLike = myLike;
 		}
 	}
 }

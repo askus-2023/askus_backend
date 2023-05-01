@@ -1,5 +1,8 @@
 package com.askus.askus.domain.reply.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +42,22 @@ public class ReplyServiceImpl implements ReplyService {
 
 		// 4. return
 		return ReplyResponse.ofEntity(users, reply);
+	}
+
+	@Override
+	public List<ReplyResponse> searchReplies(long userId, long boardId) {
+		// 1. find users
+		Users users = usersRepository.findById(userId)
+			.orElseThrow(() -> new NotFoundException("users", userId));
+
+		// 2. find board
+		Board board = boardRepository.findById(boardId)
+			.orElseThrow(() -> new NotFoundException("board", boardId));
+
+		// 2. find replies & create response & return
+		return replyRepository.findAllByBoardAndDeletedAtNull(board).stream()
+			.map(reply -> ReplyResponse.ofEntity(users, reply))
+			.collect(Collectors.toList());
 	}
 
 	@Override
