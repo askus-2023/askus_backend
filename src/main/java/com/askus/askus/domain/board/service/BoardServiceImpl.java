@@ -15,7 +15,6 @@ import com.askus.askus.domain.image.domain.Image;
 import com.askus.askus.domain.image.domain.RepresentativeImage;
 import com.askus.askus.domain.image.domain.ThumbnailImage;
 import com.askus.askus.domain.image.service.ImageUploader;
-import com.askus.askus.domain.reply.dto.ReplyResponse;
 import com.askus.askus.domain.reply.repository.ReplyRepository;
 import com.askus.askus.domain.users.domain.Users;
 import com.askus.askus.domain.users.repository.UsersRepository;
@@ -61,18 +60,22 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public BoardResponse.Detail searchBoard(long boardId) {
+	public BoardResponse.Detail searchBoard(long userId, long boardId) {
 		// 1. find board
 		Board board = boardRepository.findById(boardId)
 			.orElseThrow(() -> new NotFoundException("board", boardId));
 
-		// 2. find replies
-		List<ReplyResponse> replies = replyRepository.findAllByBoardAndDeletedAtNull(board).stream()
-			.map(reply -> ReplyResponse.ofEntity(board.getUsers(), reply))
-			.collect(Collectors.toList());
+		// 2. find datas for board detail
+		BoardResponse.Detail response = boardRepository.searchBoard(userId, boardId);
 
-		// 3. return
-		return BoardResponse.Detail.ofEntity(board.getUsers(), board, replies);
+		// 3. find representativeImages & set
+		List<String> representativeImageUrls = boardRepository.findRepresentativeImagesByBoardId(boardId).stream()
+			.map(representativeImage -> representativeImage.getUrl())
+			.collect(Collectors.toList());
+		response.setRepresentativeImageUrls(representativeImageUrls);
+
+		// 4. return
+		return boardRepository.searchBoard(userId, boardId);
 	}
 
 	@Override

@@ -76,7 +76,8 @@ public class UsersResponse {
 		private String profileImageUrl;
 
 		public static UsersResponse.ProfileInfo ofEntity(List<BoardResponse.Summary> boards, Users users) {
-			return new UsersResponse.ProfileInfo(boards, users.getEmail(), users.getNickname(), users.getProfileImage().getUrl());
+			return new UsersResponse.ProfileInfo(boards, users.getEmail(), users.getNickname(),
+				users.getProfileImage().getUrl());
 		}
 	}
 

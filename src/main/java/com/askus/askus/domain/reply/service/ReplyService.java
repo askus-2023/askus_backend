@@ -1,5 +1,7 @@
 package com.askus.askus.domain.reply.service;
 
+import java.util.List;
+
 import com.askus.askus.domain.reply.dto.ReplyRequest;
 import com.askus.askus.domain.reply.dto.ReplyResponse;
 
@@ -13,6 +15,8 @@ public interface ReplyService {
 	 * @return - added reply data(ReplyResponse)
 	 */
 	ReplyResponse addReply(long userId, long boardId, ReplyRequest request);
+
+	List<ReplyResponse> searchReplies(long userId, long boardId);
 
 	/**
 	 * update reply by given request(ReplyRequest)
