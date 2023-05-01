@@ -68,13 +68,15 @@ public class UsersResponse {
 	public static class ProfileInfo {
 		@Schema(description = "글 목록", example = "[대충 보드 리스트,,,]")
 		List<BoardResponse.Summary> boards;
+		@Schema(description = "이메일", example = "cookle@cookle.com")
+		private String email;
 		@Schema(description = "닉네임", example = "쿠킹마마")
 		private String nickname;
 		@Schema(description = "프로필 이미지 주소", example = "http://profile/image/url")
 		private String profileImageUrl;
 
 		public static UsersResponse.ProfileInfo ofEntity(List<BoardResponse.Summary> boards, Users users) {
-			return new UsersResponse.ProfileInfo(boards, users.getNickname(), users.getProfileImage().getUrl());
+			return new UsersResponse.ProfileInfo(boards, users.getEmail(), users.getNickname(), users.getProfileImage().getUrl());
 		}
 	}
 
