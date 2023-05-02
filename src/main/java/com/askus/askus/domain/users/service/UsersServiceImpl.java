@@ -86,11 +86,11 @@ public class UsersServiceImpl implements UsersService {
 		UsersResponse.TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
 
 		// 4. RefreshToken Redis 저장 (expirationTime 설정을 통해 자동 삭제 처리)
-		/*redisTemplate.opsForValue()
+		redisTemplate.opsForValue()
 			.set("RT:" + authentication.getName(),
 				tokenInfo.getRefreshToken(),
 				7,
-				TimeUnit.DAYS);*/
+				TimeUnit.DAYS);
 
 		Users users = usersRepository.findByEmail(request.getEmail())
 			.orElseThrow(() -> new NotFoundException("users", request.getEmail()));
