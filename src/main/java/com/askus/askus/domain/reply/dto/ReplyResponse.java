@@ -9,14 +9,21 @@ import lombok.Getter;
 
 @Getter
 public class ReplyResponse {
+	private final long replyId;
 	private final String replyAuthor;
 	private final String content;
 	private final LocalDateTime createdAt;
 	private final boolean myReply;
 	private final String authorProfileImageUrl;
 
-	public ReplyResponse(String replyAuthor, String content, LocalDateTime createdAt, boolean myReply,
+	public ReplyResponse(
+		long replyId,
+		String replyAuthor,
+		String content,
+		LocalDateTime createdAt,
+		boolean myReply,
 		String authorProfileImageUrl) {
+		this.replyId = replyId;
 		this.replyAuthor = replyAuthor;
 		this.content = content;
 		this.createdAt = createdAt;
@@ -25,7 +32,12 @@ public class ReplyResponse {
 	}
 
 	public static ReplyResponse ofEntity(Users users, Reply reply) {
-		return new ReplyResponse(users.getNickname(), reply.getContent(), reply.getCreatedAt(),
-			reply.getUsers().getId().equals(users.getId()), reply.getUsers().getProfileImage().getUrl());
+		return new ReplyResponse(
+			reply.getId(),
+			users.getNickname(),
+			reply.getContent(),
+			reply.getCreatedAt(),
+			reply.getUsers().getId().equals(users.getId()),
+			reply.getUsers().getProfileImage().getUrl());
 	}
 }

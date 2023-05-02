@@ -119,7 +119,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 			))
 			.from(board)
 			.innerJoin(board.users, users)
-			.innerJoin(board.thumbnailImage, thumbnailImage)
+			.leftJoin(board.thumbnailImage, thumbnailImage)
 			.where(board.id.eq(boardId))
 			.distinct().fetchOne();
 	}
