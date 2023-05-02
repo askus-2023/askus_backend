@@ -58,7 +58,6 @@ public class Users extends BaseEntity {
 	}
 
 	public void update(UsersRequest.Patch request) {
-		this.email = request.getEmail();
 		this.nickname = request.getNickname();
 	}
 

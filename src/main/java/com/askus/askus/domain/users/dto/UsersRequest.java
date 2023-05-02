@@ -103,17 +103,16 @@ public class UsersRequest {
 
 	@Getter
 	public static class Patch {
-		@Schema(description = "이메일", example = "email@email.com")
-		private String email;
 		@Schema(description = "닉네임", example = "쿠킹마마")
 		private String nickname;
 		@Schema(description = "프로필 이미지", example = "profileImage.png")
 		private Image profileImage;
+		private boolean imageUpdated;
 
-		public Patch(String email, String nickname, MultipartFile profileImage) {
-			this.email = email;
+		public Patch(String nickname, MultipartFile profileImage, boolean imageUpdated) {
 			this.nickname = nickname;
 			setProfileImage(profileImage);
+			this.imageUpdated = imageUpdated;
 		}
 
 		public void setProfileImage(MultipartFile profileImage) {
