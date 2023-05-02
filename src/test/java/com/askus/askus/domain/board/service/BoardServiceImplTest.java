@@ -76,7 +76,9 @@ class BoardServiceImplTest {
 			content,
 			tag,
 			thumbnailImage,
-			representativeImages
+			representativeImages,
+			false,
+			false
 		);
 
 		// when
@@ -148,7 +150,9 @@ class BoardServiceImplTest {
 			content1,
 			tag1,
 			thumbnailImage1,
-			representativeImages
+			representativeImages,
+			false,
+			false
 		);
 
 		BoardRequest.Post request2 = new BoardRequest.Post(
@@ -159,7 +163,9 @@ class BoardServiceImplTest {
 			content2,
 			tag2,
 			thumbnailImage2,
-			representativeImages
+			representativeImages,
+			false,
+			false
 		);
 
 		boardService.addBoard(savedUsers1.getId(), request1);
@@ -218,7 +224,9 @@ class BoardServiceImplTest {
 			content,
 			tag,
 			thumbnailImage,
-			representativeImages
+			representativeImages,
+			false,
+			false
 		);
 
 		BoardResponse.Post board = boardService.addBoard(savedUsers.getId(), request);
@@ -275,7 +283,9 @@ class BoardServiceImplTest {
 			content,
 			tag,
 			thumbnailImage,
-			representativeImages
+			representativeImages,
+			false,
+			false
 		);
 
 		BoardResponse.Post response = boardService.addBoard(savedUsers.getId(), request);
@@ -295,7 +305,9 @@ class BoardServiceImplTest {
 			updatedContent,
 			updatedTag,
 			null,
-			null);
+			null,
+			false,
+			false);
 
 		// when & then
 		assertThat(response.getTitle()).isEqualTo(title);
@@ -358,7 +370,9 @@ class BoardServiceImplTest {
 			content,
 			tag,
 			thumbnailImage,
-			representativeImages
+			representativeImages,
+			false,
+			false
 		);
 
 		BoardResponse.Post board = boardService.addBoard(savedUsers.getId(), request);
