@@ -75,7 +75,7 @@ public class BoardServiceImpl implements BoardService {
 		response.setRepresentativeImageUrls(representativeImageUrls);
 
 		// 4. return
-		return boardRepository.searchBoard(userId, boardId);
+		return response;
 	}
 
 	@Override
