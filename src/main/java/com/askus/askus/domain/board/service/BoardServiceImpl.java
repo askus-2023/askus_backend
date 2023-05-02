@@ -93,8 +93,12 @@ public class BoardServiceImpl implements BoardService {
 		board.update(request);
 
 		// 4. update images
-		board.resetThumbnailImage();
-		board.resetRepresentativeImages();
+		if (request.isThumbnailImageUpdate()) {
+			board.resetThumbnailImage();
+		}
+		if (request.isRepresentativeImageUpdate()) {
+			board.resetRepresentativeImages();
+		}
 		uploadImages(board, request.getThumbnailImage(), request.getRepresentativeImages());
 
 		// 5. return

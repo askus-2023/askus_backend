@@ -52,6 +52,8 @@ public class BoardRequest {
 		private Optional<Image> thumbnailImage = Optional.empty();
 		@Schema(description = "일반 이미지", example = "image1.png, ...")
 		private Optional<List<Image>> representativeImages = Optional.empty();
+		private boolean thumbnailImageUpdate;
+		private boolean representativeImageUpdate;
 
 		public Post(
 			String title,
@@ -61,7 +63,9 @@ public class BoardRequest {
 			String content,
 			String tag,
 			MultipartFile thumbnailImage,
-			List<MultipartFile> representativeImages
+			List<MultipartFile> representativeImages,
+			boolean thumbnailImageUpdate,
+			boolean representativeImageUpdate
 		) {
 			this.title = title;
 			this.foodName = foodName;
@@ -71,6 +75,8 @@ public class BoardRequest {
 			this.tag = tag;
 			setThumbnailImage(thumbnailImage);
 			setRepresentativeImages(representativeImages);
+			this.thumbnailImageUpdate = thumbnailImageUpdate;
+			this.representativeImageUpdate = representativeImageUpdate;
 		}
 
 		public void setThumbnailImage(MultipartFile thumbnailImage) {
