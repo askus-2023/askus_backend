@@ -86,11 +86,11 @@ public class UsersServiceImpl implements UsersService {
 		UsersResponse.TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
 
 		// 4. RefreshToken Redis 저장 (expirationTime 설정을 통해 자동 삭제 처리)
-		/*redisTemplate.opsForValue()
-				.set("RT:" + authentication.getName(),
-						tokenInfo.getRefreshToken(),
-						7,
-						TimeUnit.DAYS);*/
+		redisTemplate.opsForValue()
+			.set("RT:" + authentication.getName(),
+				tokenInfo.getRefreshToken(),
+				7,
+				TimeUnit.DAYS);
 
 		Users users = usersRepository.findByEmail(request.getEmail())
 			.orElseThrow(() -> new NotFoundException("users", request.getEmail()));
@@ -145,11 +145,15 @@ public class UsersServiceImpl implements UsersService {
 		Users users = usersRepository.findById(userId)
 			.orElseThrow(() -> new NotFoundException("users", userId));
 
-		// 2. update users & image
+		// 2. update users
 		users.update(request);
-		String profileImageUrl = request.getProfileImage().uploadBy(imageUploader);
-		ProfileImage profileImage = new ProfileImage(users, profileImageUrl);
-		users.setProfileImage(profileImage);
+
+		// 3. validate & update image
+		if (request.isImageUpdated()) {
+			String profileImageUrl = request.getProfileImage().uploadBy(imageUploader);
+			ProfileImage profileImage = new ProfileImage(users, profileImageUrl);
+			users.setProfileImage(profileImage);
+		}
 
 		// 3. return
 		return UsersResponse.Patch.ofEntity(users);
