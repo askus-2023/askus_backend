@@ -51,7 +51,7 @@ class UsersServiceImplTest {
 		String updateEmail = "updateEmail@email.com";
 		String updateNickname = "updateNickname";
 
-		UsersRequest.Patch request = new UsersRequest.Patch(updateEmail, updateNickname, null);
+		UsersRequest.Patch request = new UsersRequest.Patch(updateNickname, null, true);
 
 		// when
 		UsersResponse.Patch response = sut.updateUsers(users.getId(), request);
