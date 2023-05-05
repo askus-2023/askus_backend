@@ -132,6 +132,9 @@ public class BoardRequest {
 
 	@Getter
 	public static class Summary {
+
+		@Schema(description = "제목 검색조건", example = "맛있는")
+		private String title;
 		@Schema(description = "카테고리 검색조건", example = "KOREAN")
 		private String tag;
 		@Schema(description = "게시글 등록 시작일 검색조건", example = "2023-04-21")
@@ -143,10 +146,12 @@ public class BoardRequest {
 		private SortConditions sortTarget;
 
 		public Summary(
+			String title,
 			String tag,
 			String dateLoe,
 			String dateGoe,
 			String sortTarget) {
+			this.title = title;
 			this.tag = tag;
 			if (!dateLoe.isBlank()) {
 				this.dateLoe = Optional.of(LocalDate.parse(dateLoe, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay());
