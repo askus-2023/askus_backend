@@ -49,6 +49,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 			.innerJoin(board.users, users)
 			.leftJoin(board.thumbnailImage, thumbnailImage)
 			.where(
+				searchTitle(request),
 				searchTag(request),
 				dateLoe(request),
 				dateGoe(request),
@@ -130,6 +131,13 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 			.from(like)
 			.where(like.users.id.eq(userId))
 			.fetch();
+	}
+
+	private BooleanExpression searchTitle(BoardRequest.Summary request) {
+		if (StringUtil.isNullOrEmpty(request.getTitle())) {
+			return null;
+		}
+		return board.title.like("%"+request.getTitle()+"%");
 	}
 
 	private BooleanExpression searchTag(BoardRequest.Summary request) {
