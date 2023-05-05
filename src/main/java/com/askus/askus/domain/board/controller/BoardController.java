@@ -59,12 +59,13 @@ public class BoardController {
 	@GetMapping
 	public List<BoardResponse.Summary> searchBoards(
 		@AuthenticationPrincipal SecurityUser securityUser,
+		@RequestParam String title,
 		@RequestParam String tag,
 		@RequestParam String dateLoe,
 		@RequestParam String dateGoe,
 		@RequestParam String sortTarget
 	) {
-		BoardRequest.Summary request = new BoardRequest.Summary(tag, dateLoe, dateGoe, sortTarget);
+		BoardRequest.Summary request = new BoardRequest.Summary(title, tag, dateLoe, dateGoe, sortTarget);
 		return boardService.searchBoards(securityUser.getId(), request);
 	}
 

@@ -171,9 +171,9 @@ class BoardServiceImplTest {
 		boardService.addBoard(savedUsers1.getId(), request1);
 		boardService.addBoard(savedUsers2.getId(), request2);
 
-		BoardRequest.Summary condition1 = new BoardRequest.Summary(null, "", "", "CREATED_AT_DESC");
-		BoardRequest.Summary condition2 = new BoardRequest.Summary(tag1, "", "", "CREATED_AT_DESC");
-		BoardRequest.Summary condition3 = new BoardRequest.Summary(null, "", "", "CREATED_AT_ASC");
+		BoardRequest.Summary condition1 = new BoardRequest.Summary(null, null, "", "", "CREATED_AT_DESC");
+		BoardRequest.Summary condition2 = new BoardRequest.Summary(null, tag1, "", "", "CREATED_AT_DESC");
+		BoardRequest.Summary condition3 = new BoardRequest.Summary(null, null, "", "", "CREATED_AT_ASC");
 
 		// when
 		List<BoardResponse.Summary> responses1 = boardService.searchBoards(users1.getId(), condition1);
