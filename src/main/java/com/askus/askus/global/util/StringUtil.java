@@ -1,5 +1,9 @@
 package com.askus.askus.global.util;
 
+/**
+ * Validating String
+ * check if null or empty
+ * */
 public class StringUtil {
 	public static boolean isNullOrEmpty(String str) {
 		if (str == null) {

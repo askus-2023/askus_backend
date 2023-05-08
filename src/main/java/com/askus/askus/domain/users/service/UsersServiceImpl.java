@@ -139,8 +139,8 @@ public class UsersServiceImpl implements UsersService {
 		return UsersResponse.ProfileInfo.ofEntity(boards, users);
 	}
 
-	@Override
 	@Transactional
+	@Override
 	public UsersResponse.Patch updateUsers(long userId, UsersRequest.Patch request) {
 		// 1. find users
 		Users users = usersRepository.findById(userId)
@@ -160,24 +160,24 @@ public class UsersServiceImpl implements UsersService {
 		return UsersResponse.Patch.ofEntity(users);
 	}
 
-	@Override
 	@Transactional
+	@Override
 	public void updatePassword(long userId, UsersRequest.PatchPassword request) {
 		// 1. find users
 		Users users = usersRepository.findById(userId)
 			.orElseThrow(() -> new NotFoundException("users", userId));
 
-		// 2. validate
+		// 2. validate password
 		boolean matches = passwordEncoder.matches(request.getExistingPassword(), users.getPassword());
 		if (!matches) {
-			throw new MissMatchException("with existing password", request.getExistingPassword());
+			throw new MissMatchException("password-existing", request.getExistingPassword());
 		}
 
 		if (!request.getPassword().equals(request.getCheckedPassword())) {
-			throw new MissMatchException("with checking password", request.getCheckedPassword());
+			throw new MissMatchException("password-checking", request.getCheckedPassword());
 		}
 
-		// 3. update password
+		// 3. encode & update password
 		request.update(users);
 		users.encodePassword(passwordEncoder);
 	}

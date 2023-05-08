@@ -5,6 +5,10 @@ import java.util.regex.Pattern;
 
 import lombok.NoArgsConstructor;
 
+/**
+ * Validating Preconditions
+ * check if null, check if contains, check if pattern matches
+ * */
 @NoArgsConstructor
 public class Preconditions {
 

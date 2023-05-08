@@ -13,6 +13,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 
+/**
+ * Response DTO for domain Board
+ * */
 public class BoardResponse {
 	@Getter
 	@AllArgsConstructor

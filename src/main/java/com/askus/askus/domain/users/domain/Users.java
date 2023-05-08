@@ -20,10 +20,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * Users entity
- *
- * @Mapping - mapped with ProfileImage
- * @Function - create, update email, nickname, password, set profileImage, encode password
+ * Users entity(Attributes, Function for Board)
  */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

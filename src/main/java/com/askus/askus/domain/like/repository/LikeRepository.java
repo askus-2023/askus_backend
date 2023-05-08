@@ -9,6 +9,7 @@ import com.askus.askus.domain.like.domain.Like;
 import com.askus.askus.domain.users.domain.Users;
 
 public interface LikeRepository extends JpaRepository<Like, Long> {
+
 	/**
 	 * search like by given user and board
 	 *

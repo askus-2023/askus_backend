@@ -5,6 +5,9 @@ import com.askus.askus.domain.board.domain.Board;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
+/**
+ * Response DTO for domain Like
+ * */
 @Getter
 public class LikeResponse {
 	@Schema(description = "board ID", example = "1")

@@ -18,6 +18,10 @@ import com.askus.askus.global.properties.S3Properties;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Implementation for Image Uploader using AWS S3 bucket
+ * create bean for external library
+ * */
 @Component
 @RequiredArgsConstructor
 public class S3ImageUploader implements ImageUploader {

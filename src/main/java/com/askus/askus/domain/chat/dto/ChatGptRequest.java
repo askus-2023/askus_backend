@@ -3,6 +3,9 @@ package com.askus.askus.domain.chat.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
+/**
+ * Request DTO for domain Chat
+ * */
 public class ChatGptRequest {
 	@Getter
 	public static class Chat {

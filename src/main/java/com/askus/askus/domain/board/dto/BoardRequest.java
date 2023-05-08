@@ -18,14 +18,17 @@ import com.askus.askus.domain.board.domain.Board;
 import com.askus.askus.domain.board.domain.Category;
 import com.askus.askus.domain.image.domain.Image;
 import com.askus.askus.domain.users.domain.Users;
+import com.askus.askus.global.SortConditions;
 import com.askus.askus.global.error.exception.FileException;
-import com.askus.askus.global.util.SortConditions;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * Request DTO for domain Board
+ * */
 public class BoardRequest {
 
 	@Schema(description = "게시글 등록 request dto")

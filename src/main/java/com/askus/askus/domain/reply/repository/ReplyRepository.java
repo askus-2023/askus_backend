@@ -8,6 +8,7 @@ import com.askus.askus.domain.board.domain.Board;
 import com.askus.askus.domain.reply.domain.Reply;
 
 public interface ReplyRepository extends JpaRepository<Reply, Long> {
+
 	/**
 	 * search replies by given board
 	 *
