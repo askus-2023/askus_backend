@@ -37,12 +37,15 @@ jobs:
     - run: touch ./src/main/resources/application.properties
     - run: echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.properties
     - run: cat ./src/main/resources/application.properties
+
+    - uses: actions/checkout@v2
+    - run: mkdir -p ./src/main/resources
+    - run: touch ./src/main/resources/messages.properties
+    - run: echo "${{ secrets.MESSAGES }}" > ./src/main/resources/messages.properties
+    - run: cat ./src/main/resources/messages.properties
         
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
-    
-#    - name: Build with Gradle
-#      run: ./gradlew clean build
 
     - name: Build with Gradle
       uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
@@ -88,22 +91,6 @@ jobs:
           --ignore-hidden-files \
           --s3-location s3://$S3_BUCKET_NAME/kookle-server.zip \
           --source .
-
-#     - name: Upload to S3
-#       run: aws s3 cp --region ap-northeast-2 ./kookle-server.zip s3://$S3_BUCKET_NAME/kookle-server.zip
-
-    # Deploy
-#     - name: Deploy
-#       env:
-#         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#       run: |
-#         aws deploy create-deployment \
-#         --application-name kookle \
-#         --deployment-group-name kookle-group \
-#         --file-exists-behavior OVERWRITE \
-#         --s3-location bucket=kookle-deploy,bundleType=zip,key=kookle-server.zip \ 
-#         --region ap-northeast-2
     
     - name: Deploy to AWS EC2 from S3
       run: |
