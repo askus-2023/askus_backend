@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Implementation for Chat Service using ChatGPT
- * @Function - chat
+ * create bean for external library
  * */
 @Service
 @RequiredArgsConstructor

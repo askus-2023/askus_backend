@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * Validating Preconditions
- * @Function - check if null, check if contains, check if pattern matches
+ * check if null, check if contains, check if pattern matches
  * */
 @NoArgsConstructor
 public class Preconditions {

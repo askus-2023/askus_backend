@@ -18,7 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * RepresentativeImage entity
+ * RepresentativeImage entity(Attributes, Function for Board)
  * AggregateRoot - Board
  */
 @Getter

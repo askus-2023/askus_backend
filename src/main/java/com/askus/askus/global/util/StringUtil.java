@@ -2,7 +2,7 @@ package com.askus.askus.global.util;
 
 /**
  * Validating String
- * @Function - check if null or empty
+ * check if null or empty
  * */
 public class StringUtil {
 	public static boolean isNullOrEmpty(String str) {

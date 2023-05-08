@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Implementation for Image Uploader using AWS S3 bucket
- * @Function - upload, delete
+ * create bean for external library
  * */
 @Component
 @RequiredArgsConstructor

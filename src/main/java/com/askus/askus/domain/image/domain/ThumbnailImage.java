@@ -18,7 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * ThumbnailImage entity
+ * ThumbnailImage entity(Attributes, Function for Board)
  * AggregateRoot - Board
  */
 @Getter
