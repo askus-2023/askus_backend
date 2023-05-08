@@ -10,7 +10,7 @@ import java.util.List;
 import com.askus.askus.domain.board.domain.Category;
 import com.askus.askus.domain.board.dto.BoardRequest;
 import com.askus.askus.domain.board.dto.BoardResponse;
-import com.askus.askus.global.util.SortConditions;
+import com.askus.askus.global.SortConditions;
 import com.askus.askus.global.util.StringUtil;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
@@ -137,7 +137,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 		if (StringUtil.isNullOrEmpty(request.getTitle())) {
 			return null;
 		}
-		return board.title.like("%"+request.getTitle()+"%");
+		return board.title.like("%" + request.getTitle() + "%");
 	}
 
 	private BooleanExpression searchTag(BoardRequest.Summary request) {

@@ -5,6 +5,9 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 
 import lombok.Getter;
 
+/**
+ * Properties binding from application.properties for S3
+ * */
 @ConfigurationProperties(prefix = "cloud.aws.s3")
 @ConstructorBinding
 @Getter
