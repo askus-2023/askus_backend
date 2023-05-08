@@ -17,11 +17,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * ProfileImage entity
- *
- * @Mapping - mapped with Users
- * @Function - create
- * @AggregateRoot - Users
+ * ProfileImage entity(Attributes, Function for Board)
+ * AggregateRoot - Users
  */
 @Getter
 @NoArgsConstructor

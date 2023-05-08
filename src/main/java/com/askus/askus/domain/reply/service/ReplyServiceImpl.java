@@ -19,14 +19,15 @@ import com.askus.askus.global.error.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 @Service
 public class ReplyServiceImpl implements ReplyService {
 	private final ReplyRepository replyRepository;
 	private final UsersRepository usersRepository;
 	private final BoardRepository boardRepository;
 
-	@Override
 	@Transactional
+	@Override
 	public ReplyResponse addReply(long userId, long boardId, ReplyRequest request) {
 		// 1. find users
 		Users users = usersRepository.findById(userId)
@@ -60,8 +61,8 @@ public class ReplyServiceImpl implements ReplyService {
 			.collect(Collectors.toList());
 	}
 
-	@Override
 	@Transactional
+	@Override
 	public ReplyResponse updateReply(long boardId, long replyId, ReplyRequest request) {
 		// 1. find board
 		Board board = boardRepository.findById(boardId)
@@ -78,8 +79,8 @@ public class ReplyServiceImpl implements ReplyService {
 		return ReplyResponse.ofEntity(reply.getUsers(), reply);
 	}
 
-	@Override
 	@Transactional
+	@Override
 	public void deleteReply(long boardId, long replyId) {
 		// 1. find board
 		Board board = boardRepository.findById(boardId)

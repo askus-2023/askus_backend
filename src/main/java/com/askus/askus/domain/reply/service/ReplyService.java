@@ -6,6 +6,7 @@ import com.askus.askus.domain.reply.dto.ReplyRequest;
 import com.askus.askus.domain.reply.dto.ReplyResponse;
 
 public interface ReplyService {
+
 	/**
 	 * add reply by given request(ReplyRequest)
 	 *
@@ -16,6 +17,13 @@ public interface ReplyService {
 	 */
 	ReplyResponse addReply(long userId, long boardId, ReplyRequest request);
 
+	/**
+	 * search replies by given request(BoardId)
+	 *
+	 * @param userId - current userId
+	 * @param boardId - selected boardId
+	 * @return - searched reply data(ReplyResponse)
+	 */
 	List<ReplyResponse> searchReplies(long userId, long boardId);
 
 	/**

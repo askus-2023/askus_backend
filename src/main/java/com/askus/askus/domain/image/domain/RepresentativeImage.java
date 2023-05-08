@@ -18,11 +18,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * RepresentativeImage entity
- *
- * @Mapping - mapped with Board
- * @Function - create
- * @AggregateRoot - Board
+ * RepresentativeImage entity(Attributes, Function for Board)
+ * AggregateRoot - Board
  */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

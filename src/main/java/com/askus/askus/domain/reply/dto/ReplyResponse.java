@@ -7,6 +7,9 @@ import com.askus.askus.domain.users.domain.Users;
 
 import lombok.Getter;
 
+/**
+ * Response DTO for domain Reply
+ * */
 @Getter
 public class ReplyResponse {
 	private final long replyId;

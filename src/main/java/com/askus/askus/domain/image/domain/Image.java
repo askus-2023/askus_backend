@@ -13,8 +13,6 @@ import lombok.Getter;
 
 /**
  * Image model
- *
- * @Function - check extension, extract extension, validate extension, upload by imageUploader
  */
 @Getter
 public class Image {

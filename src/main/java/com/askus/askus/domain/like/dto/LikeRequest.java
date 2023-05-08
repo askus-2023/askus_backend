@@ -9,6 +9,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * Request DTO for domain Like
+ * */
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor

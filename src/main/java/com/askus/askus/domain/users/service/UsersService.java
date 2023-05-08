@@ -32,4 +32,12 @@ public interface UsersService {
 	 * @param request - UsersRequest.PatchPassword
 	 */
 	void updatePassword(long userId, UsersRequest.PatchPassword request);
+
+	/**
+	 * logout user
+	 *
+	 * @Param securityUser - current user
+	 * @Param accessToken - current user access token
+	 */
+	void logout(SecurityUser securityUser, String accessToken);
 }

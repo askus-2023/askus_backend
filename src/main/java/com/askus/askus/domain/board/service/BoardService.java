@@ -6,6 +6,7 @@ import com.askus.askus.domain.board.dto.BoardRequest;
 import com.askus.askus.domain.board.dto.BoardResponse;
 
 public interface BoardService {
+
 	/**
 	 * add board by given request(BoardRequest.Post)
 	 *

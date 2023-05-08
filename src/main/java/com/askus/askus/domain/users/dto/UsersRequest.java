@@ -18,6 +18,9 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * Request DTO for domain Users
+ * */
 public class UsersRequest {
 
 	private static InputStream getInputStream(MultipartFile file) {

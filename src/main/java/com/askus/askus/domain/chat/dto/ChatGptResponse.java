@@ -5,6 +5,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/**
+ * Response DTO for domain Chat
+ * */
 public class ChatGptResponse {
 	@Getter
 	@AllArgsConstructor

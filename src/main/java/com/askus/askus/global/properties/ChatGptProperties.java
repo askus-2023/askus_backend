@@ -5,6 +5,9 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 
 import lombok.Getter;
 
+/**
+ * Properties binding from application.properties for ChatGPT
+ * */
 @ConfigurationProperties(prefix = "chatgpt")
 @ConstructorBinding
 @Getter

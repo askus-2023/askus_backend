@@ -19,10 +19,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * Reply entity
- *
- * @Mapping - mapped with Users, Board
- * @Function - create, update
+ * Reply entity(Attributes, Function for Board)
  */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

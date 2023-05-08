@@ -1,16 +1,17 @@
 package com.askus.askus.global.util;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.util.StringUtils;
 
 public class SecurityUtil {
-	public static String getSignInUserEmail() {
-		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-		if (authentication == null || authentication.getName() == null) {
-			throw new RuntimeException("No authentication information");
+	public static String getAccessToken(HttpServletRequest request) {
+		String bearerToken = request.getHeader("Authorization");
+		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
+			return bearerToken.substring(7);
 		}
-		return authentication.getName();
+		return null;
 	}
 }
 

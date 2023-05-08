@@ -118,8 +118,9 @@ public class UsersServiceImpl implements UsersService {
 			throw new MissMatchException("refresh token", reissue.getRefreshToken());
 		}
 
-		// 4. 새로운 토큰 생성
+		// 4. 새로운 토큰 생성, 기존 토큰 블랙리스트 추가
 		UsersResponse.TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
+		redisTemplate.opsForValue().set(reissue.getAccessToken(), "logout", 7, TimeUnit.DAYS);
 
 		// 5. RefreshToken Redis 업데이트
 		redisTemplate.opsForValue()
@@ -138,8 +139,8 @@ public class UsersServiceImpl implements UsersService {
 		return UsersResponse.ProfileInfo.ofEntity(boards, users);
 	}
 
-	@Override
 	@Transactional
+	@Override
 	public UsersResponse.Patch updateUsers(long userId, UsersRequest.Patch request) {
 		// 1. find users
 		Users users = usersRepository.findById(userId)
@@ -159,25 +160,43 @@ public class UsersServiceImpl implements UsersService {
 		return UsersResponse.Patch.ofEntity(users);
 	}
 
-	@Override
 	@Transactional
+	@Override
 	public void updatePassword(long userId, UsersRequest.PatchPassword request) {
 		// 1. find users
 		Users users = usersRepository.findById(userId)
 			.orElseThrow(() -> new NotFoundException("users", userId));
 
-		// 2. validate
+		// 2. validate password
 		boolean matches = passwordEncoder.matches(request.getExistingPassword(), users.getPassword());
 		if (!matches) {
-			throw new MissMatchException("with existing password", request.getExistingPassword());
+			throw new MissMatchException("password-existing", request.getExistingPassword());
 		}
 
 		if (!request.getPassword().equals(request.getCheckedPassword())) {
-			throw new MissMatchException("with checking password", request.getCheckedPassword());
+			throw new MissMatchException("password-checking", request.getCheckedPassword());
 		}
 
-		// 3. update password
+		// 3. encode & update password
 		request.update(users);
 		users.encodePassword(passwordEncoder);
+	}
+
+	@Override
+	@Transactional
+	public void logout(SecurityUser securityUser, String accessToken) {
+
+		// 1. validate
+		if (!jwtTokenProvider.validateToken(accessToken)){
+			throw new NotFoundException("access token", accessToken);
+		}
+
+		// 2. delete refresh token
+		if (redisTemplate.opsForValue().get("RT:" + securityUser.getUsername()) != null){
+			redisTemplate.delete("RT:"+securityUser.getUsername());
+		}
+
+		// 3. add access token to blacklist
+		redisTemplate.opsForValue().set(accessToken, "logout", 7, TimeUnit.DAYS);
 	}
 }

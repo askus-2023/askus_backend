@@ -12,6 +12,10 @@ import io.github.flashvayne.chatgpt.dto.ChatResponse;
 import io.github.flashvayne.chatgpt.service.ChatgptService;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Implementation for Chat Service using ChatGPT
+ * create bean for external library
+ * */
 @Service
 @RequiredArgsConstructor
 public class ChatGptChatService implements ChatService {
