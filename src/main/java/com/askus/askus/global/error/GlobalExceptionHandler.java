@@ -2,7 +2,6 @@ package com.askus.askus.global.error;
 
 import static org.springframework.http.HttpStatus.*;
 
-import org.springframework.context.MessageSource;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -11,20 +10,18 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 
 import com.askus.askus.global.error.exception.KookleRuntimeException;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * handler for the exception
+ * Handler for the exception
  */
 @Slf4j
+@RequiredArgsConstructor
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
 	private final MessageSourceAccessor messageSourceAccessor;
-
-	public GlobalExceptionHandler(MessageSource messageSource) {
-		this.messageSourceAccessor = new MessageSourceAccessor(messageSource);
-	}
 
 	@ResponseStatus(BAD_REQUEST)
 	@ExceptionHandler(KookleRuntimeException.class)
