@@ -20,12 +20,6 @@ import lombok.NoArgsConstructor;
 
 /**
  * Request DTO for domain Users
- * @request - sign up
- * @request - sign in
- * @request - check if email duplicates
- * @request - reissue refresh token
- * @request - update users data
- * @request - update password
  * */
 public class UsersRequest {
 

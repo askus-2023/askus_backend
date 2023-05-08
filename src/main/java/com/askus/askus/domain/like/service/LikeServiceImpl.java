@@ -25,8 +25,8 @@ public class LikeServiceImpl implements LikeService {
 	private final UsersRepository usersRepository;
 	private final BoardRepository boardRepository;
 
-	@Override
 	@Transactional
+	@Override
 	public LikeResponse addLike(long usersId, LikeRequest request) {
 		// 1. find users
 		Users users = usersRepository.findById(usersId)
@@ -52,8 +52,8 @@ public class LikeServiceImpl implements LikeService {
 		return LikeResponse.ofEntity(board);
 	}
 
-	@Override
 	@Transactional
+	@Override
 	public LikeResponse deleteLike(long usersId, LikeRequest request) {
 		// 1. find users
 		Users users = usersRepository.findById(usersId)

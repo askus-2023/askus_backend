@@ -11,12 +11,6 @@ import lombok.Getter;
 
 /**
  * Response DTO for domain Users
- * @response - sign up
- * @response - sign in
- * @response - check if email duplicates
- * @response - reissue refresh token
- * @response - search specific domain
- * @response - update users data
  * */
 public class UsersResponse {
 
