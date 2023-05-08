@@ -164,7 +164,7 @@
 <br>
 
 6.1 CI/CD Pipeline
-[ci/cd pipeline](src/main/resources/Untitled.png)
+![ci/cd pipeline](src/main/resources/Untitled.png)
 1. github 레포지토리의 main(master) 브랜치에 commit이 발생
 2. github action 으로 프로젝트 빌드 후 S3에 zip 업로드
 3. CodeDeploy는 빌드된 zip 파일을 s3로 부터 가져와서 ec2에 deploy
