@@ -1,16 +1,7 @@
 # cookle_backend
 [ Cookle ] 데이터 서버 🧐
 
-## :books: Index
-
-- [:cookie: Cookle_Backend_Docs](#cookle_backend)
-  - [:books: Index](#books-Index)
-    - [1. Project Structure](### 1. Project Structure)
-    - [Code Convention](#Code Convention)
-    - [Exception Handling](#Exception Handling)
-    - [Git / Github](#Git / Github)
-    - [Authorization/Authentication Flow](#Authorization/Authentication Flow)
-    - [CI/CD Workflow](#CI/CD Workflow)
+## :document: Documentation
 
 ### 1. Project Structure
 
