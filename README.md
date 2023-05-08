@@ -3,9 +3,9 @@
 
 ## :books: Index
 
-- [:cookie: Cookle](#cookie-cookle_backend)
+- [:cookie: Cookle_Backend_Docs](#cookle_backend)
   - [:books: Index](#books-Index)
-    - [Project Structure](#Project Structure)
+    - [1. Project Structure](### 1. Project Structure)
     - [Code Convention](#Code Convention)
     - [Exception Handling](#Exception Handling)
     - [Git / Github](#Git / Github)
