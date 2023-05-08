@@ -141,7 +141,7 @@
 
 3.3 document
 [글로벌 예외 처리 관련 정리](https://hgene.notion.site/ce085861c5e34a47a93569d6e2951084)
-<br>
+<br><br>
 
 ### 4. Git / Github
 4.1 branch strategy
