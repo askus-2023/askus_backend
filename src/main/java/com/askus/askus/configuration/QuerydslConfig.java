@@ -1,4 +1,4 @@
-package com.askus.askus.global.configuration;
+package com.askus.askus.configuration;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

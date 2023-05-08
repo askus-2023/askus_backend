@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
- * response format for the exception
+ * Response Format for the exception
  */
 @Data
 public class ErrorResponse {

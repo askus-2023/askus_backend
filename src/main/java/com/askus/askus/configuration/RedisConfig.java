@@ -1,4 +1,4 @@
-package com.askus.askus.global.configuration;
+package com.askus.askus.configuration;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

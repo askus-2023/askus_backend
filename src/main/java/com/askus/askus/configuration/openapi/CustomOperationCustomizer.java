@@ -1,4 +1,4 @@
-package com.askus.askus.global.configuration.openapi;
+package com.askus.askus.configuration.openapi;
 
 import java.util.Set;
 
