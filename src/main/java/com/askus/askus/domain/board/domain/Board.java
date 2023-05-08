@@ -29,10 +29,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * Board entity
- *
- * @Mapping - mapped with Users, ThumbnailImage, RepresentativeImages
- * @Function - create, update, reset images, add images, like count, reply count, delete like count, reply count
+ * Board entity(Attributes, Function for Board)
  */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

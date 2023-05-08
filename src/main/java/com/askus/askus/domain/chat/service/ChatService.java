@@ -4,6 +4,7 @@ import com.askus.askus.domain.chat.dto.ChatGptRequest;
 import com.askus.askus.domain.chat.dto.ChatGptResponse;
 
 public interface ChatService {
+
 	/**
 	 * chat with openAi by given request(ChatGptRequest.Chat)
 	 *

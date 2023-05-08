@@ -26,6 +26,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * Request DTO for domain Board
+ * */
 public class BoardRequest {
 
 	@Schema(description = "게시글 등록 request dto")
