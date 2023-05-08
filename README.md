@@ -20,7 +20,7 @@
 │   │  │     │  ├─model # a common model (BaseEntity) for domain 
 │   │  │     │  ├─image
 │   │  │     │  ├─like
-│		│	 │		 │	├─reply
+│   │  │     │	├─reply
 │   │  │     │  └─users
 │   │  │     ├─global
 │   │  │     └─infra
