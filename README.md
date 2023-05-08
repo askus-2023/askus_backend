@@ -156,9 +156,20 @@
 - [feat/refactor/fix] free message
 <br>
 
-### Authorization/Authentication Flow
+### 5. Authorization/Authentication Flow
 <br>
 
-### CI/CD Workflow
+### 6. CI/CD Workflow
+- 해당 서비스의 배포과정은 Github Action을 통해 전체 흐름을 제어하고, 배포 버킷 및 서버는 AWS를 사용한다.
 <br>
 
+6.1 CI/CD Pipeline
+![              출처 : [https://github-wiki-see.page/m/prgrms-web-devcourse/Team_17TOP_Film_BE/wiki/CI-CD](https://github-wiki-see.page/m/prgrms-web-devcourse/Team_17TOP_Film_BE/wiki/CI-CD)](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/c19de540-bc05-4867-a8b6-03dfd6f5e1b8/Untitled.png)
+
+              출처 : [https://github-wiki-see.page/m/prgrms-web-devcourse/Team_17TOP_Film_BE/wiki/CI-CD](https://github-wiki-see.page/m/prgrms-web-devcourse/Team_17TOP_Film_BE/wiki/CI-CD)
+1. github 레포지토리의 main(master) 브랜치에 commit이 발생
+2. github action 으로 프로젝트 빌드 후 S3에 zip 업로드
+3. CodeDeploy는 빌드된 zip 파일을 s3로 부터 가져와서 ec2에 deploy
+
+6.2 document
+- [CI/CD 배포 과정 정리](https://hgene.notion.site/CI-CD-2331b5aad3ab44ca95f41af165e22d99)
