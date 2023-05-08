@@ -164,9 +164,7 @@
 <br>
 
 6.1 CI/CD Pipeline
-![              출처 : [https://github-wiki-see.page/m/prgrms-web-devcourse/Team_17TOP_Film_BE/wiki/CI-CD](https://github-wiki-see.page/m/prgrms-web-devcourse/Team_17TOP_Film_BE/wiki/CI-CD)](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/c19de540-bc05-4867-a8b6-03dfd6f5e1b8/Untitled.png)
-
-              출처 : [https://github-wiki-see.page/m/prgrms-web-devcourse/Team_17TOP_Film_BE/wiki/CI-CD](https://github-wiki-see.page/m/prgrms-web-devcourse/Team_17TOP_Film_BE/wiki/CI-CD)
+[ci/cd pipeline](src/main/resources/Untitled.png)
 1. github 레포지토리의 main(master) 브랜치에 commit이 발생
 2. github action 으로 프로젝트 빌드 후 S3에 zip 업로드
 3. CodeDeploy는 빌드된 zip 파일을 s3로 부터 가져와서 ec2에 deploy
