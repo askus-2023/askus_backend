@@ -1,7 +1,7 @@
 # cookle_backend
 [ Cookle ] 데이터 서버 🧐
 
-## 📝: Documentation
+## 📝 Documentation
 
 ### 1. Project Structure
 
