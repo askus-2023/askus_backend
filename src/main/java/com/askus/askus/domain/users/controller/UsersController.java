@@ -1,5 +1,6 @@
 package com.askus.askus.domain.users.controller;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import com.askus.askus.domain.users.dto.UsersRequest;
 import com.askus.askus.domain.users.dto.UsersResponse;
 import com.askus.askus.domain.users.security.SecurityUser;
 import com.askus.askus.domain.users.service.UsersService;
+import com.askus.askus.global.util.SecurityUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -117,5 +119,17 @@ public class UsersController {
 		@RequestBody UsersRequest.PatchPassword request
 	) {
 		usersService.updatePassword(securityUser.getId(), request);
+	}
+
+	@Operation(
+		summary = "로그아웃",
+		description = "현재 로그인된 사용자를 로그아웃합니다.",
+		security = {@SecurityRequirement(name = "bearer-key")}
+	)
+	@GetMapping("/logout")
+	public void logout(
+			@AuthenticationPrincipal SecurityUser securityUser,
+			HttpServletRequest request) {
+		usersService.logout(securityUser, SecurityUtil.getAccessToken(request));
 	}
 }
