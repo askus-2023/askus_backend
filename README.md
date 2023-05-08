@@ -124,7 +124,7 @@
 3.1 overview
 ```java
 └── error   # aggregate root
-	├── exception #프로젝트의 예외의 타입 패키지
+  ├── exception #프로젝트의 예외의 타입 패키지
   ├── errorResponse # 예외 응답 포맷
   └── globalExceptionHandler # 전역적인 예외처리 핸들러
 ```
