@@ -39,7 +39,6 @@ jobs:
     - run: cat ./src/main/resources/application.properties
 
     - uses: actions/checkout@v2
-    - run: mkdir -p ./src/main/resources
     - run: touch ./src/main/resources/messages.properties
     - run: echo "${{ secrets.MESSAGES }}" > ./src/main/resources/messages.properties
     - run: cat ./src/main/resources/messages.properties
