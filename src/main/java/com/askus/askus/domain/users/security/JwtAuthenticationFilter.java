@@ -8,12 +8,14 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import com.askus.askus.global.error.exception.NotFoundException;
+import com.askus.askus.global.util.SecurityUtil;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
 import com.askus.askus.domain.users.domain.Users;
@@ -36,10 +38,16 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 		ServletException {
 
 		// 1. Request Header에서 JWT 토큰 추출
-		String token = resolveToken((HttpServletRequest)request);
+		String token = SecurityUtil.getAccessToken((HttpServletRequest)request);
 
 		// 2. validateToken으로 토큰 유효성 검사
 		if (token != null && jwtTokenProvider.validateToken(token)) {
+
+			// 블랙리스트에 추가된 토큰(로그아웃, 재발급 이전 토큰)인지 확인
+			String isLogout = (String) redisTemplate.opsForValue().get(token);
+			if (!ObjectUtils.isEmpty(isLogout)) {
+				throw new NotFoundException("access token", token);
+			}
 
 			// 토큰이 유효할 경우 토큰에서 authentication 객체(사용자 정보)를 받아온다.
 			Authentication authentication = jwtTokenProvider.getAuthentication(token);
@@ -56,14 +64,5 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 			SecurityContextHolder.getContext().setAuthentication(customAuthentication);
 		}
 		chain.doFilter(request, response);
-	}
-
-	// Request Header에서 토큰 정보 추출
-	private String resolveToken(HttpServletRequest request) {
-		String bearerToken = request.getHeader("Authorization");
-		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
-			return bearerToken.substring(7);
-		}
-		return null;
 	}
 }
