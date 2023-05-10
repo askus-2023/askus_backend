@@ -157,6 +157,12 @@
 <br>
 
 ### 5. Authorization/Authentication Flow
+- 애플리케이션에서 인증/인가 에 대한 설정을 편리하게 도와주는 역할의 `Spring Security` 라이브러리를 활용하여 사용자의 인증 및 인가를 처리하여 인증/인가 관심사를 주요 로직으로부터 분리한다.
+- 사용자 토큰 검증을 통한 인증/인가 를 수행하는 JWT Filter를 생성하여 사용자 인증수단은 `JWT 토큰`으로 정하였다. 인증 수단은 JWT 토큰을 활용하여 서버 과부하를 줄일 수 있도록 한다.
+- 주요 인증토큰으로 사용되는 AccessToken의 만료시간은 짧게하여 노출의 위험을 줄이는 대신 RefreshToken을 두어 새로운 인증 토큰을 발급받는 인증수단으로 사용할 수 있도록 한다. 이때, RefreshToken은 보다 빠른 조회속도를 위해 Redis 데이터베이스에 String형식으로 저장한다.
+
+5.2 document
+- [Authorization 과정 세부정리](https://hgene.notion.site/fdb6eaa8c0af472db90760a326065bc8)
 <br>
 
 ### 6. CI/CD Workflow
